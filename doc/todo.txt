@@ -1,0 +1,38 @@
+List of little jobs to do on fast_dp (in particular the code)
+
+(1) define / add DLS boiler plate to header of each file.
+(2) define method to check environment e.g. CLIBD etc. - check CCP4 set up,
+    raise helful exception if not.
+(3) make errors from nonsense in optparse more helpful.
+(4) add '''helper''' strings to getter / setter methods so help(fast_dp) is
+    helpful. E.g. difference between set_n_jobs & set_max_n_jobs.
+(5) document dependencies - what does this need to run?
+(6) sort out once and for all the beam centres at DLS (Graeme task)
+(7) replace assertions with more helpful tests (this is currently the
+    Sheldrick "Nonsense!" error message.
+(8) add if __name__ == '__main__' unit tests to some functions e.g. autoindex
+    so you can see what they do.
+
+Tidy up:
+
+https://trac.diamond.ac.uk/scientific_software/wiki/SciMXUsingFastProcessing
+
+2017/02/11 want to make a tool which will allow repeating of the last
+steps i.e. so that you can set the resolution limit without rerunning
+the processing - will require stashing the state of the fast_dp job in
+some $file at the end of a successful run, only allow re-dp if this
+file exists...
+
+Serialize over to json because easier? Rather than pickle...
+
+Done - fast_dp now makes fast_dp.json which includes all of the salient
+facts. Then we have fast_rdp which will redo the data processing last
+steps, where most of the command line is the same.
+
+FIXME set atom=S by default...
+
+Also: set a mode where the CC-half of the data is useful according to
+XDS and assign this as the limit.
+
+Implemented: ability for user to point to a fast_dp directory and
+bootstrap from that... so changing the results based on that.

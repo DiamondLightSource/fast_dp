@@ -1,0 +1,31 @@
+<subWedge>
+<experimentalCondition>
+<beam><exposureTime><value>{exposure_time:.2f}</value></exposureTime>
+     <minExposureTimePerImage><value>{minexptime:.3f}</value></minExposureTimePerImage>
+     <wavelength><value>{wavelength:.5f}</value></wavelength>
+</beam>
+<detector><beamPositionX><value>{beam_y:.2f}</value></beamPositionX>
+          <beamPositionY><value>{beam_x:.2f}</value></beamPositionY>
+          <bin><value>{bin:s}</value></bin>
+          <distance><value>{distance:.2f}</value></distance>
+          <imageSaturation><value>{saturation:d}</value></imageSaturation>
+          <name><value>{detector_name:s}</value></name>
+          <numberPixelX><value>{pixel_x:d}</value></numberPixelX>
+          <numberPixelY><value>{pixel_y:d}</value></numberPixelY>
+          <pixelSizeX><value>{pixel_size_x:.4f}</value></pixelSizeX>
+          <pixelSizeY><value>{pixel_size_y:.4f}</value></pixelSizeY>
+          <twoTheta><value>0.000000e+00</value></twoTheta>
+          <type><value>{detector_type}</value></type>
+</detector>
+<goniostat><maxOscillationSpeed><value>{maxoscspeed:.2f}</value></maxOscillationSpeed>
+           <minOscillationWidth><value>{minoscwidth:.2f}</value></minOscillationWidth>
+           <oscillationWidth><value>{osc_width:.2f}</value></oscillationWidth>
+           <rotationAxis><value>{oscaxis:s}</value></rotationAxis>
+           <rotationAxisEnd><value>{osc_end:.2f}</value></rotationAxisEnd>
+           <rotationAxisStart><value>{osc_start:.2f}</value></rotationAxisStart>
+</goniostat>
+</experimentalCondition>
+<image><number><value>{image_number:d}</value></number>
+       <path><value>{image_name:s}</value></path></image>
+<subWedgeNumber><value>{image_number:d}</value></subWedgeNumber>
+</subWedge>

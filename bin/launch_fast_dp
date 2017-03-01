@@ -1,0 +1,42 @@
+#!/bin/sh
+
+if test -e /etc/profile.d/modules.sh; then
+  . /etc/profile.d/modules.sh
+else
+  echo "unable to submit to cluster"
+  exit
+fi
+
+module load fast_dp
+#> /dev/null 2>&1
+
+export FORKINTEGRATE_QUEUE=high
+
+fast_dp $@
+
+# convert to MTZ format...
+
+if [ -f fast_dp.mtz ]; then
+    module load shelx
+    mtz2sca fast_dp.mtz > mtz2sca.log 2>&1
+fi
+
+# insert results to ISPyB
+
+if [ -f fast_dp.xml ]; then
+    module load python/ana
+    python /dls_sw/apps/ispyb-api/mxdatareduction2ispyb.py fast_dp.xml ispyb_ids.xml
+
+# Don't pipe to this log file as it's frequently owned by gda2 so regular users can't write to it
+# >> /dls/tmp/Dbserverlogfile.log 2>&1
+
+fi
+
+# FIXME must add in something to check that xds_sorted.mtz exists here!
+
+if [ -f xds_sorted.mtz ]; then
+    module load xia2/CVS
+    autoCHEF xds_sorted.mtz >> fast_dp.log
+fi
+
+

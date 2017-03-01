@@ -1,0 +1,14 @@
+#!/bin/bash
+# 
+# Little jiffy to read a diffraction image header and compose EDNA xml.
+# 
+# graeme.winter@diamond.ac.uk 24/JAN/2011
+
+. /etc/profile.d/modules.sh
+module load ccp4 > /dev/null 2>&1
+
+full_path="$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"
+export FAST_DP_ROOT=`dirname "$full_path" | sed 's/\/bin$//'`
+
+cctbx.python ${FAST_DP_ROOT}/src/header2edna_xml.py $@
+
