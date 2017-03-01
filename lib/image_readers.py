@@ -24,6 +24,45 @@ def get_dectris_serial_no(record):
     tokens = record.split()
     return tokens[tokens.index('S/N') + 1]
 
+
+try:
+  import bz2
+except: # intentional
+  bz2 = None
+
+try:
+  import gzip
+except: # intentional
+  gzip = None
+
+
+def is_bz2(filename):
+  if not '.bz2' in filename[-4:]:
+    return False
+  return 'BZh' in open(filename, 'rb').read(3)
+
+def is_gzip(filename):
+  if not '.gz' in filename[-3:]:
+    return False
+  magic = open(filename, 'rb').read(2)
+  return ord(magic[0]) == 0x1f and ord(magic[1]) == 0x8b
+
+def open_file(filename, mode='rb', url=False):
+  if is_bz2(filename):
+    if bz2 is None:
+      raise RuntimeError, 'bz2 file provided without bz2 module'
+    fh_func = lambda: bz2.BZ2File(filename, mode)
+
+  elif is_gzip(filename):
+    if gzip is None:
+      raise RuntimeError, 'gz file provided without gzip module'
+    fh_func = lambda: gzip.GzipFile(filename, mode)
+
+  else:
+    fh_func = lambda: open(filename, mode)
+
+  return fh_func()
+
 def failover_cbf(cbf_file):
     '''CBF files from the latest update to the PILATUS detector cause a
     segmentation fault in diffdump. This is a workaround.'''
@@ -32,7 +71,7 @@ def failover_cbf(cbf_file):
 
     header['two_theta'] = 0.0
 
-    for record in open(cbf_file):
+    for record in open_file(cbf_file):
         if '_array_data.data' in record:
             break
 
@@ -188,6 +227,7 @@ def read_image_metadata(image):
     # also use the first image in the wedge to get the frame metadata
 
     template, directory = image2template_directory(image)
+
     matching = find_matching_images(template, directory)
     image = template_directory_number2image(template, directory, min(matching))
 
@@ -196,7 +236,7 @@ def read_image_metadata(image):
     # incoming...
 
     try:
-        if '.cbf' in image[-4:]:
+        if '.cbf' in image:
             metadata = failover_cbf(image)
 
             assert(metadata['detector_class'] in \
