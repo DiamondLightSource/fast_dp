@@ -1,0 +1,8 @@
+.cache
+.DS_Store
+*~
+*.pyc
+*.swp
+.git-notifier*
+git-notifier.log
+.gitversion
