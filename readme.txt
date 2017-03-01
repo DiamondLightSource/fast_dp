@@ -98,6 +98,8 @@ The main result is the file fast_dp.mtz containing the scaled and merged
 intensities, a log file from Aimless for plotting the merging statistics
 and the information above in fast_dp.log.
 
+See also fast_rdp to rerun last steps to change choices.
+
 If you find fast_dp useful please cite 10.5281/zenodo.13039 as a DOI for the
 source code and / or:
 
