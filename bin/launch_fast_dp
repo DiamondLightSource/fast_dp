@@ -32,11 +32,6 @@ if [ -f fast_dp.xml ]; then
 
 fi
 
-# FIXME must add in something to check that xds_sorted.mtz exists here!
 
-if [ -f xds_sorted.mtz ]; then
-    module load xia2/CVS
-    autoCHEF xds_sorted.mtz >> fast_dp.log
-fi
 
 
