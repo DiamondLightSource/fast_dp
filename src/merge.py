@@ -220,9 +220,9 @@ def parse_aimless_log(log):
         elif 'Total number unique' in record:
             nuniq = tuple(map(int, record.split()[-3:]))
         elif 'DelAnom correlation between half-sets' in record:
-            ccanom = tuple([100 * a for a in map(float, record.split()[-3:])])
+            ccanom = tuple(map(float, record.split()[-3:]))
         elif 'Mn(I) half-set correlation CC(1/2)' in record:
-            cchalf = tuple([100 * a for a in map(float, record.split()[-3:])])
+            cchalf = tuple(map(float, record.split()[-3:]))
 
     # copy to internal storage for XML output
     xml_results = {}
@@ -281,10 +281,10 @@ def parse_aimless_log(log):
     write('%20s ' % 'I/sigma'            + '%6.2f %6.2f %6.2f' % isigma)
     write('%20s ' % 'Completeness'       + '%6.1f %6.1f %6.1f' % comp)
     write('%20s ' % 'Multiplicity'       + '%6.1f %6.1f %6.1f' % mult)
-    write('%20s ' % 'CC 1/2'             + '%6.1f %6.1f %6.1f' % cchalf)
+    write('%20s ' % 'CC 1/2'             + '%6.3f %6.3f %6.3f' % cchalf)
     write('%20s ' % 'Anom. Completeness' + '%6.1f %6.1f %6.1f' % acomp)
     write('%20s ' % 'Anom. Multiplicity' + '%6.1f %6.1f %6.1f' % amult)
-    write('%20s ' % 'Anom. Correlation'  + '%6.1f %6.1f %6.1f' % ccanom)
+    write('%20s ' % 'Anom. Correlation'  + '%6.3f %6.3f %6.3f' % ccanom)
     write('%20s ' % 'Nrefl'              + '%6d %6d %6d' % nref)
     write('%20s ' % 'Nunique'            + '%6d %6d %6d' % nuniq)
     write('%20s ' % 'Mid-slope'          + '%6.3f' % slope)
