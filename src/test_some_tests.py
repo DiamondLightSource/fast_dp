@@ -61,4 +61,4 @@ def test_fast_dp_X4_wide():
   return
 
 def test_are_there_any_real_tests():
-  assert true, "So test! Much happy!"
+  assert True, "So test! Much happy!"
