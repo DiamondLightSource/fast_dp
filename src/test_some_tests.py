@@ -29,5 +29,36 @@
 def test_this_is_a_test():
   assert (1 + 1) == 2
 
+def test_fast_dp_X4_wide():
+  import os
+  import libtbx.load_env
+  from dials.util.procrunner import run_process
+  import tempfile
+
+  src = os.path.join(libtbx.env.under_build('xia2_regression'),
+                     'test_data', 'X4_wide')
+  dls = '/dls/science/groups/scisoft/DIALS/repositories/current/' + \
+    'xia2_regression_data/test_data/X4_wide'
+  if not os.path.exists(src):
+    if not os.path.exists(dls):
+      return
+    src = dls
+
+  image = os.path.join(src, 'X4_wide_M1S4_2_0001.cbf')
+  cmd = 'fast_dp -a Ba %s' % image
+
+  run = tempfile.mkdtemp()
+
+  os.chdir(run)
+  result = run_process(cmd.split())
+
+  assert result['stderr'] == '', 'fast_dp output to STDERR:' + result['stderr']
+  assert result['exitcode'] == 0, 'fast_dp exit code != 0: %d' % \
+    result['exitcode']
+  for output in ['fast_dp.mtz', 'fast_dp.log']:
+    assert os.path.exists(os.path.join(run, output)), 'No output found'
+
+  return
+
 def test_are_there_any_real_tests():
-  assert False, "There are no real tests. Sad."
+  assert true, "So test! Much happy!"
