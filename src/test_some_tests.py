@@ -45,7 +45,11 @@ def test_fast_dp_X4_wide():
     src = dls
 
   image = os.path.join(src, 'X4_wide_M1S4_2_0001.cbf')
-  cmd = 'fast_dp -a Ba %s' % image
+
+  bin = os.path.split(__file__)[0].replace('src', 'bin')
+  fast_dp = os.path.join(bin, 'fast_dp')
+  
+  cmd = '%s -a Ba %s' % (fast_dp, image)
 
   run = tempfile.mkdtemp()
 
