@@ -26,13 +26,12 @@
 #
 # 6. more advanced stuff at https://docs.pytest.org/en/latest/
 
+from dials.util.procrunner import run_process
+import libtbx.load_env
+import os
 import pytest
 
-def test_fast_dp_X4_wide():
-  import os
-  import libtbx.load_env
-  from dials.util.procrunner import run_process
-  import tempfile
+def test_fast_dp_X4_wide(tmpdir):
 
   src = os.path.join(libtbx.env.under_build('xia2_regression'),
                      'test_data', 'X4_wide')
@@ -47,19 +46,15 @@ def test_fast_dp_X4_wide():
 
   bin = os.path.split(__file__)[0].replace('src', 'bin')
   fast_dp = os.path.join(bin, 'fast_dp')
-  
-  cmd = '%s -a Ba %s' % (fast_dp, image)
 
-  run = tempfile.mkdtemp()
+  cmd = [ fast_dp, '-a', 'Ba', image ]
+  with tmpdir.as_cwd():
+    result = run_process(cmd)
 
-  os.chdir(run)
-  result = run_process(cmd.split())
-
-  assert result['stderr'] == '', 'fast_dp output to STDERR:' + result['stderr']
-  assert result['exitcode'] == 0, 'fast_dp exit code != 0: %d' % \
-    result['exitcode']
+  assert result['stderr'] == '', 'fast_dp output to STDERR:'
+  assert result['exitcode'] == 0, 'fast_dp non-zero exit code'
   for output in ['fast_dp.mtz', 'fast_dp.log']:
-    assert os.path.exists(os.path.join(run, output)), 'No output found'
+    assert tmpdir.join(output).check(), 'No output found'
 
 def test_are_there_any_real_tests():
   assert True, "So test! Much happy!"
