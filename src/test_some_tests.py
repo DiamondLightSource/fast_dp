@@ -26,8 +26,7 @@
 #
 # 6. more advanced stuff at https://docs.pytest.org/en/latest/
 
-def test_this_is_a_test():
-  assert (1 + 1) == 2
+import pytest
 
 def test_fast_dp_X4_wide():
   import os
@@ -41,7 +40,7 @@ def test_fast_dp_X4_wide():
     'xia2_regression_data/test_data/X4_wide'
   if not os.path.exists(src):
     if not os.path.exists(dls):
-      return
+      pytest.skip('Could not find test image file')
     src = dls
 
   image = os.path.join(src, 'X4_wide_M1S4_2_0001.cbf')
@@ -61,8 +60,6 @@ def test_fast_dp_X4_wide():
     result['exitcode']
   for output in ['fast_dp.mtz', 'fast_dp.log']:
     assert os.path.exists(os.path.join(run, output)), 'No output found'
-
-  return
 
 def test_are_there_any_real_tests():
   assert True, "So test! Much happy!"
