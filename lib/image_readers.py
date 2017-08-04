@@ -1,5 +1,6 @@
 import time
 import os
+from logger import write
 
 from image_names import image2template_directory, find_matching_images, \
     template_directory_number2image
@@ -76,19 +77,55 @@ def open_file(filename, mode='rb', url=False):
 
 def failover_hdf5(hdf5_file):
     from dxtbx.serialize import xds
-    from dxtbx.imageset import ImageSetFactory
+    from dxtbx.datablock import DataBlockFactory
     import time
     t0 = time.time()
-    sweep = ImageSetFactory.new([hdf5_file])[0]
+    db = DataBlockFactory.from_filenames([hdf5_file])[0]
+    sweep = db.extract_sweeps()[0]
     t1 = time.time()
-    print 'Reading %s took %.2fs' % (hdf5_file, t1-t0)
-    xds_sweep = xds.to_xds(sweep)
-    d = xds_sweep.get_detector()
-    s = xds_sweep.get_scan()
-    g = xds_sweep.get_goniometer()
-    b = xds_sweep.get_beam()
-    
+    write('Reading %s took %.2fs' % (hdf5_file, t1-t0))
+    d = sweep.get_detector()
+    s = sweep.get_scan()
+    g = sweep.get_goniometer()
+    b = sweep.get_beam()
 
+    # returns slow, fast, convention here is reverse
+    size = tuple(reversed(d[0].get_image_size()))
+
+    size0k_to_class = {1:'eiger 1M',
+                       2:'eiger 4M',
+                       3:'eiger 9M',
+                       4:'eiger 16M'}
+
+    header = { } 
+        
+    header['detector_class'] = size0k_to_class[int(size[0]/1000)]
+    header['detector'] = size0k_to_class[int(size[0]/1000)].upper().replace(
+        ' ', '_')
+    header['size'] = size
+    header['serial_number'] = 0
+    header['extra_text'] = find_hdf5_lib()
+
+    header['phi_start'] = s.get_angle_from_image_index(1.0, deg=True)
+    header['phi_end'] = s.get_angle_from_image_index(2.0, deg=True)
+    header['phi_width'] = header['phi_end'] - header['phi_start']
+    header['oscillation'] = header['phi_start'], header['phi_width']
+    header['exposure_time'] = s.get_exposure_times()[0]
+    header['oscillation_axis'] = 'Omega_I_guess'
+    header['distance'] = d[0].get_distance()
+    header['wavelength'] = b.get_wavelength()
+    header['pixel'] = d[0].get_pixel_size()
+    header['saturation'] = d[0].get_trusted_range()[1]
+    header['sensor'] = d[0].get_thickness()
+    header['beam'] = d[0].get_beam_centre(b.get_s0())
+    images = s.get_image_range()
+    directory, template = os.path.split(hdf5_file)
+    header['directory'] = directory
+    header['template'] = template.replace('master', '??????')
+    header['start'] = images[0]
+    header['end'] = images[1]
+    header['matching'] = range(images[0], images[1]+1)
+    return header
 
 def failover_cbf(cbf_file):
     '''CBF files from the latest update to the PILATUS detector cause a
@@ -251,6 +288,7 @@ def read_image_metadata(image):
     assert(os.path.exists(image))
 
     if image.endswith('.h5'):
+        assert 'master' in image
         return failover_hdf5(image)
 
     # FIXME also check that the file can also be read - assert is acceptable,
