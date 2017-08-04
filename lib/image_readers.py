@@ -74,6 +74,22 @@ def open_file(filename, mode='rb', url=False):
 
   return fh_func()
 
+def failover_hdf5(hdf5_file):
+    from dxtbx.serialize import xds
+    from dxtbx.imageset import ImageSetFactory
+    import time
+    t0 = time.time()
+    sweep = ImageSetFactory.new([hdf5_file])[0]
+    t1 = time.time()
+    print 'Reading %s took %.2fs' % (hdf5_file, t1-t0)
+    xds_sweep = xds.to_xds(sweep)
+    d = xds_sweep.get_detector()
+    s = xds_sweep.get_scan()
+    g = xds_sweep.get_goniometer()
+    b = xds_sweep.get_beam()
+    
+
+
 def failover_cbf(cbf_file):
     '''CBF files from the latest update to the PILATUS detector cause a
     segmentation fault in diffdump. This is a workaround.'''
@@ -233,6 +249,9 @@ def read_image_metadata(image):
     dictionary.'''
 
     assert(os.path.exists(image))
+
+    if image.endswith('.h5'):
+        return failover_hdf5(image)
 
     # FIXME also check that the file can also be read - assert is acceptable,
     # also use the first image in the wedge to get the frame metadata
