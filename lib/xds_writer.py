@@ -32,6 +32,7 @@ def write_xds_inp_autoindex(metadata, xds_inp):
     friedels_law = 'FALSE'
 
     fout.write('%s\n' % template_str.format(
+        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
         no_processors = get_number_cpus(),
         nx = metadata['size'][0],
         ny = metadata['size'][1],
@@ -122,6 +123,7 @@ def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
     friedels_law = 'FALSE'
 
     fout.write('%s\n' % template_str.format(
+        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
         no_processors = get_number_cpus(),
         nx = metadata['size'][0],
         ny = metadata['size'][1],
@@ -223,6 +225,7 @@ def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_pro
         no_processors = get_number_cpus()
 
     fout.write('%s\n' % template_str.format(
+        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
         no_processors = no_processors,
         no_jobs = no_jobs,
         resolution_low = resolution_low,
@@ -285,6 +288,7 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
         corrections = '!'
 
     fout.write('%s\n' % template_str.format(
+        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
         no_processors = get_number_cpus(),
         resolution_low = resolution_low,
         resolution_high = resolution_high,
@@ -351,6 +355,7 @@ def write_xds_inp_correct_no_cell(metadata,
         corrections = '!'
 
     fout.write('%s\n' % template_str.format(
+        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
         no_processors = get_number_cpus(),
         resolution_low = resolution_low,
         resolution_high = resolution_high,

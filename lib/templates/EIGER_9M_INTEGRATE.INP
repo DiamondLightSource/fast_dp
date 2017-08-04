@@ -23,6 +23,7 @@ FRACTION_OF_POLARIZATION=0.95
 POLARIZATION_PLANE_NORMAL=0.0 1.0 0.0
 FRIEDEL'S_LAW={friedels_law:s}
 NAME_TEMPLATE_OF_DATA_FRAMES={template:s}
+{extra_text:s}
 STARTING_ANGLE={starting_angle:.3f} STARTING_FRAME={starting_image:d}
 INCLUDE_RESOLUTION_RANGE={resolution_low:.2f} {resolution_high:.2f}
 
