@@ -24,6 +24,17 @@ def get_dectris_serial_no(record):
     tokens = record.split()
     return tokens[tokens.index('S/N') + 1]
 
+__hdf5_lib = ''
+def find_hdf5_lib():
+  global __hdf5_lib
+  if __hdf5_lib:
+    return __hdf5_lib
+  import os
+  for d in os.environ['PATH'].split(os.pathsep):
+    if os.path.exists(os.path.join(d, 'xds_par')):
+      __hdf5_lib = 'LIB=%s\n' % os.path.join(d,'dectris-neggia.so')
+      return __hdf5_lib
+  return ''
 
 try:
   import bz2
