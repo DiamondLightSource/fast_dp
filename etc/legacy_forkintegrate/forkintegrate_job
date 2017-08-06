@@ -1,0 +1,22 @@
+#!/bin/ksh
+
+image1=$1
+nitask=$2
+itask=$3
+nbatask=$4
+
+host=`uname -a | awk '{print $2}'`
+echo $image1 $nitask $itask $nbatask $host $JOB_ID >> jobs.log
+date >> .${itask}.dat
+ps -ef | grep -v '^root' >> .${itask}.dat
+echo '=========' >> .${itask}.dat
+echo $host >> .${itask}.dat
+cat /proc/cpuinfo | grep 'cpu MHz' | sort | uniq >> .${itask}.dat
+cat /proc/cpuinfo | grep processor | wc -l >> .${itask}.dat
+uptime >> .${itask}.dat
+free >> .${itask}.dat
+echo $JOB_ID >> .${itask}.dat
+echo $image1 $nitask $itask $nbatask | mintegrate_par
+date >> .${itask}.dat
+cat /proc/cpuinfo | grep 'cpu MHz' | sort | uniq >> .${itask}.dat
+
