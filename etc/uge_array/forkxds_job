@@ -1,7 +1,9 @@
-
 #!/bin/bash
 
 params=$(awk "NR==$SHE_TASK_ID" forkxds.params)
 job=`echo $params | awk '{print $1}'`
+
+# load environment
+. forkxds_env
 
 echo $SGE_TASK_ID | $job

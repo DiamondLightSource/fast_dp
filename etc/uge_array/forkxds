@@ -31,5 +31,9 @@ do
    echo $main >> forkxds.params
 done
 
+# save environment
+echo 'PATH=$PATH' > forkxds.env
+echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH' > forkxds.env
+
 qsub -p 1024 -sync y -p -10 -V -cwd -pe smp $maxcpu -t 1-$ntask \
 `which forkxds_job`
