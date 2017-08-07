@@ -31,7 +31,7 @@ def anomalous_signals(hklin):
 
     return df_f, di_sigdi
 
-def merge_aimless(hklout='fast_dp.mtz', aimless_log='aimless.log'):
+def merge(hklout='fast_dp.mtz', aimless_log='aimless.log'):
     '''Merge the reflections from XDS_ASCII.HKL with Aimless to get
     statistics - this will use pointless for the reflection file format
     mashing.'''

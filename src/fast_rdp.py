@@ -29,7 +29,7 @@ from image_readers import read_image_metadata, check_file_readable
 from autoindex import autoindex
 from integrate import integrate
 from scale import scale
-from merge import merge_aimless
+from merge import merge
 from pointgroup import decide_pointgroup
 from logger import write, set_filename
 set_filename('fast_rdp.log')
@@ -208,8 +208,8 @@ class FastRDP:
 
         try:
             n_images = self._metadata['end'] - self._metadata['start'] + 1
-            self._xml_results = merge_aimless(hklout='fast_rdp.mtz',
-                                              aimless_log='aimless_rerun.log')
+            self._xml_results = merge(hklout='fast_rdp.mtz',
+                                      aimless_log='aimless_rerun.log')
         except RuntimeError, e:
             write('Merging error: %s' % e)
             return

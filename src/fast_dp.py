@@ -31,7 +31,7 @@ from image_readers import read_image_metadata, check_file_readable
 from autoindex import autoindex
 from integrate import integrate
 from scale import scale
-from merge import merge_aimless
+from merge import merge
 from pointgroup import decide_pointgroup
 from logger import write
 
@@ -311,7 +311,7 @@ class FastDP:
 
         try:
             n_images = self._metadata['end'] - self._metadata['start'] + 1
-            self._xml_results = merge_aimless()
+            self._xml_results = merge()
         except RuntimeError, e:
             write('Merging error: %s' % e)
             return
