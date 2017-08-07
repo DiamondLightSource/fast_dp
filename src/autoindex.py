@@ -27,6 +27,9 @@ def autoindex(metadata, input_cell = None):
 
     log = run_job('xds_par')
 
+    with open('autoindex.log', 'w') as fout:
+        fout.write(''.join(log))
+
     # sequentially check for errors... XYCORR INIT COLSPOT IDXREF
 
     for step in ['XYCORR', 'INIT', 'COLSPOT', 'IDXREF']:
