@@ -1,0 +1,35 @@
+#!/bin/bash
+#                    forkxds          Version DLS-2017/08
+#
+# enables  multi-tasking by splitting the COLSPOT and INTEGRATE
+# steps of xds into independent jobs. Each job is carried out by 
+# a Fortran main program (mcolspot, mcolspot_par, mintegrate, or
+# mintegrate_par). The jobs are distributed among the processor 
+# nodes of the NFS cluster network.
+#
+# 'forkxds' is called by xds or xds_par by the Fortran instruction
+# CALL SYSTEM('forkxds ntask maxcpu main rhosts'),
+#    ntask  ::total number of independent jobs (tasks)
+#   maxcpu  ::maximum number of processors used by each job
+#    main   ::name of the main program to be executed; could be
+#             mcolspot | mcolspot_par | mintegrate | mintegrate_par
+#   rhosts  ::names of CPU cluster nodes in the NFS network 
+#
+# DLS UGE port of script to operate nicely with cluster 
+# scheduling system - will work with any XDS usage but is 
+# aimed for fast_dp see fast_dp#3.
+
+
+ntask=$1  #total number of jobs
+maxcpu=$2 #maximum number of processors used by each job
+main=$3   #name of the main program to be executed
+
+echo "" > forkxds.params
+itask=1
+while test $itask -le $ntask
+do
+   echo $main >> forkxds.params
+done
+
+qsub -p 1024 -sync y -p -10 -V -cwd -pe smp $maxcpu -t 1-$ntask \
+`which forkxds_job`

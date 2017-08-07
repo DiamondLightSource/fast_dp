@@ -1,0 +1,7 @@
+
+#!/bin/bash
+
+params=$(awk "NR==$SHE_TASK_ID" forkxds.params)
+job=`echo $params | awk '{print $1}'`
+
+echo $SGE_TASK_ID | $job
