@@ -31,136 +31,6 @@ def anomalous_signals(hklin):
 
     return df_f, di_sigdi
 
-def merge():
-    '''Merge the reflections from XDS_ASCII.HKL to get statistics - this
-    will use pointless for the reflection file format mashing.'''
-
-    run_job('pointless',
-            ['-c', 'xdsin', 'XDS_ASCII.HKL', 'hklout', 'xds_sorted.mtz'])
-
-    log = run_job('scala',
-                  ['hklin', 'xds_sorted.mtz', 'hklout', 'fast_dp.mtz'],
-                  ['bins 20', 'run 1 all', 'scales constant',
-                   'anomalous on', 'cycles 0',
-                   'sdcorrection noadjust norefine both 1.0 0.0 0.0'])
-
-    fout = open('scala.log', 'w')
-
-    for record in log:
-        fout.write(record)
-
-    fout.close()
-
-    # check for errors
-
-    for j, record in enumerate(log):
-        if 'Scala:  *** Too many runs ***' in record:
-            raise RuntimeError, 'SCALA: error in merging'
-        if 'FATAL ERROR message' in record:
-            raise RuntimeError, 'AIMLESS: %s' % log[j+1].strip()
-
-    # FIXME check that the version of Scala corresponds to ccp4 6.1.0 or later
-
-    lres = None
-    hres = None
-    rmerge = None
-    isigma = None
-    comp = None
-    mult = None
-    acomp = None
-    amult = None
-    slope = None
-
-    for record in log:
-        if '  Low resolution limit                  '   in record:
-            lres = tuple(map(float, record.split()[-3:]))
-        elif '  High resolution limit                 ' in record:
-            hres = tuple(map(float, record.split()[-3:]))
-        elif '  Rmerge                                ' in record:
-            rmerge = tuple(map(float, record.split()[-3:]))
-        elif '  Mean((I)/sd(I))                       ' in record:
-            isigma = tuple(map(float, record.split()[-3:]))
-        elif '  Completeness                          ' in record:
-            comp = tuple(map(float, record.split()[-3:]))
-        elif '  Multiplicity                          ' in record:
-            mult = tuple(map(float, record.split()[-3:]))
-        elif '  Anomalous completeness                ' in record:
-            acomp = tuple(map(float, record.split()[-3:]))
-        elif '  Anomalous multiplicity                ' in record:
-            amult = tuple(map(float, record.split()[-3:]))
-        elif '  Total number of observations' in record:
-            nref = tuple(map(int, record.split()[-3:]))
-        elif '  Total number unique' in record:
-            nuniq = tuple(map(int, record.split()[-3:]))
-        elif 'Mid-Slope of Anom Normal Probability' in record:
-            slope = float(record.split()[-3])
-        elif 'DelAnom correlation between half-sets' in record:
-            acorr = tuple([100 * a for a in map(float, record.split()[-3:])])
-
-    # copy to internal storage for XML output
-    # FIXME put the acorr values into this, also compute dF/F and dI/sig(dI)
-
-    xml_results = {}
-    xml_results['rmerge_overall'] = rmerge[0]
-    xml_results['resol_high_overall'] = hres[0]
-    xml_results['resol_low_overall'] = lres[0]
-    xml_results['isigma_overall'] = isigma[0]
-    xml_results['completeness_overall'] = comp[0]
-    xml_results['multiplicity_overall'] = mult[0]
-    xml_results['acompleteness_overall'] = acomp[0]
-    xml_results['amultiplicity_overall'] = amult[0]
-    xml_results['nref_overall'] = nref[0]
-    xml_results['nuniq_overall'] = nuniq[0]
-
-    xml_results['rmerge_inner'] = rmerge[1]
-    xml_results['resol_high_inner'] = hres[1]
-    xml_results['resol_low_inner'] = lres[1]
-    xml_results['isigma_inner'] = isigma[1]
-    xml_results['completeness_inner'] = comp[1]
-    xml_results['multiplicity_inner'] = mult[1]
-    xml_results['acompleteness_inner'] = acomp[1]
-    xml_results['amultiplicity_inner'] = amult[1]
-    xml_results['nref_inner'] = nref[1]
-    xml_results['nuniq_inner'] = nuniq[1]
-
-    xml_results['rmerge_outer'] = rmerge[2]
-    xml_results['resol_high_outer'] = hres[2]
-    xml_results['resol_low_outer'] = lres[2]
-    xml_results['isigma_outer'] = isigma[2]
-    xml_results['completeness_outer'] = comp[2]
-    xml_results['multiplicity_outer'] = mult[2]
-    xml_results['acompleteness_outer'] = acomp[2]
-    xml_results['amultiplicity_outer'] = amult[2]
-    xml_results['nref_outer'] = nref[2]
-    xml_results['nuniq_outer'] = nuniq[2]
-
-    # compute some additional results
-
-    df_f, di_sigdi = anomalous_signals('fast_dp.mtz')
-
-    # print out the results...
-
-    write(80 * '-')
-
-    write('%20s ' % 'Low resolution'     + '%6.2f %6.2f %6.2f' % lres)
-    write('%20s ' % 'High resolution'    + '%6.2f %6.2f %6.2f' % hres)
-    write('%20s ' % 'Rmerge'             + '%6.3f %6.3f %6.3f' % rmerge)
-    write('%20s ' % 'I/sigma'            + '%6.2f %6.2f %6.2f' % isigma)
-    write('%20s ' % 'Completeness'       + '%6.1f %6.1f %6.1f' % comp)
-    write('%20s ' % 'Multiplicity'       + '%6.1f %6.1f %6.1f' % mult)
-    write('%20s ' % 'Anom. Completeness' + '%6.1f %6.1f %6.1f' % acomp)
-    write('%20s ' % 'Anom. Multiplicity' + '%6.1f %6.1f %6.1f' % amult)
-    write('%20s ' % 'Anom. Correlation'  + '%6.1f %6.1f %6.1f' % acorr)
-    write('%20s ' % 'Nrefl'              + '%6d %6d %6d' % nref)
-    write('%20s ' % 'Nunique'            + '%6d %6d %6d' % nuniq)
-    write('%20s ' % 'Mid-slope'          + '%6.3f' % slope)
-    write('%20s ' % 'dF/F'               + '%6.3f' % df_f)
-    write('%20s ' % 'dI/sig(dI)'         + '%6.3f' % di_sigdi)
-
-    write(80 * '-')
-
-    return xml_results
-
 def merge_aimless(hklout='fast_dp.mtz', aimless_log='aimless.log'):
     '''Merge the reflections from XDS_ASCII.HKL with Aimless to get
     statistics - this will use pointless for the reflection file format
@@ -173,7 +43,7 @@ def merge_aimless(hklout='fast_dp.mtz', aimless_log='aimless.log'):
                   ['hklin', 'xds_sorted.mtz', 'hklout', hklout,
                    'xmlout', 'aimless.xml'],
                   ['bins 20', 'run 1 all', 'scales constant',
-                   'anomalous on', 'cycles 0',
+                   'anomalous on', 'cycles 0', 
                    'sdcorrection norefine full 1 0 0'])
 
     fout = open(aimless_log, 'w')

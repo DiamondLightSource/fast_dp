@@ -31,7 +31,7 @@ from image_readers import read_image_metadata, check_file_readable
 from autoindex import autoindex
 from integrate import integrate
 from scale import scale
-from merge import merge, merge_aimless
+from merge import merge_aimless
 from pointgroup import decide_pointgroup
 from logger import write
 
