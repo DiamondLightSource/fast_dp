@@ -43,7 +43,7 @@ def merge_aimless(hklout='fast_dp.mtz', aimless_log='aimless.log'):
                   ['hklin', 'xds_sorted.mtz', 'hklout', hklout,
                    'xmlout', 'aimless.xml'],
                   ['bins 20', 'run 1 all', 'scales constant',
-                   'anomalous on', 'cycles 0', 
+                   'anomalous on', 'cycles 0',
                    'sdcorrection norefine full 1 0 0'])
 
     fout = open(aimless_log, 'w')

@@ -97,8 +97,8 @@ def failover_hdf5(hdf5_file):
                        3:'eiger 9M',
                        4:'eiger 16M'}
 
-    header = { } 
-        
+    header = { }
+
     header['detector_class'] = size0k_to_class[int(size[0]/1000)]
     header['detector'] = size0k_to_class[int(size[0]/1000)].upper().replace(
         ' ', '_')
