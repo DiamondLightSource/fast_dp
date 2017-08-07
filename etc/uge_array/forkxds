@@ -29,6 +29,7 @@ itask=1
 while test $itask -le $ntask
 do
    echo $main >> forkxds.params
+   itask=`expr $itask + 1`
 done
 
 # save environment
