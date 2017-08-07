@@ -17,8 +17,11 @@
 #
 # DLS UGE port of script to operate nicely with cluster 
 # scheduling system - will work with any XDS usage but is 
-# aimed for fast_dp see fast_dp#3.
-
+# aimed for fast_dp see fast_dp#3. Options passed through environment:
+#
+# FORKXDS_PRIORITY - priority within queue, e.g. 1024
+# FORKXDS_PROJECT - UGE project to assign for this
+# FORKXDS_QUEUE - queue to submit to
 
 ntask=$1  #total number of jobs
 maxcpu=$2 #maximum number of processors used by each job
@@ -36,7 +39,19 @@ done
 echo "PATH=$PATH" > forkxds.env
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> forkxds.env
 
-# FIXME figure out correct queue to submit to; project to book to; priority
-# to run with...
-qsub -p 1024 -sync y -p -10 -V -cwd -pe smp $maxcpu -t 1-$ntask \
+# check environment for queue; project; priority information
+qsub_opt=""
+if [[ -v FORKXDS_PRIORITY ]] ; then
+    qsub_opt="$qsub_command -p $FORKXDS_PRIORITY"
+fi
+
+if [[ -v FORKXDS_PROJECT ]] ; then
+    qsub_opt="$qsub_command -P $FORKXDS_PROJECT"
+fi
+
+if [[ -v FORKXDS_QUEUE ]] ; then
+    qsub_opt="$qsub_command -q $FORKXDS_QUEUE"
+fi
+
+qsub $qsub_opt -sync y -V -cwd -pe smp $maxcpu -t 1-$ntask \
 `which forkxds_job`
