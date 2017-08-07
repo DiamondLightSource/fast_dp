@@ -24,7 +24,7 @@ ntask=$1  #total number of jobs
 maxcpu=$2 #maximum number of processors used by each job
 main=$3   #name of the main program to be executed
 
-echo "" > forkxds.params
+rm -f forkxds.params
 itask=1
 while test $itask -le $ntask
 do
@@ -33,8 +33,8 @@ do
 done
 
 # save environment
-echo 'PATH=$PATH' > forkxds.env
-echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH' > forkxds.env
+echo "PATH=$PATH" > forkxds.env
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> forkxds.env
 
 qsub -p 1024 -sync y -p -10 -V -cwd -pe smp $maxcpu -t 1-$ntask \
 `which forkxds_job`

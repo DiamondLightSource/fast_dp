@@ -1,9 +1,11 @@
 #!/bin/bash
 
-params=$(awk "NR==$SHE_TASK_ID" forkxds.params)
-job=`echo $params | awk '{print $1}'`
+params=$(awk "NR==$SGE_TASK_ID" forkxds.params)
+JOB=`echo $params | awk '{print $1}'`
 
 # load environment
-. forkxds_env
+. forkxds.env
 
-echo $SGE_TASK_ID | $job
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export PATH=$PATH
+echo $SGE_TASK_ID | $JOB
