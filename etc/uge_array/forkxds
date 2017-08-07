@@ -41,15 +41,15 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> forkxds.env
 
 # check environment for queue; project; priority information
 qsub_opt=""
-if [[ -v FORKXDS_PRIORITY ]] ; then
+if [[ -n "$FORKXDS_PRIORITY" ]] ; then
     qsub_opt="$qsub_command -p $FORKXDS_PRIORITY"
 fi
 
-if [[ -v FORKXDS_PROJECT ]] ; then
+if [[ -n "$FORKXDS_PROJECT" ]] ; then
     qsub_opt="$qsub_command -P $FORKXDS_PROJECT"
 fi
 
-if [[ -v FORKXDS_QUEUE ]] ; then
+if [[ -n "$FORKXDS_QUEUE" ]] ; then
     qsub_opt="$qsub_command -q $FORKXDS_QUEUE"
 fi
 
