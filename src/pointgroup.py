@@ -27,7 +27,7 @@ def decide_pointgroup(p1_unit_cell, metadata,
     xds_inp = 'P1.INP'
 
     write_xds_inp_correct(metadata, p1_unit_cell, 1,
-                          xds_inp)
+                          xds_inp, turn_subset=True)
 
     shutil.copyfile(xds_inp, 'XDS.INP')
 

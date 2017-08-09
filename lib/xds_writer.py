@@ -261,7 +261,8 @@ def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_pro
 
 def write_xds_inp_correct(metadata, unit_cell, space_group_number,
                           xds_inp, scale = True,
-                          resolution_low = 30, resolution_high = 0.0):
+                          resolution_low = 30, resolution_high = 0.0,
+                          turn_subset = False):
 
     fout = open(xds_inp, 'w')
 
@@ -318,8 +319,15 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
 
     # then we get the non-template stuff
 
-    fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
-                                       metadata['end']))
+    if turn_subset:
+        # limit to 360 degrees...
+        width = metadata['oscillation'][1]
+        start, end = metadata['start'], metadata['end']
+        if (end - start + 1) * width > 360:
+            end = start + (360. / width) - 1
+        fout.write('DATA_RANGE=%d %d\n' % (start, end))
+    else:
+        fout.write('DATA_RANGE=%d %d\n' % (metadata['start'], metadata['end']))
 
     fout.close()
 
