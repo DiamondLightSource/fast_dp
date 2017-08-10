@@ -55,3 +55,8 @@ fi
 
 qsub $qsub_opt -sync y -V -cwd -pe smp $maxcpu -t 1-$ntask \
 `which forkxds_job`
+
+# clean up... if everything completed correctly 
+if [ $? -eq 0 ]; then
+    rm -f forkxds_job.*
+fi
