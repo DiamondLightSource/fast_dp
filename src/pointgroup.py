@@ -87,10 +87,12 @@ def decide_pointgroup(p1_unit_cell, metadata,
                 break
 
         if not sg_accepted:
-            raise RuntimeError, 'Spacegroup %s not compatible with data'  % \
-                  input_spacegroup
+            write('No indexing solution for spacegroup %s so ignoring' % \
+                  input_spacegroup)
+            input_spacegroup = None
 
-    else:
+    # if input space group obviously nonsense, allow to ignore just warn
+    if not input_spacegroup:
         for r in pointless_results:
             if lattice_to_spacegroup(r[0]) in results:
                 space_group_number = r[1]
