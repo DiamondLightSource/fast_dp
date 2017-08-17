@@ -17,7 +17,7 @@ fast_dp $@
 # generate report from unmerged mtz file see
 # http://jira.diamond.ac.uk/browse/SCI-6025
 
-if [ -f fast_ep_unmerged.mtz ]; then
+if [ -f fast_dp_unmerged.mtz ]; then
     xia2.report log_include=fast_dp.log prefix=fast_dp title=fast_dp fast_dp_unmerged.mtz
     mv fast_dp.xml fast_dp_txt.xml
     cat fast_dp_txt.xml | sed 's%fast_dp.log%fast_dp-report.html%' > fast_dp.xml
