@@ -55,7 +55,7 @@ def write_xds_inp_autoindex(metadata, xds_inp):
     fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
                                        metadata['end']))
 
-    # compute the background range as min(all, 5)
+    # compute the background range as min(all, 5) #TODO maybe 5 degrees?
 
     if metadata['end'] - metadata['start'] > 5:
         fout.write('BACKGROUND_RANGE=%d %d\n' % \
@@ -63,6 +63,9 @@ def write_xds_inp_autoindex(metadata, xds_inp):
     else:
         fout.write('BACKGROUND_RANGE=%d %d\n' % (metadata['start'],
                                                  metadata['end']))
+
+    # REFINE(IDXREF)=
+    fout.write('REFINE(IDXREF)=CELL AXIS ORIENTATION POSITION BEAM\n')
 
     # by default autoindex off all images - can make this better later on.
     # Ok: I think it is too slow already. Three wedges, as per xia2...
