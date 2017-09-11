@@ -59,11 +59,13 @@ class FastDP:
         self._resolution_low = 30.0
         self._resolution_high = 0.0
 
-        # job control see -j -J -k command-line options below
+        # job control see -j -J -k command-line options below for node names
+        # see fast_dp#9
         self._n_jobs = 1
         self._n_cores = 0
         self._max_n_jobs = 0
         self._n_cpus = get_number_cpus()
+        self._execution_hosts = []
 
         # image ranges
         self._first_image = None
@@ -96,6 +98,18 @@ class FastDP:
     def set_max_n_jobs(self, max_n_jobs):
         self._max_n_jobs = max_n_jobs
         return
+
+    def set_execution_hosts(self, execution_hosts):
+        self._execution_hosts = execution_hosts
+
+        # add this to the metadata as "extra text"
+        et = self._metadata.get('extra_text', '')
+        self._metadata['extra_text'] = et + 'CLUSTER_NODES=%s\n' % \
+            ' '.join(execution_hosts)
+        return
+
+    def get_execution_hosts(self):
+        return self._execution_hosts
 
     def set_first_image(self, first_image):
         self._first_image = first_image
@@ -360,6 +374,9 @@ def main():
     parser.add_option('-J', '--maximum-number-of-jobs',
                       dest = 'maximum_number_of_jobs',
                       help = 'Maximum number of jobs for integration')
+    parser.add_option('-e', '--execution-hosts',
+                      dest = 'execution_hosts',
+                      help = 'names for execution hosts for forkxds')
 
     parser.add_option('-c', '--cell', dest = 'cell',
                       help = 'Cell constants for processing, needs spacegroup')
@@ -397,6 +414,10 @@ def main():
 
         if options.maximum_number_of_jobs:
             fast_dp.set_max_n_jobs(int(options.maximum_number_of_jobs))
+
+        if options.execution_hosts:
+            fast_dp.set_execution_hosts(options.execution_hosts.split(','))
+            write('Execution hosts: %s' % ' '.join(fast_dp.get_execution_hosts()))
 
         if options.number_of_jobs:
             if options.maximum_number_of_jobs:
