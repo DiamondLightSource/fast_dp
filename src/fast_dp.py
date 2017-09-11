@@ -101,6 +101,8 @@ class FastDP:
 
     def set_execution_hosts(self, execution_hosts):
         self._execution_hosts = execution_hosts
+        self._max_n_jobs = len(execution_hosts)
+        self._n_jobs = 0
 
         # add this to the metadata as "extra text"
         et = self._metadata.get('extra_text', '')
