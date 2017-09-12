@@ -101,7 +101,14 @@ class FastDP:
 
     def set_execution_hosts(self, execution_hosts):
         self._execution_hosts = execution_hosts
-        self._max_n_jobs = len(execution_hosts)
+        max_n_jobs = 0
+        for host in execution_hosts:
+            if ':' in host:
+                max_n_jobs += int(host.split(':')[1])
+        if max_n_jobs:
+            self._max_n_jobs = max_n_jobs
+        else:
+            self._max_n_jobs = len(execution_hosts)
         self._n_jobs = 0
 
         # add this to the metadata as "extra text"
