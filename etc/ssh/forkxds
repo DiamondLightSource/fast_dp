@@ -1,0 +1,78 @@
+#!/bin/bash
+#                    forkxds          Version 5-2017, 7-2017
+#
+# enables  multi-tasking by splitting the COLSPOT and INTEGRATE
+# steps of xds into independent jobs. Each job is carried out by 
+# a Fortran main program (mcolspot, mcolspot_par, mintegrate, or
+# mintegrate_par). The jobs are distributed among the processor 
+# nodes of the NFS cluster network.
+#
+# 'forkxds' is called by xds or xds_par by the Fortran instruction
+# CALL SYSTEM('forkxds ntask maxcpu main rhosts'),
+#    ntask  ::total number of independent jobs (tasks)
+#   maxcpu  ::maximum number of processors used by each job
+#    main   ::name of the main program to be executed; could be
+#             mcolspot | mcolspot_par | mintegrate | mintegrate_par
+#   rhosts  ::names of CPU cluster nodes in the NFS network 
+#
+# NOTE: No blanks allowed adjacent to the = signs !!!
+#
+# W.Kabsch & K.Rohm    original version Februar 2005
+# K.Diederichs 9-2005  modification for execution on remote hosts
+# W.Kabsch 5-2017      simplified version replacing the old scripts
+#                      (forkcolspot,forkintegrate); more flexibility
+#                      by using names of the cluster nodes as input
+#                      arguments of this shell script
+# G. Winter 9-2017     modification to allow multiple jobs to be submitted
+#                      cleanly for every node using CLUSTER_NODES=; abs.
+#                      path to mintegrate_par etc.; pass LD_LIBRARY_PATH
+#                      over ssh connection (for e.g. neggia plugin)
+
+ntask=$1  # total number of jobs
+maxcpu=$2 # maximum number of processors used by each job
+main=$3   # name of the main program to be executed
+
+# extract names of cluster nodes from the script command line - if 
+# :N appended include it N times
+
+shift 3
+nhosts=1
+while (( "$#" )); do
+    host=$1
+    jobs=1
+    if [[ $host =~ .*:.* ]] ; then
+	jobs=`echo $host | cut -d':' -f2`
+	host=`echo $host | cut -d':' -f1`
+    fi
+    for ((_j=0;_j<$jobs;_j++)); do 
+	rhosts[$nhosts]=$host       # name of next processor node
+	nhosts=`expr $nhosts + 1`   # number of cluster processor nodes
+    done
+    shift
+done
+
+abs_main=`which $main`
+
+pid=""                         # list of background process ID's
+itask=1
+
+# in here need to export LD_LIBRARY_PATH *not* for XDS but instead to ensure
+# any neggia dependencies are correctly propogated across (i.e. linked to 
+# libstdc++ etc)
+
+while test $itask -le $ntask
+do
+   if [ $nhosts -gt 1 ]        # distribute jobs among the cluster nodes
+   then
+      j=`expr $itask % $nhosts`
+      echo "$itask" | ssh -x ${rhosts[$j]} "cd $PWD && LD_LIBRARY_PATH=${LD_LIBRARY_PATH} $abs_main" &
+   else
+      echo "$itask" | $main &  # submit all jobs to the peer node
+   fi
+   pids="$pids $!"             # append id of the new background process
+   itask=`expr $itask + 1`
+   sync                        # complete pending disk writes 
+done
+
+trap "kill -15 $pids" 2 15     # 2:Control-C; 15:kill
+wait                           # wait for all background processes issued
