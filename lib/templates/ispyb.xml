@@ -11,6 +11,11 @@
 <fileName>fast_dp.log</fileName>
 <filePath>{results_directory:s}</filePath>
 </AutoProcProgramAttachment>
+<AutoProcProgramAttachment>
+<fileType>Result</fileType>
+<fileName>fast_dp.mtz</fileName>
+<filePath>{results_directory:s}</filePath>
+</AutoProcProgramAttachment>
 </AutoProcProgramContainer>
 
 <AutoProc>
