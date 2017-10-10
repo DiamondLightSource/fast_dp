@@ -175,6 +175,15 @@ class FastDP:
 
         return
 
+    def set_distance(self, distance):
+        '''Set the detector distance, in mm.'''
+
+        assert(self._metadata)
+
+        self._metadata['distance'] = distance
+
+        return
+
     def set_atom(self, atom):
         '''Set the heavy atom, if appropriate.'''
 
@@ -373,6 +382,9 @@ def main():
     parser.add_option('-b', '--beam', dest = 'beam',
                       help = 'Beam centre: x, y (mm)')
 
+    parser.add_option('-d', '--distance', dest = 'distance',
+                      help = 'Detector distance: d (mm)')
+
     parser.add_option('-a', '--atom', dest = 'atom',
                       help = 'Atom type (e.g. Se)')
 
@@ -417,6 +429,9 @@ def main():
         if options.beam:
             x, y = tuple(map(float, options.beam.split(',')))
             fast_dp.set_beam((x, y))
+
+        if options.distance:
+            fast_dp.set_distance(float(options.distance))
 
         if options.atom:
             fast_dp.set_atom(options.atom)
