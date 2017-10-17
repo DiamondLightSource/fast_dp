@@ -100,7 +100,7 @@ def write_xds_inp_autoindex(metadata, xds_inp):
         mid = (len(images) / 2) - wedge_size + images[0] - 1
         wedge = (mid, mid + wedge_size)
         fout.write('SPOT_RANGE=%d %d\n' % wedge)
-        wedge = (images[-5], images[-1])
+        wedge = (images[-wedge_size], images[-1])
         fout.write('SPOT_RANGE=%d %d\n' % wedge)
 
     fout.close()
