@@ -195,6 +195,13 @@ def failover_cbf(cbf_file):
             header['serial_number'] = get_dectris_serial_no(record)
             continue
 
+        if 'Detector: ADSC HF-4M' in record:
+            header['detector_class'] = 'adsc 4M'
+            header['detector'] = 'adsc-pad'
+            header['size'] = (2290, 2100)
+            header['serial_number'] = record.replace(',', '').split()[-1]
+            continue
+        
         if 'Start_angle' in record:
             header['phi_start'] = float(record.split()[-2])
             continue
@@ -316,7 +323,8 @@ def read_image_metadata(image):
 
             assert(metadata['detector_class'] in \
                    ['pilatus 2M', 'pilatus 6M', 'pilatus 12M',
-                    'eiger 1M', 'eiger 4M', 'eiger 9M', 'eiger 16M'])
+                    'eiger 1M', 'eiger 4M', 'eiger 9M', 'eiger 16M',
+                    'adsc 4M'])
 
             if metadata['detector_class'] == 'pilatus 2M':
                 metadata['detector'] = 'PILATUS_2M'
