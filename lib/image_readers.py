@@ -338,6 +338,8 @@ def read_image_metadata(image):
                 metadata['detector'] = 'EIGER_9M'
             elif metadata['detector_class'] == 'eiger 16M':
                 metadata['detector'] = 'EIGER_16M'
+            elif metadata['detector_class'] == 'adsc 4M':
+                metadata['detector'] = 'ADSC_4M'
             else:
                 metadata['detector'] = 'PILATUS_6M'
 
