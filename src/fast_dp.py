@@ -24,7 +24,7 @@ if not fast_dp_lib in sys.path:
 from run_job import get_number_cpus
 from cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
-from xml_output import write_ispyb_xml
+import output
 
 from image_readers import read_image_metadata, check_file_readable
 
@@ -337,11 +337,11 @@ class FastDP:
                self._nref))
         write('RPS: %.1f' % (float(self._nref) / duration))
 
-        # write out the xml
-
-        write_ispyb_xml(self._commandline, self._space_group,
-                        self._unit_cell, self._xml_results,
-                        self._start_image, self._refined_beam)
+        # write out json and xml
+        for func in (output.write_json, output.write_ispyb_xml):
+          func(self._commandline, self._space_group,
+               self._unit_cell, self._xml_results,
+               self._start_image, self._refined_beam)
 
 def main():
     '''Main routine for fast_dp.'''

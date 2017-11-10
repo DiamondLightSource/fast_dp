@@ -1,4 +1,21 @@
+from __future__ import absolute_import, division, print_function
+
+import json
 import os
+
+def write_json(commandline, spacegroup, unit_cell,
+               xml_results, start_image, refined_beam,
+               filename='fast_dp.json'):
+  '''Write out nice JSON for downstream processing.'''
+
+  with open(filename, 'w') as fh:
+    json.dump({ 'commandline': commandline,
+                'refined_beam': refined_beam,
+                'spacegroup': spacegroup,
+                'unit_cell': unit_cell,
+                'xml_results': xml_results,
+              }, fh, sort_keys=True,
+                 indent=2, separators=(',', ': '))
 
 def write_ispyb_xml(commandline, spacegroup, unit_cell,
                     xml_results, start_image, refined_beam,
@@ -9,7 +26,7 @@ def write_ispyb_xml(commandline, spacegroup, unit_cell,
                                 'lib', 'templates', 'ispyb.xml')
 
     if not os.path.exists(xml_template):
-        print 'XML template not found: %s' % xml_template
+        print('XML template not found: %s' % xml_template)
         return
 
     open(filename, 'w').write(
@@ -66,4 +83,3 @@ def write_ispyb_xml(commandline, spacegroup, unit_cell,
         refined_beam_y = refined_beam[1],
         filename = os.path.split(start_image)[-1],
         directory = os.path.split(start_image)[0]))
-    return
