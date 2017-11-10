@@ -8,9 +8,9 @@
 
 import sys
 import os
+import json
 import time
 import copy
-import exceptions
 import traceback
 
 if not 'FAST_DP_ROOT' in os.environ:
@@ -85,19 +85,14 @@ class FastDP:
         self._xml_results = None
         self._refined_beam = (0, 0)
 
-        return
-
     def set_n_jobs(self, n_jobs):
         self._n_jobs = n_jobs
-        return
 
     def set_n_cores(self, n_cores):
         self._n_cores = n_cores
-        return
 
     def set_max_n_jobs(self, max_n_jobs):
         self._max_n_jobs = max_n_jobs
-        return
 
     def set_execution_hosts(self, execution_hosts):
         self._execution_hosts = execution_hosts
@@ -115,26 +110,21 @@ class FastDP:
         et = self._metadata.get('extra_text', '')
         self._metadata['extra_text'] = et + 'CLUSTER_NODES=%s\n' % \
             ' '.join(execution_hosts)
-        return
 
     def get_execution_hosts(self):
         return self._execution_hosts
 
     def set_first_image(self, first_image):
         self._first_image = first_image
-        return
 
     def set_last_image(self, last_image):
         self._last_image = last_image
-        return
 
     def set_resolution_low(self, resolution_low):
         self._resolution_low = resolution_low
-        return
 
     def set_resolution_high(self, resolution_high):
         self._resolution_high = resolution_high
-        return
 
     def set_start_image(self, start_image):
         '''Set the image to work from: in the majority of cases this will
@@ -144,7 +134,6 @@ class FastDP:
         assert(self._start_image is None)
 
         # check input is image file
-        import os
         if not os.path.isfile(start_image):
             raise RuntimeError, 'no image provided: data collection cancelled?'
 
@@ -173,16 +162,12 @@ class FastDP:
 
         self._metadata['beam'] = beam
 
-        return
-
     def set_distance(self, distance):
         '''Set the detector distance, in mm.'''
 
         assert(self._metadata)
 
         self._metadata['distance'] = distance
-
-        return
 
     def set_atom(self, atom):
         '''Set the heavy atom, if appropriate.'''
@@ -191,14 +176,11 @@ class FastDP:
 
         self._metadata['atom'] = atom
 
-        return
-
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
 
     def set_input_spacegroup(self, input_spacegroup):
         self._input_spacegroup = input_spacegroup
-        return
 
     def set_input_cell(self, input_cell):
 
@@ -212,15 +194,11 @@ class FastDP:
         self._input_cell_p1 = generate_primitive_cell(
             self._input_cell, self._input_spacegroup).parameters()
 
-        return
-
     def _read_image_metadata(self):
         '''Get the information from the start image to the metadata bucket.
         For internal use only.'''
 
         assert(self._start_image)
-
-        return
 
     def get_metadata_item(self, item):
         '''Get a specific item from the metadata.'''
@@ -239,7 +217,7 @@ class FastDP:
             hostname = os.environ['HOSTNAME'].split('.')[0]
             write('Running on: %s' % hostname)
 
-        except:
+        except Exception:
             pass
 
         # check input frame limits
@@ -293,7 +271,7 @@ class FastDP:
         try:
             self._p1_unit_cell = autoindex(self._metadata,
                                            input_cell = self._input_cell_p1)
-        except exceptions.Exception, e:
+        except Exception as e:
             traceback.print_exc(file = open('fast_dp.error', 'w'))
             write('Autoindexing error: %s' % e)
             return
@@ -303,7 +281,7 @@ class FastDP:
                                 self._resolution_low, self._n_jobs,
                                 self._n_cores)
             write('Mosaic spread: %.2f < %.2f < %.2f' % tuple(mosaics))
-        except RuntimeError, e:
+        except RuntimeError as e:
             traceback.print_exc(file = open('fast_dp.error', 'w'))
             write('Integration error: %s' % e)
             return
@@ -337,14 +315,14 @@ class FastDP:
             self._refined_beam = (self._metadata['pixel'][1] * beam_pixels[1],
                                   self._metadata['pixel'][0] * beam_pixels[0])
 
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Scaling error: %s' % e)
             return
 
         try:
             n_images = self._metadata['end'] - self._metadata['start'] + 1
             self._xml_results = merge()
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Merging error: %s' % e)
             return
 
@@ -365,12 +343,9 @@ class FastDP:
                         self._unit_cell, self._xml_results,
                         self._start_image, self._refined_beam)
 
-        return
-
 def main():
     '''Main routine for fast_dp.'''
 
-    import os
     os.environ['FAST_DP_FORKINTEGRATE'] = '1'
 
     from optparse import OptionParser
@@ -495,7 +470,7 @@ def main():
 
         fast_dp.process()
 
-    except exceptions.Exception, e:
+    except Exception as e:
         traceback.print_exc(file = open('fast_dp.error', 'w'))
         write('Fast DP error: %s' % str(e))
 

@@ -4,11 +4,11 @@
 # Re-data-process i.e. repeat the finishing stages of a fast_dp job, to adjust
 # the resolution limit or assign some other symmetry.
 
+import json
 import sys
 import os
 import time
 import copy
-import exceptions
 import traceback
 
 if not 'FAST_DP_ROOT' in os.environ:
@@ -42,7 +42,6 @@ class FastRDP:
     def __init__(self):
 
         assert(os.path.exists('fast_dp.json'))
-        import json
         json_stuff = json.load(open('fast_dp.json', 'rb'))
         for prop in json_stuff:
             # do not want to pass this along since that will limit what we
@@ -52,23 +51,17 @@ class FastRDP:
                 continue
             setattr(self, prop, json_stuff[prop])
 
-        return
-
     def set_first_image(self, first_image):
         self._first_image = first_image
-        return
 
     def set_last_image(self, last_image):
         self._last_image = last_image
-        return
 
     def set_resolution_low(self, resolution_low):
         self._resolution_low = resolution_low
-        return
 
     def set_resolution_high(self, resolution_high):
         self._resolution_high = resolution_high
-        return
 
     def set_atom(self, atom):
         '''Set the heavy atom, if appropriate.'''
@@ -77,14 +70,11 @@ class FastRDP:
 
         self._metadata['atom'] = atom
 
-        return
-
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
 
     def set_input_spacegroup(self, input_spacegroup):
         self._input_spacegroup = input_spacegroup
-        return
 
     def set_input_cell(self, input_cell):
 
@@ -101,8 +91,6 @@ class FastRDP:
         # FIXME for reprocessing purposes verify here that the input unit cell
         # matches the one which was used for previous fast_dp job - check
         # self._p1_unit_cell
-
-        return
 
     def get_metadata_item(self, item):
         '''Get a specific item from the metadata.'''
@@ -121,7 +109,7 @@ class FastRDP:
             hostname = os.environ['HOSTNAME'].split('.')[0]
             write('Running on: %s' % hostname)
 
-        except:
+        except Exception:
             pass
 
         # check input frame limits
@@ -191,7 +179,7 @@ class FastRDP:
             if not self._resolution_high:
                 self._resolution_high = resol
 
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Pointgroup error: %s' % e)
             return
 
@@ -202,7 +190,7 @@ class FastRDP:
             self._refined_beam = (self._metadata['pixel'][1] * beam_pixels[1],
                                   self._metadata['pixel'][0] * beam_pixels[0])
 
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Scaling error: %s' % e)
             return
 
@@ -210,7 +198,7 @@ class FastRDP:
             n_images = self._metadata['end'] - self._metadata['start'] + 1
             self._xml_results = merge(hklout='fast_rdp.mtz',
                                       aimless_log='aimless_rerun.log')
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Merging error: %s' % e)
             return
 
@@ -230,12 +218,9 @@ class FastRDP:
                         self._unit_cell, self._xml_results,
                         self._start_image, self._refined_beam, 'fast_rdp.xml')
 
-        return
-
 def main():
     '''Main routine for fast_rdp.'''
 
-    import os
     os.environ['FAST_DP_FORKINTEGRATE'] = '1'
 
     from optparse import OptionParser
@@ -316,7 +301,7 @@ def main():
                 spacegroup = check_spacegroup_name(options.spacegroup)
                 fast_rdp.set_input_spacegroup(spacegroup)
                 write('Set spacegroup: %s' % spacegroup)
-            except RuntimeError, e:
+            except RuntimeError as e:
                 write('Spacegroup %s not recognised: ignoring' % \
                       options.spacegroup)
 
@@ -328,12 +313,9 @@ def main():
 
         fast_rdp.reprocess()
 
-    except exceptions.Exception, e:
+    except Exception as e:
         traceback.print_exc(file = open('fast_rdp.error', 'w'))
         write('Fast RDP error: %s' % str(e))
 
-    return
-
 if __name__ == '__main__':
-
     main()
