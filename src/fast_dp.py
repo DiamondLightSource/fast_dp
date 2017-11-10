@@ -482,11 +482,8 @@ def main():
         if prop in ignore:
             continue
         json_stuff[prop] = getattr(fast_dp, prop)
-    import json
-    json.dump(json_stuff, open('fast_dp.json', 'wb'))
-
-    return
+    with open('fast_dp.state', 'wb') as fh:
+      json.dump(json_stuff, fh)
 
 if __name__ == '__main__':
-
     main()

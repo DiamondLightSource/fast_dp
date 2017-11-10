@@ -41,8 +41,8 @@ class FastRDP:
 
     def __init__(self):
 
-        assert(os.path.exists('fast_dp.json'))
-        json_stuff = json.load(open('fast_dp.json', 'rb'))
+        with open('fast_dp.state', 'rb') as fh:
+          json_stuff = json.load(fh)
         for prop in json_stuff:
             # do not want to pass this along since that will limit what we
             # can reindex to...
