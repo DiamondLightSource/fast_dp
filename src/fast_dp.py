@@ -6,11 +6,14 @@
 # intensities which have been scaled reasonably well. This relies heavily on
 # XDS, and forkintegrate in particular.
 
+from __future__ import division
+
 import sys
 import os
 import json
 import time
 import copy
+import re
 import traceback
 
 if not 'FAST_DP_ROOT' in os.environ:
@@ -34,6 +37,8 @@ from scale import scale
 from merge import merge
 from pointgroup import decide_pointgroup
 from logger import write
+
+from optparse import SUPPRESS_HELP, OptionParser
 
 class FastDP:
     '''A class to implement fast data processing for MX beamlines (at Diamond)
@@ -304,7 +309,7 @@ class FastDP:
             if not self._resolution_high:
                 self._resolution_high = resol
 
-        except RuntimeError, e:
+        except RuntimeError as e:
             write('Pointgroup error: %s' % e)
             return
 
@@ -348,11 +353,11 @@ def main():
 
     os.environ['FAST_DP_FORKINTEGRATE'] = '1'
 
-    from optparse import OptionParser
-
     commandline = ' '.join(sys.argv)
 
-    parser = OptionParser()
+    parser = OptionParser(usage="fast_dp [options] imagefile")
+
+    parser.add_option("-?", action="help", help=SUPPRESS_HELP)
 
     parser.add_option('-b', '--beam', dest = 'beam',
                       help = 'Beam centre: x, y (mm)')
@@ -391,9 +396,22 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    assert(len(args) == 1)
+    if len(args) != 1:
+      sys.exit("You must point to one image of the dataset to process")
 
     image = args[0]
+
+    xia2_format = re.match(r"^(.*):(\d+):(\d+)$", image)
+    if xia2_format:
+      # Image can be given in xia2-style format, ie.
+      #   set_of_images_00001.cbf:1:5000
+      # to select images 1 to 5000. Resolve any conflicts
+      # with -1/-N in favour of the explicit arguments.
+      image = xia2_format.group(1)
+      if not options.first_image:
+        options.first_image = xia2_format.group(2)
+      if not options.last_image:
+        options.last_image = xia2_format.group(3)
 
     try:
         fast_dp = FastDP()
@@ -458,7 +476,7 @@ def main():
                 spacegroup = check_spacegroup_name(options.spacegroup)
                 fast_dp.set_input_spacegroup(spacegroup)
                 write('Set spacegroup: %s' % spacegroup)
-            except RuntimeError, e:
+            except RuntimeError:
                 write('Spacegroup %s not recognised: ignoring' % \
                       options.spacegroup)
 
