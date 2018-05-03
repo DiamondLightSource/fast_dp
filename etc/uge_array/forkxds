@@ -53,7 +53,7 @@ if [[ -n "$FORKXDS_QUEUE" ]] ; then
     qsub_opt="$qsub_command -q $FORKXDS_QUEUE"
 fi
 
-qsub $qsub_opt -sync y -V -cwd -pe smp $maxcpu -t 1-$ntask \
+qsub $qsub_opt -sync y -V -cwd -pe smp $maxcpu -t 1-$ntask -l h_rt=0:10:00 \
 `which forkxds_job`
 
 # clean up... if everything completed correctly 
