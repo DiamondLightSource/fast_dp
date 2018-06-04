@@ -26,7 +26,7 @@
 #
 # 6. more advanced stuff at https://docs.pytest.org/en/latest/
 
-from dials.util.procrunner import run_process
+import procrunner
 import libtbx.load_env
 import os
 import pytest
@@ -49,12 +49,9 @@ def test_fast_dp_X4_wide(tmpdir):
 
   cmd = [ fast_dp, '-a', 'Ba', image ]
   with tmpdir.as_cwd():
-    result = run_process(cmd)
+    result = procrunner.run(cmd)
 
   assert result['stderr'] == '', 'fast_dp output to STDERR:'
   assert result['exitcode'] == 0, 'fast_dp non-zero exit code'
   for output in ['fast_dp.mtz', 'fast_dp.log']:
     assert tmpdir.join(output).check(), 'No output found'
-
-def test_are_there_any_real_tests():
-  assert True, "So test! Much happy!"
