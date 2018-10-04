@@ -114,6 +114,9 @@ def failover_hdf5(hdf5_file, lib_name=None):
     header['oscillation'] = header['phi_start'], header['phi_width']
     header['exposure_time'] = s.get_exposure_times()[0]
     header['oscillation_axis'] = 'Omega_I_guess'
+    axis = g.get_rotation_axis()
+    if abs(axis[1]) > abs(axis[0]):
+        header['goniometer_is_vertical'] = True
     header['distance'] = d[0].get_distance()
     header['wavelength'] = b.get_wavelength()
     header['pixel'] = d[0].get_pixel_size()
@@ -293,7 +296,8 @@ def failover_cbf(cbf_file):
             header['goniometer_is_vertical'] = True
 
     else:
-        header['goniometer_is_vertical'] = False
+        if not 'goniometer_is_vertical' in header:
+            header['goniometer_is_vertical'] = False
 
     return header
 
@@ -311,7 +315,12 @@ def read_image_metadata(image):
     if image.endswith('.h5'):
         assert 'master' in image
         global __lib_name
-        return failover_hdf5(image, lib_name=__lib_name)
+
+        metadata = failover_hdf5(image, lib_name=__lib_name)
+        if metadata['goniometer_is_vertical']:
+            metadata['detector'] = '%sV' % metadata['detector']
+
+        return metadata
 
     # FIXME also check that the file can also be read - assert is acceptable,
     # also use the first image in the wedge to get the frame metadata
