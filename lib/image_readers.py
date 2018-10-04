@@ -298,7 +298,7 @@ def failover_cbf(cbf_file):
     return header
 
 __lib_name = None
-def set_lib_name(lib_name)
+def set_lib_name(lib_name):
     global __lib_name
     __lib_name = lib_name
 
