@@ -26,14 +26,16 @@ def get_dectris_serial_no(record):
     return tokens[tokens.index('S/N') + 1]
 
 __hdf5_lib = ''
-def find_hdf5_lib():
+def find_hdf5_lib(lib_name=None):
   global __hdf5_lib
   if __hdf5_lib:
     return __hdf5_lib
+  if lib_name is None:
+    'dectris-neggia.so'
   import os
   for d in os.environ['PATH'].split(os.pathsep):
     if os.path.exists(os.path.join(d, 'xds_par')):
-      __hdf5_lib = 'LIB=%s\n' % os.path.join(d,'dectris-neggia.so')
+      __hdf5_lib = 'LIB=%s\n' % os.path.join(d, lib_name)
       return __hdf5_lib
   return ''
 
@@ -75,7 +77,7 @@ def open_file(filename, mode='rb', url=False):
 
   return fh_func()
 
-def failover_hdf5(hdf5_file):
+def failover_hdf5(hdf5_file, lib_name=None):
     from dxtbx.serialize import xds
     from dxtbx.datablock import DataBlockFactory
     import time
@@ -104,7 +106,7 @@ def failover_hdf5(hdf5_file):
         ' ', '_')
     header['size'] = size
     header['serial_number'] = 0
-    header['extra_text'] = find_hdf5_lib()
+    header['extra_text'] = find_hdf5_lib(lib_name)
 
     header['phi_start'] = s.get_angle_from_image_index(1.0, deg=True)
     header['phi_end'] = s.get_angle_from_image_index(2.0, deg=True)
@@ -201,7 +203,7 @@ def failover_cbf(cbf_file):
             header['size'] = (2290, 2100)
             header['serial_number'] = record.replace(',', '').split()[-1]
             continue
-        
+
         if 'Start_angle' in record:
             header['phi_start'] = float(record.split()[-2])
             continue
@@ -295,6 +297,11 @@ def failover_cbf(cbf_file):
 
     return header
 
+__lib_name = None
+def set_lib_name(lib_name)
+    global __lib_name
+    __lib_name = lib_name
+
 def read_image_metadata(image):
     '''Read the image header and send back the resulting metadata in a
     dictionary.'''
@@ -303,7 +310,8 @@ def read_image_metadata(image):
 
     if image.endswith('.h5'):
         assert 'master' in image
-        return failover_hdf5(image)
+        global __lib_name
+        return failover_hdf5(image, lib_name=__lib_name)
 
     # FIXME also check that the file can also be read - assert is acceptable,
     # also use the first image in the wedge to get the frame metadata

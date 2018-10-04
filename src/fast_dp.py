@@ -394,6 +394,10 @@ def main():
     parser.add_option('-R', '--resolution-low', dest = 'resolution_low',
                       help = 'Low resolution limit')
 
+
+    parser.add_option('-l', '--lib-name', dest = 'lib_name',
+                      help = 'HDF5 reader library (i.e. neggia etc.)')
+
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
@@ -412,6 +416,10 @@ def main():
         options.first_image = xia2_format.group(2)
       if not options.last_image:
         options.last_image = xia2_format.group(3)
+
+    if options.lib_name:
+        from image_readers import set_lib_name
+        set_lib_name(options.lib_name)
 
     try:
         fast_dp = FastDP()
