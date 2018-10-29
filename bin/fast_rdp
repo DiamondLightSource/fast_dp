@@ -1,9 +1,9 @@
 #!/bin/bash
-# 
+#
 # run the fast data processing, assumes that the environment is configured
 # with XDS, CCP4 on the PATH and the forkintegrate script properly configured
 # if -j > 1 or -J set and -j == 0.
-# 
+#
 
 full_path="$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"
 export FAST_DP_ROOT=`dirname "$full_path" | sed 's/\/bin$//'`

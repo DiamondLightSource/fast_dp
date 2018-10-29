@@ -1,7 +1,7 @@
 #!/bin/bash
-# 
+#
 # Little jiffy to read a diffraction image header and compose EDNA xml.
-# 
+#
 # graeme.winter@diamond.ac.uk 24/JAN/2011
 
 . /etc/profile.d/modules.sh
