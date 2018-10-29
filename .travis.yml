@@ -1,0 +1,32 @@
+language: python
+
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
+    - python: 3.6
+    - python: 3.5
+    - python: 3.4
+    - python: 2.7
+
+# Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install: pip install -U tox-travis
+
+# Command to run tests, e.g. python setup.py test
+script: tox
+
+# Assuming you have installed the travis-ci CLI tool, after you
+# create the Github repo and add it to Travis, run the
+# following command to finish PyPI deployment setup:
+# $ travis encrypt --add deploy.password
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: mgerstel
+  password:
+    secure: MwRZZtMeZZGjn7lzXh8iFTEneRkoxvkshfrGcPeRhogT7yjVWZSapj5CGFG3Pok2/kLJupXdqBPOm6JdBSsiJeJpESa+1wv4slPQeyvRF1BdbiZyHSBXrJ+L5va8gg6dw77j9Gk3rd2udAS4rLlwFw0de8CGO3Sy6mgKAoDaXnibenHEv05hETSBkVtU34edCyOg2xadFfTHIhSxTo72qZinou+pNYPerQqE41SKA3DxlQgp+bzf/4mxIsO6LMKxW4HIqcpMFSSFvIYFxXN0LmDfm+U9/8gPebOVF5cQhFtaQVQ7QaTL4xWRFC/GRc1Oz4PRQM1z8g0Du4ww+upHChlgwQTq/A8OQ/a5i012faft56jhR5tx9NPCvVWKHgbJgB3Z5vVmxt/KiKyIvNbRzSNe2yfo6TiJ5XeGCBwrLKYwz0JcCeL3Neg6tRRqa1A8RVyHJ4GeG2vrVuPbzMMv5gYHYSt6Cr4vbG5zqWLdoCdJQXLZhblanZ8mRNGTk8ugoVpEz674t2dMKtXBzawnwYwrQUnpmw3ZN6ZyIHX9wB3+U4i7hwuuv+IL7617NzgeqB/1CdXZ3Uwcaz0ipbBrXQkXMsvj2MFD9TuUb7mkdBGVJWS2VQ2TvVvJhSihwm7s1gOKcdUCFpmt4wBEaxb+/Ezzc1qLbVrYBDE1XRvdkck=
+  on:
+    tags: true
+    repo: DiamondLightSource/fast_dp
+    python: 3.7

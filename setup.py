@@ -13,9 +13,9 @@ setup(name='fast_dp',
       version='0.1',
       install_requires=[],
       packages=find_packages(),
-      license='BSD',
+      license='Apache-2.0',
       entry_points={
-        'cctbx.dispatcher': [
+        'libtbx.dispatcher': [
           'fast_dp=fast_dp',
           'fast_rdp=fast_rdp',
           'header2edna_xml=header2edna_xml',
