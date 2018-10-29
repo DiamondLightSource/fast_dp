@@ -1,8 +1,23 @@
-.cache
+# Compiled python modules.
+*.pyc
+
+# Temporary stuff
+*.swp
 .DS_Store
 *~
-*.pyc
-*.swp
 .git-notifier*
 git-notifier.log
 .gitversion
+
+# Setuptools distribution folder.
+/build/
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+/.eggs
+
+# Testing output
+/.cache
+/.coverage
+.pytest_cache
