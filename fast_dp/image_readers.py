@@ -4,10 +4,10 @@ import time
 import os
 from logger import write
 
-from .image_names import image2template_directory, find_matching_images, \
+from fast_dp.image_names import image2template_directory, find_matching_images, \
     template_directory_number2image
 
-from .run_job import run_job
+from fast_dp.run_job import run_job
 
 def check_file_readable(filename):
     '''Check that the file filename exists and that it can be read. Returns
