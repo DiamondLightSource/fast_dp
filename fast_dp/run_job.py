@@ -1,6 +1,7 @@
-from __future__ import print_function
-import subprocess
+from __future__ import absolute_import, division, print_function
+
 import os
+import subprocess
 
 def run_job(executable, arguments = [], stdin = [], working_directory = None):
     '''Run a program with some command-line arguments and some input,
@@ -77,6 +78,5 @@ def get_number_cpus():
     return -1
 
 if __name__ == '__main__':
-    import os
     os.environ['FAST_DP_FORKINTEGRATE'] = '1'
     print(''.join(run_job('env')))

@@ -1,7 +1,8 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import time
+from __future__ import absolute_import, division, print_function
+
 import os
+import time
+
 from logger import write
 
 from fast_dp.image_names import image2template_directory, find_matching_images, \
@@ -34,7 +35,6 @@ def find_hdf5_lib(lib_name=None):
     return __hdf5_lib
   if lib_name is None:
     'dectris-neggia.so'
-  import os
   for d in os.environ['PATH'].split(os.pathsep):
     if os.path.exists(os.path.join(d, 'xds_par')):
       __hdf5_lib = 'LIB=%s\n' % os.path.join(d, lib_name)
@@ -82,7 +82,6 @@ def open_file(filename, mode='rb', url=False):
 def failover_hdf5(hdf5_file, lib_name=None):
     from dxtbx.serialize import xds
     from dxtbx.datablock import DataBlockFactory
-    import time
     t0 = time.time()
     db = DataBlockFactory.from_filenames([hdf5_file])[0]
     sweep = db.extract_sweeps()[0]

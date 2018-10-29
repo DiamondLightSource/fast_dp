@@ -6,14 +6,14 @@
 # intensities which have been scaled reasonably well. This relies heavily on
 # XDS, and forkintegrate in particular.
 
-from __future__ import division
+from __future__ import absolute_import, division, print_function
 
-import sys
-import os
-import json
-import time
 import copy
+import json
+import os
 import re
+import sys
+import time
 import traceback
 
 if not 'FAST_DP_ROOT' in os.environ:

@@ -1,5 +1,7 @@
-import shutil
+from __future__ import absolute_import, division, print_function
+
 import os
+import shutil
 
 from xds_writer import write_xds_inp_autoindex, write_xds_inp_autoindex_p1_cell
 from xds_reader import read_xds_idxref_lp

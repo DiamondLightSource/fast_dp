@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import os
 import shutil
 
@@ -21,8 +23,6 @@ def integrate(metadata, p1_unit_cell, resolution_low, n_jobs, n_processors):
     shutil.copyfile(xds_inp, 'XDS.INP')
 
     run_job('xds_par')
-
-    import os
 
     # FIXME need to check that all was hunky-dory in here!
 

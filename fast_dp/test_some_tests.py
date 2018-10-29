@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 # Minimal intro "How to make a test":
 #
 # 1. Files matching pattern test_*.py contain tests.
@@ -26,8 +28,8 @@
 #
 # 6. more advanced stuff at https://docs.pytest.org/en/latest/
 
-import procrunner
 import os
+import procrunner
 import pytest
 
 def test_fast_dp_X4_wide(tmpdir):

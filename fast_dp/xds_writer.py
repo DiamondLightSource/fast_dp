@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
+
 import os
 
 if not 'FAST_DP_ROOT' in os.environ:

@@ -4,6 +4,8 @@
 # Re-data-process i.e. repeat the finishing stages of a fast_dp job, to adjust
 # the resolution limit or assign some other symmetry.
 
+from __future__ import absolute_import, division, print_function
+
 import json
 import sys
 import os

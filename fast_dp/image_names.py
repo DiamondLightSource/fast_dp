@@ -1,7 +1,9 @@
-import re
-import os
-import string
+from __future__ import absolute_import, division, print_function
+
 import math
+import os
+import re
+import string
 
 def image2template(filename):
     '''Return a template to match this filename.'''

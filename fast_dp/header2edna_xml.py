@@ -1,8 +1,10 @@
-from __future__ import print_function
 # header2edna_xml - a jiffy to read a Diffraction Image from an instrument
 # here at Diamond Light Source and generate EDNA xml.
 
-import os, sys
+from __future__ import absolute_import, division, print_function
+
+import os
+import sys
 
 if not 'FAST_DP_ROOT' in os.environ:
     raise RuntimeError('FAST_DP_ROOT not defined')
@@ -90,8 +92,6 @@ def header2edna_xml(image_file, minosc, mintime):
     return xml
 
 if __name__ == '__main__':
-
-    import sys
 
     if len(sys.argv) == 4:
         minosc = float(sys.argv[2])
