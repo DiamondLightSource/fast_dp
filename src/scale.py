@@ -33,8 +33,8 @@ def scale(unit_cell, metadata, space_group_number, resolution_high):
     for step in ['CORRECT']:
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError, 'error in %s: %s' % \
-                  (step, lastrecord.replace('!!! ERROR !!!', '').strip())
+            raise RuntimeError('error in %s: %s' % \
+                  (step, lastrecord.replace('!!! ERROR !!!', '').strip()))
 
     # and get the postrefined cell constants from GXPARM.XDS - but continue
     # to work for the old format too...

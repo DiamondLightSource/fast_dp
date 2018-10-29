@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 import sys
 import re
 
-from cell_spacegroup import constrain_cell, lattice_to_spacegroup
+from .cell_spacegroup import constrain_cell, lattice_to_spacegroup
 
-from pointless_reader import read_pointless_xml
+from .pointless_reader import read_pointless_xml
 
 def read_xds_idxref_lp(idxref_lp_file):
     '''Read the XDS IDXREF.LP file and return a dictionary indexed by the
@@ -74,7 +75,7 @@ def read_correct_lp_get_resolution(correct_lp_file):
             break
 
     if rec < 0:
-        raise RuntimeError, 'resolution information not found'
+        raise RuntimeError('resolution information not found')
 
     j = rec
 

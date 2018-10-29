@@ -1,10 +1,11 @@
+from __future__ import print_function
 # header2edna_xml - a jiffy to read a Diffraction Image from an instrument
 # here at Diamond Light Source and generate EDNA xml.
 
 import os, sys
 
 if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError, 'FAST_DP_ROOT not defined'
+    raise RuntimeError('FAST_DP_ROOT not defined')
 
 fast_dp_lib = os.path.join(os.environ['FAST_DP_ROOT'], 'lib')
 
@@ -53,7 +54,7 @@ def header2edna_xml(image_file, minosc, mintime):
                             'EDNA_HEADER_XML.INP')
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for EDNA_HEADER_XML.INP cannot be found'
+        raise RuntimeError('template for EDNA_HEADER_XML.INP cannot be found')
 
     edna_xml_for_subwedge = open(template, 'r').read().strip()
 
@@ -101,5 +102,5 @@ if __name__ == '__main__':
 
     xml = header2edna_xml(sys.argv[1], minosc, mintime)
 
-    print xml
+    print(xml)
     # .replace('><', '>\n<')

@@ -31,30 +31,30 @@ def integrate(metadata, p1_unit_cell, resolution_low, n_jobs, n_processors):
             continue
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError, 'error in %s: %s' % \
+            raise RuntimeError('error in %s: %s' % \
                   (step, lastrecord.replace(
-                '!!! ERROR !!!', '').strip().lower())
+                '!!! ERROR !!!', '').strip().lower()))
 
     if not os.path.exists('INTEGRATE.LP'):
         step = 'INTEGRATE'
         for record in open('LP_01.tmp').readlines():
             if '!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE ' in record:
-                raise RuntimeError, 'error in %s: %s' % \
+                raise RuntimeError('error in %s: %s' % \
                       (step, record.replace(
-                    '!!! ERROR !!!', '').strip().lower())
+                    '!!! ERROR !!!', '').strip().lower()))
             elif '!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp' in record:
-                raise RuntimeError, 'integration error: cluster error'
+                raise RuntimeError('integration error: cluster error')
 
     # check for some specific errors
 
     for step in ['INTEGRATE']:
         for record in open('%s.LP' % step).readlines():
             if '!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE ' in record:
-                raise RuntimeError, 'error in %s: %s' % \
+                raise RuntimeError('error in %s: %s' % \
                       (step, record.replace(
-                    '!!! ERROR !!!', '').strip().lower())
+                    '!!! ERROR !!!', '').strip().lower()))
             elif '!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp' in record:
-                raise RuntimeError, 'integration error: cluster error'
+                raise RuntimeError('integration error: cluster error')
 
 
 

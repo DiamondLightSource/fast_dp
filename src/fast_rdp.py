@@ -12,7 +12,7 @@ import copy
 import traceback
 
 if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError, 'FAST_DP_ROOT not defined'
+    raise RuntimeError('FAST_DP_ROOT not defined')
 
 fast_dp_lib = os.path.join(os.environ['FAST_DP_ROOT'], 'lib')
 
@@ -259,7 +259,7 @@ def main():
 
     if len(args) == 1:
         if not os.path.isdir(args[0]):
-            raise RuntimeError, 'in this mode, provide /path/to/fast_dp/dir'
+            raise RuntimeError('in this mode, provide /path/to/fast_dp/dir')
         from_dir = args[0]
         for filename in os.listdir(from_dir):
             if os.path.isdir(os.path.join(from_dir, filename)):

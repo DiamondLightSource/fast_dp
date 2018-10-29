@@ -1,21 +1,23 @@
+from __future__ import print_function
+from __future__ import absolute_import
 import time
 import os
 from logger import write
 
-from image_names import image2template_directory, find_matching_images, \
+from .image_names import image2template_directory, find_matching_images, \
     template_directory_number2image
 
-from run_job import run_job
+from .run_job import run_job
 
 def check_file_readable(filename):
     '''Check that the file filename exists and that it can be read. Returns
     only if everything is OK.'''
 
     if not os.path.exists(filename):
-        raise RuntimeError, 'file %s not found' % filename
+        raise RuntimeError('file %s not found' % filename)
 
     if not os.access(filename, os.R_OK):
-        raise RuntimeError, 'file %s not readable' % filename
+        raise RuntimeError('file %s not readable' % filename)
 
     return
 
@@ -64,12 +66,12 @@ def is_gzip(filename):
 def open_file(filename, mode='rb', url=False):
   if is_bz2(filename):
     if bz2 is None:
-      raise RuntimeError, 'bz2 file provided without bz2 module'
+      raise RuntimeError('bz2 file provided without bz2 module')
     fh_func = lambda: bz2.BZ2File(filename, mode)
 
   elif is_gzip(filename):
     if gzip is None:
-      raise RuntimeError, 'gz file provided without gzip module'
+      raise RuntimeError('gz file provided without gzip module')
     fh_func = lambda: gzip.GzipFile(filename, mode)
 
   else:
@@ -373,7 +375,7 @@ def read_image_metadata(image):
 
             return metadata
 
-    except ValueError, e:
+    except ValueError:
         pass
 
     # MAR CCD images record the beam centre in pixels...
@@ -439,8 +441,8 @@ def read_image_metadata(image):
             elif detector == 'RIGAKU':
                 metadata['detector'] = 'RIGAKU'
             else:
-                raise RuntimeError, 'detector %s not yet supported' % \
-                      detector
+                raise RuntimeError('detector %s not yet supported' % \
+                      detector)
 
     if (metadata['detector'] == 'PILATUS_6M') and \
        (metadata['size'] == (1679, 1475)):
@@ -472,4 +474,4 @@ if __name__ == '__main__':
     import sys
     md = read_image_metadata(sys.argv[1])
     for name in sorted(md):
-        print name, md[name]
+        print(name, md[name])

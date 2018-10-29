@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 import xml.dom.minidom
 
-from cell_spacegroup import lauegroup_to_lattice
+from .cell_spacegroup import lauegroup_to_lattice
 from cctbx import sgtbx
 
 def read_pointless_xml(pointless_xml_file):

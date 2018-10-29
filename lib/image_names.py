@@ -8,7 +8,7 @@ def image2template(filename):
 
     # check that the file name doesn't contain anything mysterious
     if filename.count('#'):
-        raise RuntimeError, '# characters in filename'
+        raise RuntimeError('# characters in filename')
 
     # the patterns in the order I want to test them
 
@@ -39,15 +39,15 @@ def image2template(filename):
 
             return patterns[pattern] % (prefix, number, exten)
 
-    raise RuntimeError, 'filename %s not understood as a template' % \
-          filename
+    raise RuntimeError('filename %s not understood as a template' % \
+          filename)
 
 def image2image(filename):
     '''Return an integer for the template to match this filename.'''
 
     # check that the file name doesn't contain anything mysterious
     if filename.count('#'):
-        raise RuntimeError, '# characters in filename'
+        raise RuntimeError('# characters in filename')
 
     # the patterns in the order I want to test them
 
@@ -68,8 +68,8 @@ def image2image(filename):
 
             return int(number)
 
-    raise RuntimeError, 'filename %s not understood as a template' % \
-          filename
+    raise RuntimeError('filename %s not understood as a template' % \
+          filename)
 
 def image2template_directory(filename):
     '''Separate out the template and directory from an image name.'''
@@ -126,7 +126,7 @@ def template_directory_number2image(template, directory, number):
     # check that the number will fit in the template
 
     if (math.pow(10, length) - 1) < number:
-        raise RuntimeError, 'number too big for template'
+        raise RuntimeError('number too big for template')
 
     # construct a format statement to give the number part of the
     # template

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 class _writer:
@@ -25,7 +26,7 @@ class _writer:
             self._fout = open(self._filename, 'w')
 
         self._fout.write('%s\n' % record)
-        print record
+        print(record)
         return
 
 write = _writer()

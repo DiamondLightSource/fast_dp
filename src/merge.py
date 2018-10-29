@@ -22,7 +22,7 @@ def anomalous_signals(hklin):
         data = ma
 
     if not data:
-        raise RuntimeError, 'no data found'
+        raise RuntimeError('no data found')
 
     df_f = data.anomalous_signal()
     differences = data.anomalous_differences()
@@ -57,7 +57,7 @@ def merge(hklout='fast_dp.mtz', aimless_log='aimless.log'):
 
     for record in log:
         if '!!!! No data !!!!' in record:
-            raise RuntimeError, 'aimless complains no data'
+            raise RuntimeError('aimless complains no data')
 
 
     return parse_aimless_log(log)

@@ -35,8 +35,8 @@ def autoindex(metadata, input_cell = None):
     for step in ['XYCORR', 'INIT', 'COLSPOT', 'IDXREF']:
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError, 'error in %s: %s' % \
-                  (step, lastrecord.replace('!!! ERROR !!!', '').strip())
+            raise RuntimeError('error in %s: %s' % \
+                  (step, lastrecord.replace('!!! ERROR !!!', '').strip()))
 
     results = read_xds_idxref_lp('IDXREF.LP')
 
@@ -61,4 +61,4 @@ def autoindex(metadata, input_cell = None):
     try:
         return results[1][1]
     except:
-        raise RuntimeError, 'getting P1 cell for autoindex'
+        raise RuntimeError('getting P1 cell for autoindex')

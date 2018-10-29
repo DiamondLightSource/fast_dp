@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 import os
 
 if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError, 'FAST_DP_ROOT undefined'
+    raise RuntimeError('FAST_DP_ROOT undefined')
 
-from run_job import get_number_cpus
+from .run_job import get_number_cpus
 
 # XDS.INP writer functions - two (three) of these, to write out commands
 # for autoindexing, integration then postrefinement and scaling. Split
@@ -22,8 +23,8 @@ def write_xds_inp_autoindex(metadata, xds_inp):
                             '%s_INDEX.INP' % metadata['detector'])
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for %s not found at %s' % \
-              (metadata['detector'], template)
+        raise RuntimeError('template for %s not found at %s' % \
+              (metadata['detector'], template))
 
     template_str = open(template, 'r').read().strip()
 
@@ -116,8 +117,8 @@ def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
                             '%s_INDEX.INP' % metadata['detector'])
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for %s not found at %s' % \
-              (metadata['detector'], template)
+        raise RuntimeError('template for %s not found at %s' % \
+              (metadata['detector'], template))
 
     template_str = open(template, 'r').read().strip()
 
@@ -215,8 +216,8 @@ def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_pro
                             '%s_INTEGRATE.INP' % metadata['detector'])
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for %s not found at %s' % \
-              (metadata['detector'], template)
+        raise RuntimeError('template for %s not found at %s' % \
+              (metadata['detector'], template))
 
     template_str = open(template, 'r').read().strip()
 
@@ -274,8 +275,8 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
                             '%s_CORRECT.INP' % metadata['detector'])
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for %s not found at %s' % \
-              (metadata['detector'], template)
+        raise RuntimeError('template for %s not found at %s' % \
+              (metadata['detector'], template))
 
     template_str = open(template, 'r').read().strip()
 
@@ -351,8 +352,8 @@ def write_xds_inp_correct_no_cell(metadata,
                             '%s_CORRECT_NO_CELL.INP' % metadata['detector'])
 
     if not os.path.exists(template):
-        raise RuntimeError, 'template for %s not found at %s' % \
-              (metadata['detector'], template)
+        raise RuntimeError('template for %s not found at %s' % \
+              (metadata['detector'], template))
 
     template_str = open(template, 'r').read().strip()
 
