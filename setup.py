@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 setup(name='fast_dp',
       description='fast_dp',
       url='https://github.com/DiamondLightSource/fast_dp',
-      author='Markus Gerstel',
+      author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
       download_url="https://github.com/DiamondLightSource/fast_dp/releases",
       version='0.1',
