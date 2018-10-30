@@ -1,5 +1,8 @@
 # Fast DP: Fast Data Processsing with XDS
 
+[![PYPI release](https://img.shields.io/pypi/v/fast_dp.svg)](https://pypi.python.org/pypi/fast_dp)
+[![Build Status](https://travis-ci.com/DiamondLightSource/fast_dp.svg?branch=master)](https://travis-ci.com/DiamondLightSource/fast_dp)
+
 ### 0. Introduction
 
 Fast DP is a small Python program which uses XDS, CCP4 & CCTBX to deliver
