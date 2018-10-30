@@ -13,19 +13,20 @@ import time
 import copy
 import traceback
 
-from run_job import get_number_cpus
-from cell_spacegroup import check_spacegroup_name, check_split_cell, \
+import fast_dp
+from fast_dp.run_job import get_number_cpus
+from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
-import output
+import fast_dp.output
 
-from image_readers import read_image_metadata, check_file_readable
+from fast_dp.image_readers import read_image_metadata, check_file_readable
 
-from autoindex import autoindex
-from integrate import integrate
-from scale import scale
-from merge import merge
-from pointgroup import decide_pointgroup
-from logger import write, set_filename
+from fast_dp.autoindex import autoindex
+from fast_dp.integrate import integrate
+from fast_dp.scale import scale
+from fast_dp.merge import merge
+from fast_dp.pointgroup import decide_pointgroup
+from fast_dp.logger import write, set_filename
 set_filename('fast_rdp.log')
 
 class FastRDP:
@@ -207,8 +208,8 @@ class FastRDP:
                self._nref))
 
         # write out json and xml
-        for func, filename in [ (output.write_json, 'fast_rdp.json'),
-                                (output.write_ispyb_xml, 'fast_rdp.xml') ]:
+        for func, filename in [ (fast_dp.output.write_json, 'fast_rdp.json'),
+                                (fast_dp.output.write_ispyb_xml, 'fast_rdp.xml') ]:
           func(self._commandline, self._space_group,
                self._unit_cell, self._xml_results,
                self._start_image, self._refined_beam,
@@ -243,9 +244,17 @@ def main():
     parser.add_option('-R', '--resolution-low', dest = 'resolution_low',
                       help = 'Low resolution limit')
 
+    parser.add_option('--version', dest='version', action='store_true',
+                      default=False, help='Print fast_dp version')
+
     (options, args) = parser.parse_args()
 
-    assert(len(args) < 2)
+    if options.version:
+      print('Fast_RDP version %s' % fast_dp.__version__)
+      sys.exit(0)
+
+    if len(args) < 2:
+      parser.error("")
 
     # if arg given then assume that this is a directory with a fast_dp
     # job it in, but where $user does not have access to write - so first
@@ -265,9 +274,9 @@ def main():
         from_dir = None
 
     try:
+        write('Fast_DP version %s' % fast_dp.__version__)
         fast_rdp = FastRDP()
         fast_rdp._commandline = commandline
-        write('Fast_RDP installed in: %s' % os.environ['FAST_DP_ROOT'])
         write('Working in: %s' % os.getcwd())
         if from_dir:
             write('Working from: %s' % from_dir)

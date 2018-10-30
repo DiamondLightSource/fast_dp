@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import pkg_resources
 import sys
 
 from image_readers import read_image_metadata
@@ -30,27 +31,23 @@ detector_short_names = {
     ('PILATUS_2M', 1679):'p2m',
     ('PILATUS_6M', 2527):'p6m',
     ('ADSC', 3072):'q315-2x',
-    ('RIGAKU', 3000):'raxis4'
-    }
+    ('RIGAKU', 3000):'raxis4',
+}
 
 detector_long_names = {
     ('PILATUS_2M', 1679):'PILATUS 2M',
     ('PILATUS_6M', 2527):'PILATUS 6M',
     ('ADSC', 3072):'ADSC Q315 bin 2x2',
-    ('RIGAKU', 3000):'RIGAKU RAXIS IV'
-    }
+    ('RIGAKU', 3000):'RIGAKU RAXIS IV',
+}
 
 def header2edna_xml(image_file, minosc, mintime):
     '''Read an image header, generate EDNA xml. DLS #1295.'''
 
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            'EDNA_HEADER_XML.INP')
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for EDNA_HEADER_XML.INP cannot be found')
-
-    edna_xml_for_subwedge = open(template, 'r').read().strip()
+    template = 'templates/EDNA_HEADER_XML.INP'
+    if not pkg_resources.resource_exists('fast_dp', template):
+      raise RuntimeError('template for EDNA_HEADER_XML.INP cannot be found')
+    edna_xml_for_subwedge = pkg_resources.resource_string('fast_dp', template).decode('utf-8').strip()
 
     header = read_image_metadata(image_file)
 
