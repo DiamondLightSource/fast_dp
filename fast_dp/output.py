@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import pkg_resources
 import json
 import os
 
@@ -20,17 +21,13 @@ def write_json(commandline, spacegroup, unit_cell,
 def write_ispyb_xml(commandline, spacegroup, unit_cell,
                     xml_results, start_image, refined_beam,
                     filename='fast_dp.xml'):
-    '''Write out big lump of XML for ISPyB import.'''
+  '''Write out big lump of XML for ISPyB import.'''
 
-    xml_template = os.path.join(os.environ['FAST_DP_ROOT'],
-                                'lib', 'templates', 'ispyb.xml')
+  xml_template = pkg_resources.resource_string('fast_dp', os.path.join('templates', 'ispyb.xml'))
+  assert xml_template, 'Error retrieving XML template'
 
-    if not os.path.exists(xml_template):
-        print('XML template not found: %s' % xml_template)
-        return
-
-    open(filename, 'w').write(
-        open(xml_template, 'r').read().format(
+  with open(filename, 'w') as fh:
+    fh.write(xml_template.format(
         commandline = commandline,
         spacegroup = spacegroup,
         cell_a = unit_cell[0],
@@ -82,4 +79,5 @@ def write_ispyb_xml(commandline, spacegroup, unit_cell,
         refined_beam_x = refined_beam[0],
         refined_beam_y = refined_beam[1],
         filename = os.path.split(start_image)[-1],
-        directory = os.path.split(start_image)[0]))
+        directory = os.path.split(start_image)[0],
+    ))
