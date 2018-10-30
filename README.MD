@@ -137,9 +137,35 @@ jobs to your queuing system.
 
 ### 2. Installation
 
-Provided that the dependencies are all satisfied and the programs are on the
-PATH, all that is necessary is to unpack the fast_dp tarball and place the
-bin directory found therein into your PATH.
+You can install the latest release version of fast_dp from pypi by loading
+your CCTBX environment and then running
+
+    libtbx.pip install fast_dp
+
+and update an existing installation to a newer version with
+
+    libtbx.pip install --upgrade fast_dp
+
+You will then have to run eg.
+
+    libtbx.configure libtbx
+
+to make sure all command line programs are set up correctly.
+
+#### Developer instructions
+
+If you are a developer then you can run
+
+    libtbx.install fast_dp
+
+instead. This will check out a development copy of fast_dp into the cctbx
+modules directory and then install that to the system. To update your
+development copy you will need to update the repository as usual and then
+run
+
+    libtbx.python setup.py develop
+
+in the source directory.
 
 ### 3. Assumptions
 
