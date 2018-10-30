@@ -13,9 +13,7 @@ from fast_dp.run_job import get_number_cpus
 # ranges to use from the input metadata.
 
 def write_xds_inp_autoindex(metadata, xds_inp):
-
-    fout = open(xds_inp, 'w')
-
+  with open(xds_inp, 'w') as fout:
     template = os.path.join(os.environ['FAST_DP_ROOT'],
                             'lib', 'templates',
                             '%s_INDEX.INP' % metadata['detector'])
@@ -102,14 +100,9 @@ def write_xds_inp_autoindex(metadata, xds_inp):
         wedge = (images[-wedge_size], images[-1])
         fout.write('SPOT_RANGE=%d %d\n' % wedge)
 
-    fout.close()
-
-    return
 
 def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
-
-    fout = open(xds_inp, 'w')
-
+  with open(xds_inp, 'w') as fout:
     template = os.path.join(os.environ['FAST_DP_ROOT'],
                             'lib', 'templates',
                             '%s_INDEX.INP' % metadata['detector'])
@@ -198,16 +191,12 @@ def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
         wedge = (images[-5], images[-1])
         fout.write('SPOT_RANGE=%d %d\n' % wedge)
 
-    fout.close()
-
-    return
 
 def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_processors=0):
+  with open(xds_inp, 'w') as fout:
 
     # FIXME in here calculate the maximum number of jobs to correspond at the
     # least to 5 degree wedges / job.
-
-    fout = open(xds_inp, 'w')
 
     template = os.path.join(os.environ['FAST_DP_ROOT'],
                             'lib', 'templates',
@@ -253,9 +242,6 @@ def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_pro
     fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
                                        metadata['end']))
 
-    fout.close()
-
-    return
 
 # N.B. this one is a little different to the others as the inclusion of
 # the cell constants and symmetry are *mandatory*. N.B. default may be
@@ -265,9 +251,7 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
                           xds_inp, scale = True,
                           resolution_low = 30, resolution_high = 0.0,
                           turn_subset = False):
-
-    fout = open(xds_inp, 'w')
-
+  with open(xds_inp, 'w') as fout:
     template = os.path.join(os.environ['FAST_DP_ROOT'],
                             'lib', 'templates',
                             '%s_CORRECT.INP' % metadata['detector'])
@@ -331,16 +315,11 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
     else:
         fout.write('DATA_RANGE=%d %d\n' % (metadata['start'], metadata['end']))
 
-    fout.close()
-
-    return
 
 def write_xds_inp_correct_no_cell(metadata,
                                   xds_inp, scale = True,
                                   resolution_low = 30, resolution_high = 0.0):
-
-    fout = open(xds_inp, 'w')
-
+  with open(xds_inp, 'w') as fout:
     template = os.path.join(os.environ['FAST_DP_ROOT'],
                             'lib', 'templates',
                             '%s_CORRECT.INP' % metadata['detector'])
@@ -390,7 +369,3 @@ def write_xds_inp_correct_no_cell(metadata,
 
     fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
                                        metadata['end']))
-
-    fout.close()
-
-    return
