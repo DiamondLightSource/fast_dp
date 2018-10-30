@@ -9,7 +9,7 @@ setup(name='fast_dp',
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
 
-      version='0.4',
+      version='0.5',
 
       url='https://github.com/DiamondLightSource/fast_dp',
       download_url="https://github.com/DiamondLightSource/fast_dp/releases",
