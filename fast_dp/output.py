@@ -18,13 +18,18 @@ def write_json(commandline, spacegroup, unit_cell,
               }, fh, sort_keys=True,
                  indent=2, separators=(',', ': '))
 
+def get_ispyb_template():
+  '''Read the ispyb.xml template from the package resources.'''
+  xml_template = pkg_resources.resource_string('fast_dp', 'templates/ispyb.xml')
+  assert xml_template, 'Error retrieving XML template'
+  return xml_template
+
 def write_ispyb_xml(commandline, spacegroup, unit_cell,
                     xml_results, start_image, refined_beam,
                     filename='fast_dp.xml'):
   '''Write out big lump of XML for ISPyB import.'''
 
-  xml_template = pkg_resources.resource_string('fast_dp', os.path.join('templates', 'ispyb.xml'))
-  assert xml_template, 'Error retrieving XML template'
+  xml_template = get_ispyb_template()
 
   with open(filename, 'w') as fh:
     fh.write(xml_template.format(
