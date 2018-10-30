@@ -8,4 +8,4 @@
 # extend to (hopefully) 4096 file handles... for big Eiger sets
 ulimit -n `ulimit -Hn 2>&1 |sed 's/unlimited/4096/'`
 
-cctbx.python -m fast_dp.main "$@"
+cctbx.python -m fast_dp.fast_dp "$@"
