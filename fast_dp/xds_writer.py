@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import pkg_resources
 
 from fast_dp.run_job import get_number_cpus
 
@@ -12,17 +13,19 @@ from fast_dp.run_job import get_number_cpus
 # to control the scale factors applied. N.B. these calculate the image
 # ranges to use from the input metadata.
 
+def get_template(detector, instruction):
+  '''Read the template for a given detector from the package resource files.'''
+  template = 'templates/%s_%s.INP' % (detector, instruction)
+  if not pkg_resources.resource_exists('fast_dp', template):
+    raise RuntimeError('{instruction} template for {detector} not found'.format(
+        instruction=instruction, detector=detector))
+
+  return pkg_resources.resource_string('fast_dp', template).decode('utf-8').strip()
+
+
 def write_xds_inp_autoindex(metadata, xds_inp):
+  template_str = get_template(metadata['detector'], 'INDEX')
   with open(xds_inp, 'w') as fout:
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_INDEX.INP' % metadata['detector'])
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for %s not found at %s' % \
-              (metadata['detector'], template))
-
-    template_str = open(template, 'r').read().strip()
 
     # should somehow hang this from an anomalous flag
 
@@ -102,17 +105,8 @@ def write_xds_inp_autoindex(metadata, xds_inp):
 
 
 def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
+  template_str = get_template(metadata['detector'], 'INDEX')
   with open(xds_inp, 'w') as fout:
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_INDEX.INP' % metadata['detector'])
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for %s not found at %s' % \
-              (metadata['detector'], template))
-
-    template_str = open(template, 'r').read().strip()
-
     # should somehow hang this from an anomalous flag
 
     friedels_law = 'FALSE'
@@ -193,20 +187,11 @@ def write_xds_inp_autoindex_p1_cell(metadata, xds_inp, cell):
 
 
 def write_xds_inp_integrate(metadata, xds_inp, resolution_low, no_jobs=1, no_processors=0):
+  template_str = get_template(metadata['detector'], 'INTEGRATE')
   with open(xds_inp, 'w') as fout:
 
     # FIXME in here calculate the maximum number of jobs to correspond at the
     # least to 5 degree wedges / job.
-
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_INTEGRATE.INP' % metadata['detector'])
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for %s not found at %s' % \
-              (metadata['detector'], template))
-
-    template_str = open(template, 'r').read().strip()
 
     # should somehow hang this from an anomalous flag
 
@@ -251,17 +236,8 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
                           xds_inp, scale = True,
                           resolution_low = 30, resolution_high = 0.0,
                           turn_subset = False):
+  template_str = get_template(metadata['detector'], 'CORRECT')
   with open(xds_inp, 'w') as fout:
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_CORRECT.INP' % metadata['detector'])
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for %s not found at %s' % \
-              (metadata['detector'], template))
-
-    template_str = open(template, 'r').read().strip()
-
     # should somehow hang this from an anomalous flag
 
     if 'atom' in metadata:
@@ -319,21 +295,8 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
 def write_xds_inp_correct_no_cell(metadata,
                                   xds_inp, scale = True,
                                   resolution_low = 30, resolution_high = 0.0):
+  template_str = get_template(metadata['detector'], 'CORRECT_NO_CELL')
   with open(xds_inp, 'w') as fout:
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_CORRECT.INP' % metadata['detector'])
-
-    template = os.path.join(os.environ['FAST_DP_ROOT'],
-                            'lib', 'templates',
-                            '%s_CORRECT_NO_CELL.INP' % metadata['detector'])
-
-    if not os.path.exists(template):
-        raise RuntimeError('template for %s not found at %s' % \
-              (metadata['detector'], template))
-
-    template_str = open(template, 'r').read().strip()
-
     # should somehow hang this from an anomalous flag
 
     friedels_law = 'FALSE'
