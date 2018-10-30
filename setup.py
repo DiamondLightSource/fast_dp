@@ -6,16 +6,20 @@ from setuptools import find_packages, setup
 
 setup(name='fast_dp',
       description='fast_dp',
-      url='https://github.com/DiamondLightSource/fast_dp',
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
-      download_url="https://github.com/DiamondLightSource/fast_dp/releases",
+
       version='0.1',
+
+      url='https://github.com/DiamondLightSource/fast_dp',
+      download_url="https://github.com/DiamondLightSource/fast_dp/releases",
+      license='Apache-2.0',
+
       install_requires=[],
       packages=find_packages(),
-      license='Apache-2.0',
+
       entry_points={
-        'libtbx.dispatcher': [
+        'libtbx.dispatcher.script': [
           'fast_dp=fast_dp',
           'fast_rdp=fast_rdp',
           'header2edna_xml=header2edna_xml',
@@ -26,6 +30,7 @@ setup(name='fast_dp',
         'bin/fast_rdp',
         'bin/header2edna_xml',
       ],
+
       tests_require=['mock', 'procrunner', 'pytest'],
       zip_safe=False,
       classifiers = [
