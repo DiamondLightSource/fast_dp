@@ -16,7 +16,8 @@ setup(name='fast_dp',
       license='Apache-2.0',
 
       install_requires=[],
-      packages=find_packages(),
+      packages=['fast_dp'],
+      package_data={'fast_dp': ['templates/*.INP', 'templates/ispyb.xml']},
 
       entry_points={
         'libtbx.dispatcher.script': [
