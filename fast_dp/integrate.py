@@ -3,8 +3,8 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from xds_writer import write_xds_inp_integrate
-from run_job import run_job
+from fast_dp.xds_writer import write_xds_inp_integrate
+from fast_dp.run_job import run_job
 
 def integrate(metadata, p1_unit_cell, resolution_low, n_jobs, n_processors):
     '''Peform the integration with a triclinic basis.'''

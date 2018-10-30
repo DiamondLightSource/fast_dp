@@ -16,27 +16,20 @@ import sys
 import time
 import traceback
 
-if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError('FAST_DP_ROOT not defined')
-
-fast_dp_lib = os.path.join(os.environ['FAST_DP_ROOT'], 'lib')
-
-if not fast_dp_lib in sys.path:
-    sys.path.append(fast_dp_lib)
-
-from run_job import get_number_cpus
-from cell_spacegroup import check_spacegroup_name, check_split_cell, \
+import fast_dp
+from fast_dp.run_job import get_number_cpus
+from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
-import output
+import fast_dp.output
 
-from image_readers import read_image_metadata, check_file_readable
+from fast_dp.image_readers import read_image_metadata, check_file_readable
 
-from autoindex import autoindex
-from integrate import integrate
-from scale import scale
-from merge import merge
-from pointgroup import decide_pointgroup
-from logger import write
+from fast_dp.autoindex import autoindex
+from fast_dp.integrate import integrate
+from fast_dp.scale import scale
+from fast_dp.merge import merge
+from fast_dp.pointgroup import decide_pointgroup
+from fast_dp.logger import write
 
 from optparse import SUPPRESS_HELP, OptionParser
 
@@ -394,14 +387,20 @@ def main():
     parser.add_option('-R', '--resolution-low', dest = 'resolution_low',
                       help = 'Low resolution limit')
 
-
     parser.add_option('-l', '--lib-name', dest = 'lib_name',
                       help = 'HDF5 reader library (i.e. neggia etc.)')
 
+    parser.add_option('--version', dest='version', action='store_true',
+                      default=False, help='Print fast_dp version')
+
     (options, args) = parser.parse_args()
 
+    if options.version:
+      print('Fast_DP version %s' % fast_dp.__version__)
+      sys.exit(0)
+
     if len(args) != 1:
-      sys.exit("You must point to one image of the dataset to process")
+      parser.error("You must point to one image of the dataset to process")
 
     image = args[0]
 
@@ -422,27 +421,27 @@ def main():
         set_lib_name(options.lib_name)
 
     try:
-        fast_dp = FastDP()
-        fast_dp._commandline = commandline
-        write('Fast_DP installed in: %s' % os.environ['FAST_DP_ROOT'])
+        write('Fast_DP version %s' % fast_dp.__version__)
+        finst = FastDP()
+        finst._commandline = commandline
         write('Starting image: %s' % image)
-        missing = fast_dp.set_start_image(image)
+        missing = finst.set_start_image(image)
         if options.beam:
             x, y = tuple(map(float, options.beam.split(',')))
-            fast_dp.set_beam((x, y))
+            finst.set_beam((x, y))
 
         if options.distance:
-            fast_dp.set_distance(float(options.distance))
+            finst.set_distance(float(options.distance))
 
         if options.atom:
-            fast_dp.set_atom(options.atom)
+            finst.set_atom(options.atom)
 
         if options.maximum_number_of_jobs:
-            fast_dp.set_max_n_jobs(int(options.maximum_number_of_jobs))
+            finst.set_max_n_jobs(int(options.maximum_number_of_jobs))
 
         if options.execution_hosts:
-            fast_dp.set_execution_hosts(options.execution_hosts.split(','))
-            write('Execution hosts: %s' % ' '.join(fast_dp.get_execution_hosts()))
+            finst.set_execution_hosts(options.execution_hosts.split(','))
+            write('Execution hosts: %s' % ' '.join(finst.get_execution_hosts()))
 
         if options.number_of_jobs:
             if options.maximum_number_of_jobs:
@@ -450,31 +449,31 @@ def main():
                              int(options.maximum_number_of_jobs))
             else:
                 n_jobs = int(options.number_of_jobs)
-            fast_dp.set_n_jobs(n_jobs)
+            finst.set_n_jobs(n_jobs)
 
         if options.number_of_cores:
             n_cores = int(options.number_of_cores)
-            fast_dp.set_n_cores(n_cores)
+            finst.set_n_cores(n_cores)
 
         if options.first_image:
             first_image = int(options.first_image)
             missing = [m for m in missing if m >= first_image]
-            fast_dp.set_first_image(first_image)
+            finst.set_first_image(first_image)
 
         if options.last_image:
             last_image = int(options.last_image)
             missing = [m for m in missing if m <= last_image]
-            fast_dp.set_last_image(last_image)
+            finst.set_last_image(last_image)
 
         if missing:
             raise RuntimeError('images missing: %s' % \
                 ' '.join(map(str, missing)))
 
         if options.resolution_low:
-            fast_dp.set_resolution_low(float(options.resolution_low))
+            finst.set_resolution_low(float(options.resolution_low))
 
         if options.resolution_high:
-            fast_dp.set_resolution_high(float(options.resolution_high))
+            finst.set_resolution_high(float(options.resolution_high))
 
         # must input spacegroup first as unpacking of the unit cell
         # will depend on the centering operation...
@@ -482,7 +481,7 @@ def main():
         if options.spacegroup:
             try:
                 spacegroup = check_spacegroup_name(options.spacegroup)
-                fast_dp.set_input_spacegroup(spacegroup)
+                finst.set_input_spacegroup(spacegroup)
                 write('Set spacegroup: %s' % spacegroup)
             except RuntimeError:
                 write('Spacegroup %s not recognised: ignoring' % \
@@ -492,22 +491,22 @@ def main():
             assert(options.spacegroup)
             cell = check_split_cell(options.cell)
             write('Set cell: %.2f %.2f %.2f %.2f %.2f %.2f' % cell)
-            fast_dp.set_input_cell(cell)
+            finst.set_input_cell(cell)
 
-        fast_dp.process()
+        finst.process()
 
     except Exception as e:
         traceback.print_exc(file = open('fast_dp.error', 'w'))
         write('Fast DP error: %s' % str(e))
 
     json_stuff = { }
-    for prop in dir(fast_dp):
+    for prop in dir(finst):
         ignore = ['_read_image_metadata']
         if not prop.startswith('_') or prop.startswith('__'):
             continue
         if prop in ignore:
             continue
-        json_stuff[prop] = getattr(fast_dp, prop)
+        json_stuff[prop] = getattr(finst, prop)
     with open('fast_dp.state', 'wb') as fh:
       json.dump(json_stuff, fh)
 

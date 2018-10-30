@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function
 
-from run_job import run_job
+from fast_dp.run_job import run_job
 
-from logger import write
+from fast_dp.logger import write
 
 def anomalous_signals(hklin):
     '''

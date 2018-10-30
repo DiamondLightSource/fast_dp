@@ -6,14 +6,6 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError('FAST_DP_ROOT not defined')
-
-fast_dp_lib = os.path.join(os.environ['FAST_DP_ROOT'], 'lib')
-
-if not fast_dp_lib in sys.path:
-    sys.path.append(fast_dp_lib)
-
 from image_readers import read_image_metadata
 
 from image_names import image2image

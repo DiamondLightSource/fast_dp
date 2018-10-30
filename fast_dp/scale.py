@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from xds_writer import write_xds_inp_correct
-from run_job import run_job
-from cell_spacegroup import spacegroup_number_to_name
+from fast_dp.xds_writer import write_xds_inp_correct
+from fast_dp.run_job import run_job
+from fast_dp.cell_spacegroup import spacegroup_number_to_name
 
 def scale(unit_cell, metadata, space_group_number, resolution_high):
     '''Perform the scaling with the spacegroup and unit cell calculated

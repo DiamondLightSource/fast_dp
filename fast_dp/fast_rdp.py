@@ -13,14 +13,6 @@ import time
 import copy
 import traceback
 
-if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError('FAST_DP_ROOT not defined')
-
-fast_dp_lib = os.path.join(os.environ['FAST_DP_ROOT'], 'lib')
-
-if not fast_dp_lib in sys.path:
-    sys.path.append(fast_dp_lib)
-
 from run_job import get_number_cpus
 from cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell

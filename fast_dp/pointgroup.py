@@ -3,15 +3,15 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution, \
+from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution, \
      read_xds_correct_lp
-from pointless_reader import read_pointless_xml
-from xds_writer import write_xds_inp_correct_no_cell, write_xds_inp_correct
-from run_job import run_job
-from cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
+from fast_dp.pointless_reader import read_pointless_xml
+from fast_dp.xds_writer import write_xds_inp_correct_no_cell, write_xds_inp_correct
+from fast_dp.run_job import run_job
+from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
     spacegroup_to_lattice, check_spacegroup_name
 
-from logger import write
+from fast_dp.logger import write
 
 def decide_pointgroup(p1_unit_cell, metadata,
                       input_spacegroup = None):

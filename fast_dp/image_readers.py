@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import time
 
-from logger import write
+from fast_dp.logger import write
 
 from fast_dp.image_names import image2template_directory, find_matching_images, \
     template_directory_number2image

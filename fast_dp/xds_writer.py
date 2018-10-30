@@ -2,9 +2,6 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-if not 'FAST_DP_ROOT' in os.environ:
-    raise RuntimeError('FAST_DP_ROOT undefined')
-
 from fast_dp.run_job import get_number_cpus
 
 # XDS.INP writer functions - two (three) of these, to write out commands

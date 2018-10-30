@@ -3,13 +3,13 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from xds_writer import write_xds_inp_autoindex, write_xds_inp_autoindex_p1_cell
-from xds_reader import read_xds_idxref_lp
-from run_job import run_job
+from fast_dp.xds_writer import write_xds_inp_autoindex, write_xds_inp_autoindex_p1_cell
+from fast_dp.xds_reader import read_xds_idxref_lp
+from fast_dp.run_job import run_job
 
-from cell_spacegroup import spacegroup_to_lattice
+from fast_dp.cell_spacegroup import spacegroup_to_lattice
 
-from logger import write
+from fast_dp.logger import write
 
 def autoindex(metadata, input_cell = None):
     '''Perform the autoindexing, using metatdata, get a list of possible
