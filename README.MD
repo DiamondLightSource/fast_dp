@@ -140,7 +140,7 @@ jobs to your queuing system.
 
 ### 2. Installation
 
-You can install the latest release version of fast_dp from pypi by loading
+You can install the latest release version of fast_dp from PyPI by loading
 your CCTBX environment and then running
 
     libtbx.pip install fast_dp
@@ -211,3 +211,28 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+### 7. Release Process
+
+To prepare a new fast_dp release you need to install
+[bumpversion](https://pypi.org/project/bumpversion/), for example by running
+
+    pip install bumpversion
+
+or using libtbx.pip in an CCTBX environment, followed by a libtbx.configure.
+Releases can then be made by
+
+```
+# Assuming current version is 1.1.1
+bumpversion major  # 1.1.1 -> 2.0.0
+    # or
+bumpversion minor  # 1.1.1 -> 1.2.0
+    # or
+bumpversion patch  # 1.1.1 -> 1.1.2
+
+git push
+git push --tags
+```
+
+The release tag, once pushed to Github, will be picked up by Travis
+which will generate a new package and upload it directly to PyPI.
