@@ -14,7 +14,6 @@ setup(name='fast_dp',
 
       url='https://github.com/DiamondLightSource/fast_dp',
       download_url="https://github.com/DiamondLightSource/fast_dp/releases",
-      long_description=readme,
       license='Apache-2.0',
 
       install_requires=[],
@@ -46,5 +45,8 @@ setup(name='fast_dp',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Operating System :: POSIX :: Linux',
-     ],
+      ],
+
+      long_description=readme,
+      zip_safe=False, # required so that the README.MD file can be read
 )
