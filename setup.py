@@ -35,7 +35,7 @@ setuptools.setup(
       zip_safe=False,
       classifiers = [
         'Development Status :: 5 - Production/Stable',
-        'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)',
+#       'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)', # eventually. https://github.com/pypa/warehouse/issues/2996
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
