@@ -2,6 +2,9 @@
 
 [![PYPI release](https://img.shields.io/pypi/v/fast_dp.svg)](https://pypi.python.org/pypi/fast_dp)
 [![Build Status](https://travis-ci.com/DiamondLightSource/fast_dp.svg?branch=master)](https://travis-ci.com/DiamondLightSource/fast_dp)
+[![Updates](https://pyup.io/repos/github/DiamondLightSource/fast_dp/shield.svg)](https://pyup.io/repos/github/DiamondLightSource/fast_dp/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/fast_dp.svg)](https://pypi.org/project/fast-dp/)
+[![Python 3](https://pyup.io/repos/github/DiamondLightSource/fast_dp/python-3-shield.svg)](https://pyup.io/repos/github/DiamondLightSource/fast_dp/)
 
 ### 0. Introduction
 
