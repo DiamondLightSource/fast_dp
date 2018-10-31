@@ -2,9 +2,13 @@ from __future__ import absolute_import, division, print_function
 
 import setuptools
 
+with open('README.md') as readme_file:
+  readme = readme_file.read()
+
 setuptools.setup(
       name='fast_dp',
       description='Fast DP: Fast Data Processsing with XDS',
+      long_description=readme,
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
 
@@ -32,7 +36,6 @@ setuptools.setup(
       ],
 
       tests_require=['mock', 'procrunner', 'pytest'],
-      zip_safe=False,
       classifiers = [
         'Development Status :: 5 - Production/Stable',
 #       'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)', # eventually. https://github.com/pypa/warehouse/issues/2996
