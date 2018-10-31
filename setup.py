@@ -35,7 +35,6 @@ setup(name='fast_dp',
       ],
 
       tests_require=['mock', 'procrunner', 'pytest'],
-      zip_safe=False,
       classifiers = [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)',
