@@ -1,11 +1,12 @@
-# in preparation for pypi packaging. We are not there yet
-
 from __future__ import absolute_import, division, print_function
 
-from setuptools import find_packages, setup
+from setuptools import setup
+
+with open('README.MD') as readme_file:
+  readme = readme_file.read()
 
 setup(name='fast_dp',
-      description='fast_dp',
+      description='Fast DP: Fast Data Processsing with XDS',
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
 
@@ -13,6 +14,7 @@ setup(name='fast_dp',
 
       url='https://github.com/DiamondLightSource/fast_dp',
       download_url="https://github.com/DiamondLightSource/fast_dp/releases",
+      long_description=readme,
       license='Apache-2.0',
 
       install_requires=[],
@@ -35,15 +37,15 @@ setup(name='fast_dp',
       tests_require=['mock', 'procrunner', 'pytest'],
       zip_safe=False,
       classifiers = [
-        'Development Status :: 4 - Beta',
-#       'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)', # eventually. https://github.com/pypa/warehouse/issues/2996
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: Apache Software License 2.0 (Apache-2.0)',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Operating System :: POSIX :: Linux',
      ],
 )
