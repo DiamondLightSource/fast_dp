@@ -2,13 +2,14 @@ from __future__ import absolute_import, division, print_function
 
 import setuptools
 
-with open('README.md') as readme_file:
+with open('README.rst') as readme_file:
   readme = readme_file.read()
 
 setuptools.setup(
       name='fast_dp',
       description='Fast DP: Fast Data Processsing with XDS',
       long_description=readme,
+      long_description_content_type='text/x-rst',
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
 
