@@ -312,15 +312,23 @@ def read_image_metadata_dxtbx(image):
     first image in the sequence to derive the metadata, for HDF5 files
     just get on an read.'''
 
+    from scitbx import matrix
+    from collections import namedtuple
+
     check_file_readable(image)
 
     if image.endswith('.h5'):
+        # XDS can literally only handle master files called (prefix)_master.h5
+        assert 'master' in image
         from dxtbx.datablock import DataBlockFactory
         db = DataBlockFactory.from_filenames([hdf5_file])[0]
         d = sweep.get_detector()
         s = sweep.get_scan()
         g = sweep.get_goniometer()
         b = sweep.get_beam()
+
+        image_range = (s.get_image_range()[0], s.get_image_range()[1] + 1)
+
     else:
         from dxtbx import load
         template, directory = image2template_directory(image)
@@ -332,6 +340,29 @@ def read_image_metadata_dxtbx(image):
         s = i.get_scan()
         g = i.get_goniometer()
         b = i.get_beam()
+
+        image_range = min(matching), max(matching)
+
+    # extract properties from dxtbx objects, and other things we know like
+    # the image range - for the segments make a flyweight class to represent
+    # these things to make the later calculations a little tidier
+
+    Segment = namedtuple('Segment', ['fast', 'slow', 'origin', 'normal',
+                                     'nfast', 'nslow', 'dfast', 'dslow',
+                                     'ofast', 'oslow'])
+    segments = []
+    for panel in d:
+        pixel_size = panel.get_pixel_size()
+        image_size = panel.get_image_size()
+        fast = matrix.col(panel.get_fast_axis())
+        slow = matrix.col(panel.get_slow_axis())
+        normal = matrix.col(panel.get_normal())
+        origin = matrix.col(panel.get_origin())
+        data_offset = panel.get_raw_image_offset()
+        segments.append(Segment(fast, slow, origin, normal,
+                                image_size[0], image_size[1],
+                                pixel_size[0], pixel_size[1],
+                                data_offset[0], data_offset[1]))
 
     # at this stage we have all the experimental components we need -
     # transform everything to an XDS system - first pass, try to do this
