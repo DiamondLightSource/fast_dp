@@ -5,8 +5,8 @@ import time
 
 from fast_dp.logger import write
 
-from fast_dp.image_names import image2template_directory, find_matching_images, \
-    template_directory_number2image
+from fast_dp.image_names import image2template_directory, \
+     find_matching_images, template_directory_number2image
 
 from fast_dp.run_job import run_job
 
