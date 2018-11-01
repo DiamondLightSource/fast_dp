@@ -51,7 +51,6 @@ try:
 except: # intentional
   gzip = None
 
-
 def is_bz2(filename):
   if not '.bz2' in filename[-4:]:
     return False
@@ -307,11 +306,42 @@ def set_lib_name(lib_name):
     global __lib_name
     __lib_name = lib_name
 
+def read_image_metadata_dxtbx(image):
+    '''Read the image header and send back the resulting metadata in a
+    dictionary. Read this using dxtbx - for a sequence of images use the
+    first image in the sequence to derive the metadata, for HDF5 files
+    just get on an read.'''
+
+    check_file_readable(image)
+
+    if image.endswith('.h5'):
+        from dxtbx.datablock import DataBlockFactory
+        db = DataBlockFactory.from_filenames([hdf5_file])[0]
+        d = sweep.get_detector()
+        s = sweep.get_scan()
+        g = sweep.get_goniometer()
+        b = sweep.get_beam()
+    else:
+        from dxtbx import load
+        template, directory = image2template_directory(image)
+        matching = find_matching_images(template, directory)
+        image = template_directory_number2image(template, directory,
+                                                min(matching))
+        i = load(image)
+        d = i.get_detector()
+        s = i.get_scan()
+        g = i.get_goniometer()
+        b = i.get_beam()
+
+    # at this stage we have all the experimental components we need -
+    # transform everything to an XDS system - first pass, try to do this
+    # properly as a sequence of segments
+
 def read_image_metadata(image):
     '''Read the image header and send back the resulting metadata in a
     dictionary.'''
 
-    assert(os.path.exists(image))
+    check_file_readable(image)
 
     if image.endswith('.h5'):
         assert 'master' in image
@@ -323,11 +353,7 @@ def read_image_metadata(image):
 
         return metadata
 
-    # FIXME also check that the file can also be read - assert is acceptable,
-    # also use the first image in the wedge to get the frame metadata
-
     template, directory = image2template_directory(image)
-
     matching = find_matching_images(template, directory)
     image = template_directory_number2image(template, directory, min(matching))
 
