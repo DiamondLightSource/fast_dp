@@ -5,23 +5,15 @@ import pkg_resources
 
 from fast_dp.run_job import get_number_cpus
 
-# XDS.INP writer functions - two (three) of these, to write out commands
-# for autoindexing, integration then postrefinement and scaling. Split
-# up thus because XDS will frequently stop after autoindexing complaining
-# that your data are not perfect, and then you probably want to run post-
-# refinement and scaling a couple of times. With the latter need to be able
-# to control the scale factors applied. N.B. these calculate the image
-# ranges to use from the input metadata.
-
 def get_template(detector, instruction):
-  '''Read the template for a given detector from the package resource files.'''
-  template = 'templates/%s_%s.INP' % (detector, instruction)
-  if not pkg_resources.resource_exists('fast_dp', template):
-    raise RuntimeError('{instruction} template for {detector} not found'.format(
-        instruction=instruction, detector=detector))
+    '''Read the template for a given detector from the package resource
+    files.'''
+    template = 'templates/%s_%s.INP' % (detector, instruction)
+    if not pkg_resources.resource_exists('fast_dp', template):
+        raise RuntimeError('{template} not found'.format(template=template)
 
-  return pkg_resources.resource_string('fast_dp', template).decode('utf-8').strip()
-
+    return pkg_resources.resource_string('fast_dp', template).decode(
+        'utf-8').strip()
 
 def write_xds_inp_autoindex(metadata, xds_inp):
     template_str = get_template(metadata['detector'], 'INDEX')
