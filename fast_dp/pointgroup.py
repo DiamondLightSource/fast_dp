@@ -6,7 +6,7 @@ import shutil
 from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution, \
      read_xds_correct_lp
 from fast_dp.pointless_reader import read_pointless_xml
-from fast_dp.xds_writer import write_xds_inp_correct_no_cell, write_xds_inp_correct
+from fast_dp.xds_writer import write_xds_inp_correct
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
     spacegroup_to_lattice, check_spacegroup_name

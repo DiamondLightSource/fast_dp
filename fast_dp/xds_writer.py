@@ -291,48 +291,6 @@ def write_xds_inp_correct(metadata, unit_cell, space_group_number,
     else:
         fout.write('DATA_RANGE=%d %d\n' % (metadata['start'], metadata['end']))
 
-
-def write_xds_inp_correct_no_cell(metadata,
-                                  xds_inp, scale = True,
-                                  resolution_low = 30, resolution_high = 0.0):
-  template_str = get_template(metadata['detector'], 'CORRECT_NO_CELL')
-  with open(xds_inp, 'w') as fout:
-    # should somehow hang this from an anomalous flag
-
-    friedels_law = 'FALSE'
-
-    if scale:
-        corrections = 'ALL'
-    else:
-        corrections = '!'
-
-    fout.write('%s\n' % template_str.format(
-        extra_text = metadata.get('extra_text', '!PARAMETER=VALUE'),
-        no_processors = get_number_cpus(),
-        resolution_low = resolution_low,
-        resolution_high = resolution_high,
-        nx = metadata['size'][0],
-        ny = metadata['size'][1],
-        qx = metadata['pixel'][0],
-        qy = metadata['pixel'][1],
-        orgx = metadata['beam'][0] / metadata['pixel'][0],
-        orgy = metadata['beam'][1] / metadata['pixel'][1],
-        distance = metadata['distance'],
-        sensor = metadata['sensor'],
-        wavelength = metadata['wavelength'],
-        oscillation = metadata['oscillation'][1],
-        friedels_law = friedels_law,
-        corrections = corrections,
-        template = os.path.join(metadata['directory'],
-                                metadata['template'].replace('#', '?')),
-        starting_angle = metadata['oscillation'][0],
-        starting_image = metadata['start']))
-
-    # then we get the non-template stuff
-
-    fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
-                                       metadata['end']))
-
 def detector_segment_text(segments):
     '''Convert a sequence of Segment descriptions to the XDS segment
     description.
