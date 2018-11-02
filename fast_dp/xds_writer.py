@@ -10,7 +10,7 @@ def get_template(detector, instruction):
     files.'''
     template = 'templates/%s_%s.INP' % (detector, instruction)
     if not pkg_resources.resource_exists('fast_dp', template):
-        raise RuntimeError('{template} not found'.format(template=template)
+        raise RuntimeError('{template} not found'.format(template=template))
 
     return pkg_resources.resource_string('fast_dp', template).decode(
         'utf-8').strip()
