@@ -37,7 +37,8 @@ class FastRDP:
     def __init__(self):
 
         with open('fast_dp.state', 'rb') as fh:
-          json_stuff = json.load(fh)
+            json_stuff = json.load(fh)
+
         for prop in json_stuff:
             # do not want to pass this along since that will limit what we
             # can reindex to...
@@ -139,8 +140,8 @@ class FastRDP:
         # FIXME should be able to run the same from CORRECT.LP which would
         # work better....
 
-        from xds_reader import read_xds_idxref_lp
-        from cell_spacegroup import spacegroup_to_lattice
+        from fast_dp.xds_reader import read_xds_idxref_lp
+        from fast_dp.cell_spacegroup import spacegroup_to_lattice
 
         results = read_xds_idxref_lp('IDXREF.LP')
 
@@ -250,11 +251,8 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.version:
-      print('Fast_RDP version %s' % fast_dp.__version__)
-      sys.exit(0)
-
-    if len(args) < 2:
-      parser.error("")
+        print('Fast_RDP version %s' % fast_dp.__version__)
+        sys.exit(0)
 
     # if arg given then assume that this is a directory with a fast_dp
     # job it in, but where $user does not have access to write - so first
