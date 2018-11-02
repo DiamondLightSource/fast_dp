@@ -344,13 +344,15 @@ def read_image_metadata_dxtbx(image):
         image_range = min(matching), max(matching)
 
     # extract properties from dxtbx objects, and other things we know like
-    # the image range - for the segments make a flyweight class to represent
-    # these things to make the later calculations a little tidier
+    # the image range - for the segments make a flyweight class (i.e. a C
+    # struct) to represent these things to make the code a little tidier
 
     Segment = namedtuple('Segment', ['fast', 'slow', 'origin', 'normal',
                                      'nfast', 'nslow', 'dfast', 'dslow',
                                      'ofast', 'oslow'])
     segments = []
+
+
     for panel in d:
         pixel_size = panel.get_pixel_size()
         image_size = panel.get_image_size()
@@ -367,6 +369,10 @@ def read_image_metadata_dxtbx(image):
     # at this stage we have all the experimental components we need -
     # transform everything to an XDS system - first pass, try to do this
     # properly as a sequence of segments
+
+    from fast_dp.xds_writer import detector_segment_text
+
+    print(detector_segment_text(segments))
 
 def read_image_metadata(image):
     '''Read the image header and send back the resulting metadata in a
