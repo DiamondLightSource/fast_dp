@@ -332,3 +332,30 @@ def write_xds_inp_correct_no_cell(metadata,
 
     fout.write('DATA_RANGE=%d %d\n' % (metadata['start'],
                                        metadata['end']))
+
+def detector_segment_text(segments):
+    '''Convert a sequence of Segment descriptions to the XDS segment
+    description.
+
+    Input: list of segments
+    Output: str'''
+
+    result = []
+
+    for segment in segments:
+        x0, y0 = segment.ofast + 1, segment.oslow + 1
+        x1, y1 = x0 + segment.nfast - 1, y0 + segment.nslow - 1
+        f0, f1, f2 = segment.fast.elems
+        s0, s1, s2 = segment.slow.elems
+        d = segment.origin.dot(segment.normal)
+        ox = - segment.origin.dot(segment.fast) / segment.dfast
+        oy = - segment.origin.dot(segment.slow) / segment.dslow
+        result.append('''SEGMENT=  %d %d %d %d
+DIRECTION_OF_SEGMENT_X-AXIS=  %f %f %f
+DIRECTION_OF_SEGMENT_Y-AXIS=  %f %f %f
+SEGMENT_ORGX=  %f
+SEGMENT_ORGY=  %f
+SEGMENT_DISTANCE=  %f
+''' % (x0, x1, y0, y1, f0, f1, f2, s0, s1, s2, ox, oy, d))
+
+    return '\n'.join(result)
