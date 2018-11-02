@@ -1,0 +1,39 @@
+JOB=XYCORR INIT COLSPOT IDXREF
+
+! The definition of OVERLOAD= should be read from the image 
+! header really...
+
+DETECTOR={detector:s} MINIMUM_VALID_PIXEL_VALUE={minimum:d}
+OVERLOAD={overload:d}
+VALUE_RANGE_FOR_TRUSTED_DETECTOR_PIXELS= 1000 40000
+ 
+DIRECTION_OF_DETECTOR_X-AXIS= {fast_as_str:s}
+DIRECTION_OF_DETECTOR_Y-AXIS= {slow_as_str:s}
+TRUSTED_REGION=0.0 1.45
+SENSOR_THICKNESS={sensor:.5f}
+
+MAXIMUM_NUMBER_OF_PROCESSORS={no_processors:d}
+NY={nx:d} NX={ny:d} QX={qx:.5f} QY={qy:.5f}
+ORGX={orgx:.1f} ORGY={orgy:.1f}
+ROTATION_AXIS= {axis_as_str:s}
+DETECTOR_DISTANCE={distance:.2f}
+X-RAY_WAVELENGTH={wavelength:5f}
+OSCILLATION_RANGE={oscillation:.3f}
+INCIDENT_BEAM_DIRECTION= {beam_as_str:s}
+FRACTION_OF_POLARIZATION= {polarization:f}
+POLARIZATION_PLANE_NORMAL= {polarization_plane_as_str:s}
+AIR= {air:f}
+FRIEDEL'S_LAW={friedels_law:s}
+NAME_TEMPLATE_OF_DATA_FRAMES={template:s}
+{extra_text:s}
+STARTING_ANGLE={starting_angle:.3f} STARTING_FRAME={starting_image:d}
+
+MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT= 2
+MAXIMUM_ERROR_OF_SPOT_POSITION= 2.0
+MINIMUM_FRACTION_OF_INDEXED_SPOTS= 0.5
+
+REFINE(IDXREF)= POSITION BEAM AXIS ORIENTATION CELL
+
+! optional SEGMENT descriptions
+
+{segment_text:s}
