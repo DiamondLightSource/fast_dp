@@ -144,7 +144,17 @@ def XDS_INP_to_dict(inp_text):
                 result[tokens[2*j].strip()] = tokens[2*j+1].strip()
         else:
             tokens = useful.split('=')
-            result[tokens[0].strip()] = tokens[1].strip()
+            key = tokens[0].strip()
+            value = tokens[1].strip()
+            # handle multiple's gracelessly
+            if key in result:
+                if type(result[key]) is str:
+                    result[key] = [result[key]]
+                    result[key].append(value)
+                else:
+                    result[key].append(value)
+            else:
+                result[key] = value
     return result
 
 def failover_cbf(cbf_file):
@@ -327,9 +337,6 @@ def read_image_metadata_dxtbx(image):
     first image in the sequence to derive the metadata, for HDF5 files
     just get on an read.'''
 
-    from scitbx import matrix
-    from collections import namedtuple
-
     check_file_readable(image)
 
     if image.endswith('.h5'):
@@ -340,26 +347,31 @@ def read_image_metadata_dxtbx(image):
         sweep = db.extract_sweeps()[0]
 
     else:
-        template, directory = image2template_directory(image)
-        matching = find_matching_images(template, directory)
-        image = template_directory_number2image(template, directory,
-                                                min(matching))
         from dxtbx.datablock import DataBlockTemplateImporter
-        importer = DataBlockTemplateImporter(
-            [os.path.join(directory, template)])
+        template, directory = image2template_directory(image)
+        full_template = os.path.join(directory, template)
+        importer = DataBlockTemplateImporter([full_template])
         sweep = importer.datablocks[0].extract_sweeps()[0]
 
     from dxtbx.serialize.xds import to_xds
     XDS_INP = to_xds(sweep).XDS_INP(as_str=True)
     params = XDS_INP_to_dict(XDS_INP)
 
+    # detector type specific parameters - minimum spot size, trusted region
+    # and so on.
+
     d = sweep.get_detector()
     from dxtbx.model.detector_helpers import detector_helper_sensors
     sensor_type = d[0].get_type()
     if sensor_type == detector_helper_sensors.SENSOR_PAD:
-        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = 2
+        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = '2'
     else:
-        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = 4
+        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = '4'
+
+    # remove things we will want to guarantee we set in fast_dp
+    for name in ['BACKGROUND_RANGE', 'SPOT_RANGE', 'DATA_RANGE']:
+        if name in params: del(params[name])
+
     return params
 
 def read_image_metadata(image):
@@ -367,8 +379,22 @@ def read_image_metadata(image):
     dictionary.'''
 
     check_file_readable(image)
+
+    # use dxtbx to extract the data collection parameters as a dictionary
+    # which can be rolled back into an XDS.INP - can easily add / override
+    # the parameters in here. N.B. this is distinct from the old "metadata"
+    # dictionary, since everything in here is pure XDS
+
+    params = read_image_metadata_dxtbx(image)
     if False:
-        read_image_metadata_dxtbx(image)
+        for p in sorted(params):
+            value = params[p]
+            if type(value) is str:
+                print('%s %s' % (p, params[p]))
+            else:
+                for v in params[p]:
+                    print('%s %s' % (p, v))
+
 
     if image.endswith('.h5'):
         assert 'master' in image
