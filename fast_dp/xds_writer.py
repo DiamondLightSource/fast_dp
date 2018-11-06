@@ -282,6 +282,44 @@ def detector_segment_text(segments):
 
     result = []
 
+    if len(segments) == 1:
+        segment = segments[0]
+        x0, y0 = segment.ofast + 1, segment.oslow + 1
+        x1, y1 = x0 + segment.nfast - 1, y0 + segment.nslow - 1
+        f0, f1, f2 = segment.fast.elems
+        s0, s1, s2 = segment.slow.elems
+        d = segment.origin.dot(segment.normal)
+        ox = - segment.origin.dot(segment.fast) / segment.dfast
+        oy = - segment.origin.dot(segment.slow) / segment.dslow
+        result.append('''NX= %d NY= %d QX= %f QY= %f
+DIRECTION_OF_DETECTOR_X-AXIS=  %f %f %f
+DIRECTION_OF_DETECTOR_Y-AXIS=  %f %f %f
+ORGX=  %f
+ORGY=  %f
+DETECTOR_DISTANCE=  %f
+''' % (segment.nfast, segment.nslow, segment.dfast, segment.dslow,
+       f0, f1, f2, s0, s1, s2, ox, oy, d))
+        return '\n'.join(result)
+
+    # XDS needs to know the total detector size so... the rest of this will
+    # be effectively a datum position and let the segments fill in the rest
+
+    nx = 0
+    ny = 0
+    for segment in segments:
+        _nx, _ny = segment.ofast + segment.nfast, segment.oslow + segment.nslow
+        if _nx > nx: nx = _nx
+        if _ny > ny: ny = _ny
+
+    result.append('''NX= %d NY= %d QX= %f QY= %f
+DIRECTION_OF_DETECTOR_X-AXIS=  %f %f %f
+DIRECTION_OF_DETECTOR_Y-AXIS=  %f %f %f
+ORGX=  %f
+ORGY=  %f
+DETECTOR_DISTANCE=  %f
+''' % (nx, ny, segments[0].dfast, segments[0].dslow,
+       1, 0, 0, 0, 1, 0, 0, 0, 0))
+
     for segment in segments:
         x0, y0 = segment.ofast + 1, segment.oslow + 1
         x1, y1 = x0 + segment.nfast - 1, y0 + segment.nslow - 1

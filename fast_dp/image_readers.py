@@ -320,27 +320,23 @@ def read_image_metadata_dxtbx(image):
         # XDS can literally only handle master files called (prefix)_master.h5
         assert 'master' in image
         from dxtbx.datablock import DataBlockFactory
-        db = DataBlockFactory.from_filenames([hdf5_file])[0]
-        d = sweep.get_detector()
-        s = sweep.get_scan()
-        g = sweep.get_goniometer()
-        b = sweep.get_beam()
-
-        image_range = (s.get_image_range()[0], s.get_image_range()[1] + 1)
+        db = DataBlockFactory.from_filenames([image])[0]
+        sweep = db.extract_sweeps()[0]
 
     else:
-        from dxtbx import load
         template, directory = image2template_directory(image)
         matching = find_matching_images(template, directory)
         image = template_directory_number2image(template, directory,
                                                 min(matching))
-        i = load(image)
-        d = i.get_detector()
-        s = i.get_scan()
-        g = i.get_goniometer()
-        b = i.get_beam()
+        from dxtbx.datablock import DataBlockTemplateImporter
+        importer = DataBlockTemplateImporter(
+            [os.path.join(directory, template)])
+        sweep = importer.datablocks[0].extract_sweeps()[0]
 
-        image_range = min(matching), max(matching)
+    d = sweep.get_detector()
+    s = sweep.get_scan()
+    g = sweep.get_goniometer()
+    b = sweep.get_beam()
 
     # extract properties from dxtbx objects, and other things we know like
     # the image range - for the segments make a flyweight class (i.e. a C
@@ -350,7 +346,6 @@ def read_image_metadata_dxtbx(image):
                                      'nfast', 'nslow', 'dfast', 'dslow',
                                      'ofast', 'oslow'])
     segments = []
-
 
     for panel in d:
         pixel_size = panel.get_pixel_size()
@@ -365,6 +360,15 @@ def read_image_metadata_dxtbx(image):
                                 pixel_size[0], pixel_size[1],
                                 data_offset[0], data_offset[1]))
 
+    # parameters derived from detector sensor technology - assume all sensors
+    # are the same
+    from dxtbx.model.detector_helpers import detector_helper_sensors
+    sensor_type = d[0].get_type()
+    if sensor_type == detector_helper_sensors.SENSOR_PAD:
+        min_pixels = 2
+    else:
+        min_pixels = 4
+
     # at this stage we have all the experimental components we need -
     # transform everything to an XDS system - first pass, try to do this
     # properly as a sequence of segments
@@ -378,6 +382,7 @@ def read_image_metadata(image):
     dictionary.'''
 
     check_file_readable(image)
+    # read_image_metadata_dxtbx(image)
 
     if image.endswith('.h5'):
         assert 'master' in image
