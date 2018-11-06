@@ -20,9 +20,8 @@ import fast_dp
 from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
+import fast_dp.image_readers
 import fast_dp.output
-
-from fast_dp.image_readers import read_image_metadata, check_file_readable
 
 from fast_dp.autoindex import autoindex
 from fast_dp.integrate import integrate
@@ -135,10 +134,10 @@ class FastDP:
         if not os.path.isfile(start_image):
             raise RuntimeError('no image provided: data collection cancelled?')
 
-        check_file_readable(start_image)
+        fast_dp.image_readers.check_file_readable(start_image)
 
         self._start_image = start_image
-        self._metadata = read_image_metadata(self._start_image)
+        self._metadata = fast_dp.image_readers.read_image_metadata(self._start_image)
 
         # check that all of the images are present
 
@@ -417,8 +416,7 @@ def main():
         options.last_image = xia2_format.group(3)
 
     if options.lib_name:
-        from image_readers import set_lib_name
-        set_lib_name(options.lib_name)
+        fast_dp.image_readers.set_lib_name(options.lib_name)
 
     try:
         write('Fast_DP version %s' % fast_dp.__version__)
