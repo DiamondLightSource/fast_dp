@@ -13,7 +13,7 @@ setuptools.setup(
       author='Diamond Light Source',
       author_email='scientificsoftware@diamond.ac.uk',
 
-      version='1.0.1',
+      version='1.0.2',
 
       url='https://github.com/DiamondLightSource/fast_dp',
       download_url="https://github.com/DiamondLightSource/fast_dp/releases",
