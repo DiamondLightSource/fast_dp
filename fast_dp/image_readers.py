@@ -131,6 +131,22 @@ def failover_hdf5(hdf5_file, lib_name=None):
     header['matching'] = range(images[0], images[1]+1)
     return header
 
+def XDS_INP_to_dict(inp_text):
+    result = { }
+    for record in inp_text.split('\n'):
+        useful = record.split('!')[0].strip()
+        if not useful:
+            continue
+        if useful.count('=') > 1:
+            # assume tokens of form key=value key=value
+            tokens = useful.replace('=', ' ').split()
+            for j in range(useful.count('=')):
+                result[tokens[2*j].strip()] = tokens[2*j+1].strip()
+        else:
+            tokens = useful.split('=')
+            result[tokens[0].strip()] = tokens[1].strip()
+    return result
+
 def failover_cbf(cbf_file):
     '''CBF files from the latest update to the PILATUS detector cause a
     segmentation fault in diffdump. This is a workaround.'''
@@ -333,56 +349,26 @@ def read_image_metadata_dxtbx(image):
             [os.path.join(directory, template)])
         sweep = importer.datablocks[0].extract_sweeps()[0]
 
+    from dxtbx.serialize.xds import to_xds
+    XDS_INP = to_xds(sweep).XDS_INP(as_str=True)
+    params = XDS_INP_to_dict(XDS_INP)
+
     d = sweep.get_detector()
-    s = sweep.get_scan()
-    g = sweep.get_goniometer()
-    b = sweep.get_beam()
-
-    # extract properties from dxtbx objects, and other things we know like
-    # the image range - for the segments make a flyweight class (i.e. a C
-    # struct) to represent these things to make the code a little tidier
-
-    Segment = namedtuple('Segment', ['fast', 'slow', 'origin', 'normal',
-                                     'nfast', 'nslow', 'dfast', 'dslow',
-                                     'ofast', 'oslow'])
-    segments = []
-
-    for panel in d:
-        pixel_size = panel.get_pixel_size()
-        image_size = panel.get_image_size()
-        fast = matrix.col(panel.get_fast_axis())
-        slow = matrix.col(panel.get_slow_axis())
-        normal = matrix.col(panel.get_normal())
-        origin = matrix.col(panel.get_origin())
-        data_offset = panel.get_raw_image_offset()
-        segments.append(Segment(fast, slow, origin, normal,
-                                image_size[0], image_size[1],
-                                pixel_size[0], pixel_size[1],
-                                data_offset[0], data_offset[1]))
-
-    # parameters derived from detector sensor technology - assume all sensors
-    # are the same
     from dxtbx.model.detector_helpers import detector_helper_sensors
     sensor_type = d[0].get_type()
     if sensor_type == detector_helper_sensors.SENSOR_PAD:
-        min_pixels = 2
+        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = 2
     else:
-        min_pixels = 4
-
-    # at this stage we have all the experimental components we need -
-    # transform everything to an XDS system - first pass, try to do this
-    # properly as a sequence of segments
-
-    from fast_dp.xds_writer import detector_segment_text
-
-    print(detector_segment_text(segments))
+        params['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = 4
+    return params
 
 def read_image_metadata(image):
     '''Read the image header and send back the resulting metadata in a
     dictionary.'''
 
     check_file_readable(image)
-    # read_image_metadata_dxtbx(image)
+    if False:
+        read_image_metadata_dxtbx(image)
 
     if image.endswith('.h5'):
         assert 'master' in image
