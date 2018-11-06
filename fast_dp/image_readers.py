@@ -28,18 +28,17 @@ def get_dectris_serial_no(record):
     tokens = record.split()
     return tokens[tokens.index('S/N') + 1]
 
-__hdf5_lib = ''
 def find_hdf5_lib(lib_name=None):
-  global __hdf5_lib
-  if __hdf5_lib:
-    return __hdf5_lib
-  if lib_name is None:
-    'dectris-neggia.so'
-  for d in os.environ['PATH'].split(os.pathsep):
-    if os.path.exists(os.path.join(d, 'xds_par')):
-      __hdf5_lib = 'LIB=%s\n' % os.path.join(d, lib_name)
-      return __hdf5_lib
-  return ''
+  if not hasattr(find_hdf5_lib, 'cache'):
+    lib_name = lib_name or 'dectris-neggia.so'
+    for d in os.environ['PATH'].split(os.pathsep):
+      if os.path.exists(os.path.join(d, 'xds_par')):
+        library = 'LIB=%s\n' % os.path.join(d, lib_name)
+        break
+    else:
+      library = ''
+    setattr(find_hdf5_lib, 'cache', library)
+  return getattr(find_hdf5_lib, 'cache')
 
 try:
   import bz2
