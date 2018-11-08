@@ -3,24 +3,33 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from fast_dp.xds_writer import write_xds_inp_integrate
 from fast_dp.run_job import run_job
 
-def integrate(metadata, p1_unit_cell, resolution_low, n_jobs, n_processors):
+def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     '''Peform the integration with a triclinic basis.'''
 
-    assert(metadata)
+    assert(xds_inp)
     assert(p1_unit_cell)
 
-    xds_inp = 'INTEGRATE.INP'
+    with open('INTEGRATE.INP', 'w') as fout:
+        for k in sorted(xds_inp):
+            v = xds_inp[k]
+            if type(v) == list:
+                for _v in v:
+                    fout.write('%s=%s\n' % (k, _v))
+            else:
+                fout.write('%s=%s\n' % (k, v))
 
-    # FIXME in here make a calculation from the metadata of a sensible
-    # maximum number of jobs, to give minimally 5 degree wedges.
+        fout.write('REFINE(INTEGRATE)= POSITION BEAM ORIENTATION CELL\n')
+        fout.write('JOB=DEFPIX INTEGRATE\n')
 
-    write_xds_inp_integrate(metadata, xds_inp, resolution_low,
-                            no_jobs=n_jobs, no_processors=n_processors)
+        if n_processors:
+            fout.write('MAXIMUM_NUMBER_OF_PROCESSORS=%d\n' % n_processors)
+        if n_jobs:
+            fout.write('MAXIMUM_NUMBER_OF_JOBS=%d\n' % n_jobs)
+        fout.write('INCLUDE_RESOLUTION_RANGE= %f 0.0\n' % resolution_low)
 
-    shutil.copyfile(xds_inp, 'XDS.INP')
+    shutil.copyfile('INTEGRATE.INP', 'XDS.INP')
 
     run_job('xds_par')
 
