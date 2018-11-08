@@ -27,13 +27,11 @@ setuptools.setup(
         'libtbx.dispatcher.script': [
           'fast_dp=fast_dp',
           'fast_rdp=fast_rdp',
-          'header2edna_xml=header2edna_xml',
         ],
       },
       scripts=[
         'bin/fast_dp',
         'bin/fast_rdp',
-        'bin/header2edna_xml',
       ],
 
       tests_require=['mock', 'procrunner', 'pytest'],
