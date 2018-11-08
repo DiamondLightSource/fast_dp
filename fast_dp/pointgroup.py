@@ -6,14 +6,13 @@ import shutil
 from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution, \
      read_xds_correct_lp
 from fast_dp.pointless_reader import read_pointless_xml
-from fast_dp.xds_writer import write_xds_inp_correct
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
     spacegroup_to_lattice, check_spacegroup_name
 
 from fast_dp.logger import write
 
-def decide_pointgroup(p1_unit_cell, metadata,
+def decide_pointgroup(p1_unit_cell, xds_inp,
                       input_spacegroup = None):
     '''Run POINTLESS to get the list of allowed pointgroups (N.B. will
     insist on triclinic symmetry for this scaling step) then run
@@ -23,15 +22,29 @@ def decide_pointgroup(p1_unit_cell, metadata,
 
     assert(p1_unit_cell)
 
-    # write correct input file for the triclinic solution, in the
-    # working directory
+    start, end = map(int, xds_inp['DATA_RANGE'].split())
+    osc = float(xds_inp['OSCILLATION_RANGE'])
+    if (end - start + 1) * osc > 360:
+        end = start + int(round(360.0 / osc))
+        xds_inp['DATA_RANGE'] = '%d %d' % (start, end)
 
-    xds_inp = 'P1.INP'
+    with open('P1.INP', 'w') as fout:
+        for k in sorted(xds_inp):
+            v = xds_inp[k]
+            if type(v) == list:
+                for _v in v:
+                    fout.write('%s=%s\n' % (k, _v))
+            else:
+                fout.write('%s=%s\n' % (k, v))
 
-    write_xds_inp_correct(metadata, p1_unit_cell, 1,
-                          xds_inp, turn_subset=True)
+        fout.write('SPACE_GROUP_NUMBER=1\n')
+        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+                   tuple(p1_unit_cell))
 
-    shutil.copyfile(xds_inp, 'XDS.INP')
+        fout.write('JOB=CORRECT\n')
+        fout.write('REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n')
+
+    shutil.copyfile('P1.INP', 'XDS.INP')
 
     run_job('xds_par')
 
