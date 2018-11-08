@@ -385,16 +385,7 @@ def read_image_metadata(image):
     # the parameters in here. N.B. this is distinct from the old "metadata"
     # dictionary, since everything in here is pure XDS
 
-    params = read_image_metadata_dxtbx(image)
-    if False:
-        for p in sorted(params):
-            value = params[p]
-            if type(value) is str:
-                print('%s %s' % (p, params[p]))
-            else:
-                for v in params[p]:
-                    print('%s %s' % (p, v))
-
+    xds_params = read_image_metadata_dxtbx(image)
 
     if image.endswith('.h5'):
         assert 'master' in image
