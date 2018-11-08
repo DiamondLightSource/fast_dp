@@ -58,7 +58,8 @@ def autoindex(xds_inp, input_cell=None):
 
         if input_cell:
             fout.write('SPACE_GROUP_NUMBER=1\n')
-            fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % tuple(cell))
+            fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+                       tuple(input_cell))
 
         fout.write('JOB=XYCORR INIT COLSPOT IDXREF\n')
         fout.write('REFINE(IDXREF)=CELL AXIS ORIENTATION POSITION BEAM\n')
