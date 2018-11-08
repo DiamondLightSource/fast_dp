@@ -70,7 +70,7 @@ class FastDP:
         self._last_image = None
 
         # internal data
-        self._metadata = None
+        self._params = { }
 
         # these are the resulting not input ones... clarify this?
         self._p1_unit_cell = None
@@ -103,11 +103,7 @@ class FastDP:
         else:
             self._max_n_jobs = len(execution_hosts)
         self._n_jobs = 0
-
-        # add this to the metadata as "extra text"
-        et = self._metadata.get('extra_text', '')
-        self._metadata['extra_text'] = et + 'CLUSTER_NODES=%s\n' % \
-            ' '.join(execution_hosts)
+        self._xds_inp['CLUSTER_NODES'] = ' '.join(execution_hosts)
 
     def get_execution_hosts(self):
         return self._execution_hosts
@@ -143,8 +139,6 @@ class FastDP:
         self._xds_inp = fast_dp.image_readers.read_image_metadata_dxtbx(
             self._start_image)
 
-        self._metadata = fast_dp.image_readers.read_image_metadata(self._start_image)
-
         # list image numbers which are missing from this sequence
         template = self._xds_inp['NAME_TEMPLATE_OF_DATA_FRAMES']
         if template.split('.')[-1] != 'h5':
@@ -162,24 +156,25 @@ class FastDP:
     def set_beam(self, beam):
         '''Set the beam centre, in mm, in the Mosflm reference frame.'''
 
-        assert(self._metadata)
+        assert(self._xds_inp)
         assert(len(beam) == 2)
 
-        self._metadata['beam'] = beam
+        # use XDS_INP parameters to map these to XDS description
+        orgx = beam[1] / self._xds_inp['QX']
+        orgy = beam[0] / self._xds_inp['QY']
+        self._xds_inp['ORGX'] = orgx
+        self._xds_inp['ORGY'] = orgy
 
     def set_distance(self, distance):
         '''Set the detector distance, in mm.'''
 
-        assert(self._metadata)
-
-        self._metadata['distance'] = distance
+        assert(self._xds_inp)
+        self._xds_inp['DETECTOR_DISTANCE'] = distance
 
     def set_atom(self, atom):
         '''Set the heavy atom, if appropriate.'''
 
-        assert(self._metadata)
-
-        self._metadata['atom'] = atom
+        self._params['atom'] = atom
 
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
@@ -199,20 +194,6 @@ class FastDP:
         self._input_cell_p1 = generate_primitive_cell(
             self._input_cell, self._input_spacegroup).parameters()
 
-    def _read_image_metadata(self):
-        '''Get the information from the start image to the metadata bucket.
-        For internal use only.'''
-
-        assert(self._start_image)
-
-    def get_metadata_item(self, item):
-        '''Get a specific item from the metadata.'''
-
-        assert(self._metadata)
-        assert(item in self._metadata)
-
-        return self._metadata[item]
-
     def process(self):
         '''Main routine, chain together all of the steps imported from
         autoindex, integrate, pointgroup, scale and merge.'''
@@ -227,28 +208,37 @@ class FastDP:
 
         # check input frame limits
 
+        start, end = map(int, self._xds_inp['DATA_RANGE'].split())
+        osc = float(self._xds_inp['OSCILLATION_RANGE'])
+        osc_start = float(self._xds_inp['STARTING_ANGLE'])
+
+        if osc == 0.0:
+            raise RuntimeError('grid scan data')
+
         if not self._first_image is None:
-            if self._metadata['start'] < self._first_image:
-                start = self._metadata['start']
-                self._metadata['start'] = self._first_image
-                self._metadata['phi_start'] += self._metadata['phi_width'] * \
-                                               (self._first_image - start)
+            if start < self._first_image:
+                start = self._first_image
+                osc_start += osc * (self._first_image - start)
+                self._xds_inp['STARTING_ANGLE'] = str(osc_start)
+                self._xds_inp['STARTING_FRAME'] = str(start)
 
         if not self._last_image is None:
-            if self._metadata['end'] > self._last_image:
-                self._metadata['end'] = self._last_image
+            if end > self._last_image:
+                end = self._last_image
+
+        self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
 
         # first if the number of jobs was set to 0, decide something sensible.
         # this should be jobs of a minimum of 5 degrees, 10 frames.
 
+        wedge = max(10, int(round(5.0 / osc)))
+        if wedge > end - start:
+            wedge = end - start
+
+        self._xds_inp['BACKGROUND_RANGE'] = '%d %d' % (start, start + wedge)
+
         if self._n_jobs == 0:
-            phi = self._metadata['oscillation'][1]
-
-            if phi == 0.0:
-                raise RuntimeError('grid scan data')
-
-            wedge = max(10, int(round(5.0 / phi)))
-            frames = self._metadata['end'] - self._metadata['start'] + 1
+            frames = end - start + 1
             n_jobs = int(round(frames / wedge))
             if self._max_n_jobs > 0:
                 if n_jobs > self._max_n_jobs:
@@ -260,21 +250,18 @@ class FastDP:
 
         step_time = time.time()
 
-        write('Processing images: %d -> %d' % (self._metadata['start'],
-                                               self._metadata['end']))
+        write('Processing images: %d -> %d' % (start, end))
+        osc_end = osc_start + (end - start + 1) * osc
+        write('Rotation range: %.2f -> %.2f' % (osc_start, osc_end))
 
-        phi_end = self._metadata['phi_start'] + self._metadata['phi_width'] * \
-                  (self._metadata['end'] - self._metadata['start'] + 1)
+        template = self._xds_inp['NAME_TEMPLATE_OF_DATA_FRAMES']
 
-        write('Phi range: %.2f -> %.2f' % (self._metadata['phi_start'],
-                                           phi_end))
-
-        write('Template: %s' % self._metadata['template'])
-        write('Wavelength: %.5f' % self._metadata['wavelength'])
+        write('Template: %s' % os.path.split(template)[-1].replace('?', '#'))
+        write('Wavelength: %.5f' % float(self._xds_inp['X-RAY_WAVELENGTH']))
         write('Working in: %s' % os.getcwd())
 
         try:
-            self._p1_unit_cell = autoindex(self._metadata,
+            self._p1_unit_cell = autoindex(self._xds_inp,
                                            input_cell = self._input_cell_p1)
         except Exception as e:
             traceback.print_exc(file = open('fast_dp.error', 'w'))
@@ -282,7 +269,7 @@ class FastDP:
             return
 
         try:
-            mosaics = integrate(self._metadata, self._p1_unit_cell,
+            mosaics = integrate(self._xds_inp, self._p1_unit_cell,
                                 self._resolution_low, self._n_jobs,
                                 self._n_cores)
             write('Mosaic spread: %.2f < %.2f < %.2f' % tuple(mosaics))
@@ -298,7 +285,7 @@ class FastDP:
             # and then apply this (or verify that it is allowed then
             # select)
 
-            metadata = copy.deepcopy(self._metadata)
+            metadata = copy.deepcopy(self._xds_inp)
 
             cell, sg_num, resol = decide_pointgroup(
                 self._p1_unit_cell, metadata,
@@ -315,7 +302,7 @@ class FastDP:
 
         try:
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
-            scale(self._unit_cell, self._metadata, self._space_group_number, \
+            scale(self._unit_cell, self._xds_inp, self._space_group_number, \
                    self._resolution_high)
             self._refined_beam = (self._metadata['pixel'][1] * beam_pixels[1],
                                   self._metadata['pixel'][0] * beam_pixels[0])
@@ -325,7 +312,6 @@ class FastDP:
             return
 
         try:
-            n_images = self._metadata['end'] - self._metadata['start'] + 1
             self._xml_results = merge()
         except RuntimeError as e:
             write('Merging error: %s' % e)
@@ -507,7 +493,7 @@ def main():
 
     json_stuff = { }
     for prop in dir(finst):
-        ignore = ['_read_image_metadata']
+        ignore = []
         if not prop.startswith('_') or prop.startswith('__'):
             continue
         if prop in ignore:

@@ -88,14 +88,6 @@ class FastRDP:
         # matches the one which was used for previous fast_dp job - check
         # self._p1_unit_cell
 
-    def get_metadata_item(self, item):
-        '''Get a specific item from the metadata.'''
-
-        assert(self._metadata)
-        assert(item in self._metadata)
-
-        return self._metadata[item]
-
     def reprocess(self):
         '''Main routine, chain together last few steps of processing i.e.
         pointgroup, scale and merge.'''

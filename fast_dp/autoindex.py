@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from fast_dp.xds_writer import write_xds_inp_autoindex, write_xds_inp_autoindex_p1_cell
 from fast_dp.xds_reader import read_xds_idxref_lp
 from fast_dp.run_job import run_job
 
@@ -11,21 +10,61 @@ from fast_dp.cell_spacegroup import spacegroup_to_lattice
 
 from fast_dp.logger import write
 
-def autoindex(metadata, input_cell = None):
+def add_spot_range(xds_inp):
+    start, end = map(int, xds_inp['DATA_RANGE'].split())
+    osc = float(xds_inp['OSCILLATION_RANGE'])
+    wedge = max(10, int(round(5.0 / osc)))
+    if wedge > end - start:
+         wedge = end - start
+
+    spot_ranges = []
+
+    if (end - start + 1) * osc < 15:
+        spot_ranges.append('%d %d' % (start, end))
+    elif int(90.0 / osc) + start + wedge <= end:
+        half = int(- wedge + 90 / osc) + start
+        spot_ranges.append('%d %d' % (start, start + wedge - 1))
+        spot_ranges.append('%d %d' % (half, half + wedge - 1))
+        spot_ranges.append('%d %d' % (int(90.0 / osc) + start,
+                                       int(90.0 / osc) + start + wedge - 1))
+    else:
+        half = int((start + end - wedge) / 2)
+        spot_ranges.append('%d %d' % (start, start + wedge - 1))
+        spot_ranges.append('%d %d' % (half, half + wedge - 1))
+        spot_ranges.append('%d %d' % (end - wedge + 1, end))
+
+    xds_inp['SPOT_RANGE'] = spot_ranges
+
+    return xds_inp
+
+def autoindex(xds_inp, input_cell=None):
     '''Perform the autoindexing, using metatdata, get a list of possible
     lattices and record / return the triclinic cell constants (get these from
     XPARM.XDS).'''
 
-    assert(metadata)
+    assert(xds_inp)
 
-    xds_inp = 'AUTOINDEX.INP'
+    xds_inp = add_spot_range(xds_inp)
 
-    if input_cell:
-        write_xds_inp_autoindex_p1_cell(metadata, xds_inp, input_cell)
-    else:
-        write_xds_inp_autoindex(metadata, xds_inp)
+    with open('AUTOINDEX.INP', 'w') as fout:
+        for k in sorted(xds_inp):
+            v = xds_inp[k]
+            if type(v) == list:
+                for _v in v:
+                    fout.write('%s=%s\n' % (k, _v))
+            else:
+                fout.write('%s=%s\n' % (k, v))
 
-    shutil.copyfile(xds_inp, 'XDS.INP')
+        if input_cell:
+            fout.write('SPACE_GROUP_NUMBER=1\n')
+            fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % tuple(cell))
+
+        fout.write('JOB=XYCORR INIT COLSPOT IDXREF\n')
+        fout.write('REFINE(IDXREF)=CELL AXIS ORIENTATION POSITION BEAM\n')
+        fout.write('MAXIMUM_ERROR_OF_SPOT_POSITION= 2.0\n')
+        fout.write('MINIMUM_FRACTION_OF_INDEXED_SPOTS= 0.5\n')
+
+    shutil.copyfile('AUTOINDEX.INP', 'XDS.INP')
 
     log = run_job('xds_par')
 
