@@ -10,19 +10,20 @@ from fast_dp.cell_spacegroup import spacegroup_to_lattice
 
 from fast_dp.logger import write
 
+#TODO add pytests for this method
+
 def add_spot_range(xds_inp):
     start, end = map(int, xds_inp['DATA_RANGE'].split())
     osc = float(xds_inp['OSCILLATION_RANGE'])
     wedge = max(10, int(round(5.0 / osc)))
-    if wedge > end - start:
-         wedge = end - start
 
     spot_ranges = []
 
-    if (end - start + 1) * osc < 15:
+    if (end - start + 1) * osc <= 15:
         spot_ranges.append('%d %d' % (start, end))
+
     elif int(90.0 / osc) + start + wedge <= end:
-        half = int(- wedge + 90 / osc) + start
+        half = int(0.5 * ((90 / osc) - wedge)) + start
         spot_ranges.append('%d %d' % (start, start + wedge - 1))
         spot_ranges.append('%d %d' % (half, half + wedge - 1))
         spot_ranges.append('%d %d' % (int(90.0 / osc) + start,
