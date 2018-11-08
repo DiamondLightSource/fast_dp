@@ -401,10 +401,6 @@ def read_image_metadata(image):
     matching = find_matching_images(template, directory)
     image = template_directory_number2image(template, directory, min(matching))
 
-    # work around (preempt) diffdump failure with the new 2M instrument
-    # FIXME may also need to do this for the new 6M instrument which is
-    # incoming...
-
     try:
         if '.cbf' in image:
             metadata = failover_cbf(image)
