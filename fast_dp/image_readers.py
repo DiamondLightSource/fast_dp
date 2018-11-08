@@ -350,7 +350,8 @@ def read_image_metadata_dxtbx(image):
         from dxtbx.datablock import DataBlockTemplateImporter
         template, directory = image2template_directory(image)
         full_template = os.path.join(directory, template)
-        importer = DataBlockTemplateImporter([full_template])
+        importer = DataBlockTemplateImporter([full_template],
+                                             allow_incomplete_sweeps=True)
         sweep = importer.datablocks[0].extract_sweeps()[0]
 
     from dxtbx.serialize.xds import to_xds
