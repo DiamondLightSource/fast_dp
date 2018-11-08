@@ -20,6 +20,7 @@ import fast_dp
 from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
+from fast_dp.image_names import find_matching_images
 import fast_dp.image_readers
 import fast_dp.output
 
@@ -130,18 +131,25 @@ class FastDP:
 
         assert(self._start_image is None)
 
-        # check input is image file
+        # check input is image file, and exists
+        if not os.path.exists(start_image):
+            raise RuntimeError('%s does not exist' % start_image)
         if not os.path.isfile(start_image):
-            raise RuntimeError('no image provided: data collection cancelled?')
+            raise RuntimeError('%s is not a file' % start_image)
 
         fast_dp.image_readers.check_file_readable(start_image)
 
         self._start_image = start_image
+        self._xds_inp = fast_dp.image_readers.read_image_metadata_dxtbx(
+            self._start_image)
+
         self._metadata = fast_dp.image_readers.read_image_metadata(self._start_image)
 
-        # check that all of the images are present
-
-        matching = self._metadata['matching']
+        # list image numbers which are missing from this sequence
+        template = self._xds_inp['NAME_TEMPLATE_OF_DATA_FRAMES']
+        if template.split('.')[-1] != 'h5':
+            directory, template = os.path.split(template.replace('?', '#'))
+            matching = find_matching_images(template, directory)
 
         missing = []
 
