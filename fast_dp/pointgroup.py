@@ -34,7 +34,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
             if 'SEGMENT' in k:
                 continue
             v = xds_inp[k]
-            if type(v) == list:
+            if isinstance(v, list):
                 for _v in v:
                     fout.write('%s=%s\n' % (k, _v))
             else:
