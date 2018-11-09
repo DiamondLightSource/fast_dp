@@ -131,7 +131,7 @@ class FastDP:
         if not os.path.exists(start_image):
             raise RuntimeError('%s does not exist' % start_image)
         if not os.path.isfile(start_image):
-            raise RuntimeError('%s is not a file' % start_image)
+            raise ValueError('%s is not a file' % start_image)
 
         fast_dp.image_readers.check_file_readable(start_image)
 
