@@ -139,17 +139,17 @@ class FastDP:
         self._xds_inp = fast_dp.image_readers.read_image_metadata_dxtbx(
             self._start_image)
 
-        # list image numbers which are missing from this sequence
+        missing = []
+        # list image numbers which are missing from this sequence - iff ! h5
         template = self._xds_inp['NAME_TEMPLATE_OF_DATA_FRAMES']
         if template.split('.')[-1] != 'h5':
             directory, template = os.path.split(template.replace('?', '#'))
             matching = find_matching_images(template, directory)
 
-        missing = []
 
-        for j in range(min(matching), max(matching)):
-            if not j in matching:
-                missing.append(j)
+            for j in range(min(matching), max(matching)):
+                if not j in matching:
+                    missing.append(j)
 
         return missing
 
