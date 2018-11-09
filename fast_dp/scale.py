@@ -16,6 +16,8 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
 
     with open('CORRECT.INP', 'w') as fout:
         for k in sorted(xds_inp):
+            if 'SEGMENT' in k:
+                continue
             v = xds_inp[k]
             if type(v) == list:
                 for _v in v:

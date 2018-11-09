@@ -38,6 +38,22 @@ def add_spot_range(xds_inp):
 
     return xds_inp
 
+def segment_text(xds_inp):
+    if not 'SEGMENT' in xds_inp:
+        return ''
+
+    result = []
+
+    n = len(xds_inp['SEGMENT'])
+
+    for j in range(n):
+        for k in 'SEGMENT', 'SEGMENT_DISTANCE', \
+            'SEGMENT_ORGX', 'SEGMENT_ORGY', \
+            'DIRECTION_OF_SEGMENT_X-AXIS', 'DIRECTION_OF_SEGMENT_Y-AXIS':
+            result.append('%s=%s' % (k, xds_inp[k][j]))
+
+    return '\n'.join(result)
+
 def autoindex(xds_inp, input_cell=None):
     '''Perform the autoindexing, using metatdata, get a list of possible
     lattices and record / return the triclinic cell constants (get these from
@@ -49,12 +65,16 @@ def autoindex(xds_inp, input_cell=None):
 
     with open('AUTOINDEX.INP', 'w') as fout:
         for k in sorted(xds_inp):
+            if 'SEGMENT' in k:
+                continue
             v = xds_inp[k]
             if type(v) == list:
                 for _v in v:
                     fout.write('%s=%s\n' % (k, _v))
             else:
                 fout.write('%s=%s\n' % (k, v))
+
+        fout.write('%s\n' % segment_text(xds_inp))
 
         if input_cell:
             fout.write('SPACE_GROUP_NUMBER=1\n')

@@ -13,6 +13,8 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
 
     with open('INTEGRATE.INP', 'w') as fout:
         for k in sorted(xds_inp):
+            if 'SEGMENT' in k:
+                continue
             v = xds_inp[k]
             if type(v) == list:
                 for _v in v:
