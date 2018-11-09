@@ -145,11 +145,8 @@ class FastDP:
         if template.split('.')[-1] != 'h5':
             directory, template = os.path.split(template.replace('?', '#'))
             matching = find_matching_images(template, directory)
-
-
-            for j in range(min(matching), max(matching)):
-                if not j in matching:
-                    missing.append(j)
+            every = set(range(min(matching), max(matching) + 1))
+            missing = list(sorted(every - set(matching)))
 
         return missing
 
@@ -223,8 +220,7 @@ class FastDP:
                 self._xds_inp['STARTING_FRAME'] = str(start)
 
         if not self._last_image is None:
-            if end > self._last_image:
-                end = self._last_image
+            end = min(end, self._last_image)
 
         self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
 
@@ -232,8 +228,7 @@ class FastDP:
         # this should be jobs of a minimum of 5 degrees, 10 frames.
 
         wedge = max(10, int(round(5.0 / osc)))
-        if wedge > end - start:
-            wedge = end - start
+        wedge = min(wedge, end - start)
 
         self._xds_inp['BACKGROUND_RANGE'] = '%d %d' % (start, start + wedge)
 

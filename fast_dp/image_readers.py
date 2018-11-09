@@ -89,9 +89,9 @@ def XDS_INP_to_dict(inp_text):
             for j in range(useful.count('=')):
                 key = tokens[2*j].strip()
                 value = tokens[2*j+1].strip()
-                # handle multiple's gracelessly
+                # handle multiples gracelessly
                 if key in result:
-                    if type(result[key]) is str:
+                    if not isinstance(result[key], list):
                         result[key] = [result[key]]
                         result[key].append(value)
                     else:
@@ -102,9 +102,9 @@ def XDS_INP_to_dict(inp_text):
             tokens = useful.split('=')
             key = tokens[0].strip()
             value = tokens[1].strip()
-            # handle multiple's gracelessly
+            # handle multiples gracelessly
             if key in result:
-                if type(result[key]) is str:
+                if not isinstance(result[key], list):
                     result[key] = [result[key]]
                     result[key].append(value)
                 else:

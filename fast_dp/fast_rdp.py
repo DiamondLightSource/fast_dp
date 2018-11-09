@@ -114,8 +114,7 @@ class FastRDP:
                 self._xds_inp['STARTING_FRAME'] = str(start)
 
         if not self._last_image is None:
-            if end > self._last_image:
-                end = self._last_image
+            end = min(end, self._last_image)
 
         self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
 
