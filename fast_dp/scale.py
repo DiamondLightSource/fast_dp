@@ -20,7 +20,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
             if 'SEGMENT' in k:
                 continue
             v = xds_inp[k]
-            if type(v) == list:
+            if instance(v, list):
                 for _v in v:
                     fout.write('%s=%s\n' % (k, _v))
             else:
