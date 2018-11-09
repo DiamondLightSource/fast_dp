@@ -62,9 +62,9 @@ class FastRDP:
     def set_atom(self, atom):
         '''Set the heavy atom, if appropriate.'''
 
-        assert(self._metadata)
+        assert(self._params)
 
-        self._metadata['atom'] = atom
+        self._params['atom'] = atom
 
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
@@ -102,30 +102,34 @@ class FastRDP:
 
         # check input frame limits
 
+        start, end = map(int, self._xds_inp['DATA_RANGE'].split())
+        osc = float(self._xds_inp['OSCILLATION_RANGE'])
+        osc_start = float(self._xds_inp['STARTING_ANGLE'])
+
         if not self._first_image is None:
-            if self._metadata['start'] < self._first_image:
-                start = self._metadata['start']
-                self._metadata['start'] = self._first_image
-                self._metadata['phi_start'] += self._metadata['phi_width'] * \
-                                               (self._first_image - start)
+            if start < self._first_image:
+                osc_start += osc * (self._first_image - start)
+                start = self._first_image
+                self._xds_inp['STARTING_ANGLE'] = str(osc_start)
+                self._xds_inp['STARTING_FRAME'] = str(start)
 
         if not self._last_image is None:
-            if self._metadata['end'] > self._last_image:
-                self._metadata['end'] = self._last_image
+            if end > self._last_image:
+                end = self._last_image
+
+        self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
 
         step_time = time.time()
 
-        write('Processing images: %d -> %d' % (self._metadata['start'],
-                                               self._metadata['end']))
+        write('Processing images: %d -> %d' % (start, end))
 
-        phi_end = self._metadata['phi_start'] + self._metadata['phi_width'] * \
-                  (self._metadata['end'] - self._metadata['start'] + 1)
+        osc_end = osc_start + (end - start + 1) * osc
+        write('Rotation range: %.2f -> %.2f' % (osc_start, osc_end))
 
-        write('Phi range: %.2f -> %.2f' % (self._metadata['phi_start'],
-                                           phi_end))
+        template = self._xds_inp['NAME_TEMPLATE_OF_DATA_FRAMES']
 
-        write('Template: %s' % self._metadata['template'])
-        write('Wavelength: %.5f' % self._metadata['wavelength'])
+        write('Template: %s' % os.path.split(template)[-1].replace('?', '#'))
+        write('Wavelength: %.5f' % float(self._xds_inp['X-RAY_WAVELENGTH']))
         write('Working in: %s' % os.getcwd())
 
         # just for information for the user, print all options for indexing
@@ -150,13 +154,7 @@ class FastRDP:
                 cell[3], cell[4], cell[5]))
 
         try:
-
-            # FIXME in here will need a mechanism to take the input
-            # spacegroup, determine the corresponding pointgroup
-            # and then apply this (or verify that it is allowed then
-            # select)
-
-            metadata = copy.deepcopy(self._metadata)
+            metadata = copy.deepcopy(self._xds_inp)
 
             cell, sg_num, resol = decide_pointgroup(
                 self._p1_unit_cell, metadata,
@@ -173,17 +171,16 @@ class FastRDP:
 
         try:
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
-            scale(self._unit_cell, self._metadata, self._space_group_number, \
+            scale(self._unit_cell, self._xds_inp, self._space_group_number, \
                    self._resolution_high)
-            self._refined_beam = (self._metadata['pixel'][1] * beam_pixels[1],
-                                  self._metadata['pixel'][0] * beam_pixels[0])
+            self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
+                                  beam_pixels[0] * float(self._xds_inp['QX']))
 
         except RuntimeError as e:
             write('Scaling error: %s' % e)
             return
 
         try:
-            n_images = self._metadata['end'] - self._metadata['start'] + 1
             self._xml_results = merge(hklout='fast_rdp.mtz',
                                       aimless_log='aimless_rerun.log')
         except RuntimeError as e:
@@ -210,8 +207,6 @@ class FastRDP:
 
 def main():
     '''Main routine for fast_rdp.'''
-
-    os.environ['FAST_DP_FORKINTEGRATE'] = '1'
 
     from optparse import OptionParser
 

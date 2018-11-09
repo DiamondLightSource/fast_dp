@@ -217,8 +217,8 @@ class FastDP:
 
         if not self._first_image is None:
             if start < self._first_image:
-                start = self._first_image
                 osc_start += osc * (self._first_image - start)
+                start = self._first_image
                 self._xds_inp['STARTING_ANGLE'] = str(osc_start)
                 self._xds_inp['STARTING_FRAME'] = str(start)
 
@@ -279,12 +279,6 @@ class FastDP:
             return
 
         try:
-
-            # FIXME in here will need a mechanism to take the input
-            # spacegroup, determine the corresponding pointgroup
-            # and then apply this (or verify that it is allowed then
-            # select)
-
             metadata = copy.deepcopy(self._xds_inp)
 
             cell, sg_num, resol = decide_pointgroup(
@@ -304,7 +298,8 @@ class FastDP:
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
             scale(self._unit_cell, self._xds_inp, self._space_group_number, \
                    self._resolution_high)
-            self._refined_beam = (0, 0)
+            self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
+                                  beam_pixels[0] * float(self._xds_inp['QX']))
 
         except RuntimeError as e:
             write('Scaling error: %s' % e)
