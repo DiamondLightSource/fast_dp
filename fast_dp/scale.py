@@ -3,30 +3,39 @@ from __future__ import absolute_import, division, print_function
 import os
 import shutil
 
-from fast_dp.xds_writer import write_xds_inp_correct
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import spacegroup_number_to_name
+from fast_dp.autoindex import segment_text
 
-def scale(unit_cell, metadata, space_group_number, resolution_high):
+def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     '''Perform the scaling with the spacegroup and unit cell calculated
     from pointless and correct. N.B. this scaling is done by CORRECT.'''
 
     assert(unit_cell)
-    assert(metadata)
+    assert(xds_inp)
     assert(space_group_number)
 
-    if resolution_high:
-        resolution_high = resolution_high
-    else:
-        resolution_high = 0.0
+    with open('CORRECT.INP', 'w') as fout:
+        for k in sorted(xds_inp):
+            if 'SEGMENT' in k:
+                continue
+            v = xds_inp[k]
+            if isinstance(v, list):
+                for _v in v:
+                    fout.write('%s=%s\n' % (k, _v))
+            else:
+                fout.write('%s=%s\n' % (k, v))
 
-    xds_inp = 'CORRECT.INP'
+        fout.write('SPACE_GROUP_NUMBER=%d\n' % space_group_number)
+        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+                   tuple(unit_cell))
 
-    write_xds_inp_correct(metadata, unit_cell,
-                          space_group_number, xds_inp,
-                          resolution_high = resolution_high)
+        fout.write('JOB=CORRECT\n')
+        fout.write('REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n')
+        fout.write('INCLUDE_RESOLUTION_RANGE= 100 %f\n' % resolution_high)
+        fout.write('%s\n' % segment_text(xds_inp))
 
-    shutil.copyfile(xds_inp, 'XDS.INP')
+    shutil.copyfile('CORRECT.INP', 'XDS.INP')
 
     run_job('xds_par')
 

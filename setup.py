@@ -21,7 +21,7 @@ setuptools.setup(
 
       install_requires=[],
       packages=['fast_dp'],
-      package_data={'fast_dp': ['templates/*.INP', 'templates/ispyb.xml']},
+      package_data={'fast_dp': ['templates/ispyb.xml']},
 
       entry_points={
         'libtbx.dispatcher.script': [
