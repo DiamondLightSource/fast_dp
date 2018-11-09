@@ -141,7 +141,17 @@ def XDS_INP_to_dict(inp_text):
             # assume tokens of form key=value key=value
             tokens = useful.replace('=', ' ').split()
             for j in range(useful.count('=')):
-                result[tokens[2*j].strip()] = tokens[2*j+1].strip()
+                key = tokens[2*j].strip()
+                value = tokens[2*j+1].strip()
+                # handle multiple's gracelessly
+                if key in result:
+                    if type(result[key]) is str:
+                        result[key] = [result[key]]
+                        result[key].append(value)
+                    else:
+                        result[key].append(value)
+                else:
+                    result[key] = value
         else:
             tokens = useful.split('=')
             key = tokens[0].strip()
