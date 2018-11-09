@@ -33,7 +33,7 @@ def find_hdf5_lib(lib_name=None):
     lib_name = lib_name or 'dectris-neggia.so'
     for d in os.environ['PATH'].split(os.pathsep):
       if os.path.exists(os.path.join(d, 'xds_par')):
-        library = 'LIB=%s\n' % os.path.join(d, lib_name)
+        library = os.path.join(d, lib_name)
         break
     else:
       library = ''
@@ -165,6 +165,12 @@ def XDS_INP_to_dict(inp_text):
                     result[key].append(value)
             else:
                 result[key] = value
+
+    # add neggia-type plugin if needed
+    if result['NAME_TEMPLATE_OF_DATA_FRAMES'].endswith('.h5'):
+        global __lib_name
+        result['LIB'] = find_hdf5_lib(lib_name=__lib_name)
+
     return result
 
 def failover_cbf(cbf_file):
