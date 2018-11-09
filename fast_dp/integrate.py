@@ -5,6 +5,8 @@ import shutil
 
 from fast_dp.run_job import run_job
 
+from fast_dp.autoindex import segment_text
+
 def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     '''Peform the integration with a triclinic basis.'''
 
@@ -24,6 +26,7 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
 
         fout.write('REFINE(INTEGRATE)= POSITION BEAM ORIENTATION CELL\n')
         fout.write('JOB=DEFPIX INTEGRATE\n')
+        fout.write('%s\n' % segment_text(xds_inp))
 
         if n_processors:
             fout.write('MAXIMUM_NUMBER_OF_PROCESSORS=%d\n' % n_processors)

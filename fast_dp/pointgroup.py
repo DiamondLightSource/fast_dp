@@ -11,6 +11,7 @@ from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
     spacegroup_to_lattice, check_spacegroup_name
 
 from fast_dp.logger import write
+from fast_dp.autoindex import segment_text
 
 def decide_pointgroup(p1_unit_cell, xds_inp,
                       input_spacegroup = None):
@@ -45,6 +46,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
 
         fout.write('JOB=CORRECT\n')
         fout.write('REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n')
+        fout.write('%s\n' % segment_text(xds_inp))
 
     shutil.copyfile('P1.INP', 'XDS.INP')
 

@@ -5,6 +5,7 @@ import shutil
 
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import spacegroup_number_to_name
+from fast_dp.autoindex import segment_text
 
 def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     '''Perform the scaling with the spacegroup and unit cell calculated
@@ -32,6 +33,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
         fout.write('JOB=CORRECT\n')
         fout.write('REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n')
         fout.write('INCLUDE_RESOLUTION_RANGE= 100 %f\n' % resolution_high)
+        fout.write('%s\n' % segment_text(xds_inp))
 
     shutil.copyfile('CORRECT.INP', 'XDS.INP')
 
