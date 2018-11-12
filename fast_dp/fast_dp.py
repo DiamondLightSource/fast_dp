@@ -169,9 +169,12 @@ class FastDP:
         self._xds_inp['DETECTOR_DISTANCE'] = distance
 
     def set_atom(self, atom):
-        '''Set the heavy atom, if appropriate.'''
-
-        self._params['atom'] = atom
+        '''Set the heavy atom, if appropriate. Use "-" to unset'''
+        if atom == '-':
+            if 'atom' in self._params:
+                del(self._params['atom'])
+        else:
+            self._params['atom'] = atom
 
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
@@ -196,7 +199,6 @@ class FastDP:
         autoindex, integrate, pointgroup, scale and merge.'''
 
         try:
-
             hostname = os.environ['HOSTNAME'].split('.')[0]
             write('Running on: %s' % hostname)
 
@@ -290,6 +292,10 @@ class FastDP:
             return
 
         try:
+            if self._params.get('atom', None):
+                self._xds_inp['FRIEDEL\'S_LAW'] = 'FALSE'
+            else:
+                self._xds_inp['FRIEDEL\'S_LAW'] = 'TRUE'
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
             scale(self._unit_cell, self._xds_inp, self._space_group_number, \
                    self._resolution_high)

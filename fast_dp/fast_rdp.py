@@ -19,7 +19,7 @@ from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
      generate_primitive_cell
 import fast_dp.output
 
-from fast_dp.image_readers import read_image_metadata, check_file_readable
+from fast_dp.image_readers import check_file_readable
 
 from fast_dp.autoindex import autoindex
 from fast_dp.integrate import integrate
@@ -60,11 +60,12 @@ class FastRDP:
         self._resolution_high = resolution_high
 
     def set_atom(self, atom):
-        '''Set the heavy atom, if appropriate.'''
-
-        assert(self._params)
-
-        self._params['atom'] = atom
+        '''Set the heavy atom, if appropriate. Use "-" to unset'''
+        if atom == '-':
+            if 'atom' in self._params:
+                del(self._params['atom'])
+        else:
+            self._params['atom'] = atom
 
     # N.B. these two methods assume that the input unit cell etc.
     # has already been tested at the option parsing stage...
@@ -169,6 +170,10 @@ class FastRDP:
             return
 
         try:
+            if self._params.get('atom', None):
+                self._xds_inp['FRIEDEL\'S_LAW'] = 'FALSE'
+            else:
+                self._xds_inp['FRIEDEL\'S_LAW'] = 'TRUE'
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
             scale(self._unit_cell, self._xds_inp, self._space_group_number, \
                    self._resolution_high)
