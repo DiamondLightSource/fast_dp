@@ -483,19 +483,22 @@ def main():
         finst.process()
 
     except Exception as e:
-        traceback.print_exc(file = open('fast_dp.error', 'w'))
+        with open('fast_dp.error', 'w') as fh:
+            traceback.print_exc(file=fh)
         write('Fast DP error: %s' % str(e))
+        sys.exit(1)
 
-    json_stuff = { }
-    for prop in dir(finst):
-        ignore = []
-        if not prop.startswith('_') or prop.startswith('__'):
-            continue
-        if prop in ignore:
-            continue
-        json_stuff[prop] = getattr(finst, prop)
-    with open('fast_dp.state', 'wb') as fh:
-      json.dump(json_stuff, fh)
+    finally:
+        json_stuff = { }
+        for prop in dir(finst):
+            ignore = []
+            if not prop.startswith('_') or prop.startswith('__'):
+                continue
+            if prop in ignore:
+                continue
+            json_stuff[prop] = getattr(finst, prop)
+        with open('fast_dp.state', 'wb') as fh:
+          json.dump(json_stuff, fh)
 
 if __name__ == '__main__':
     main()
