@@ -80,7 +80,7 @@ class FastDP:
         # two additional results
 
         self._nref = 0
-        self._xml_results = None
+        self._scaling_statistics = None
         self._refined_beam = (0, 0)
 
     def set_n_jobs(self, n_jobs):
@@ -307,7 +307,7 @@ class FastDP:
             return
 
         try:
-            self._xml_results = merge()
+            self._scaling_statistics = merge()
         except RuntimeError as e:
             write('Merging error: %s' % e)
             return
@@ -326,7 +326,7 @@ class FastDP:
         # write out json and xml
         for func in (fast_dp.output.write_json, fast_dp.output.write_ispyb_xml):
           func(self._commandline, self._space_group,
-               self._unit_cell, self._xml_results,
+               self._unit_cell, self._scaling_statistics,
                self._start_image, self._refined_beam)
 
 def main():

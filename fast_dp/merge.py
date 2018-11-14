@@ -1,8 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-from fast_dp.run_job import run_job
-
 from fast_dp.logger import write
+from fast_dp.run_job import run_job
 
 def anomalous_signals(hklin):
     '''
@@ -48,24 +47,18 @@ def merge(hklout='fast_dp.mtz', aimless_log='aimless.log'):
                    'anomalous on', 'cycles 0', 'output unmerged',
                    'sdcorrection norefine full 1 0 0'])
 
-    fout = open(aimless_log, 'w')
-
-    for record in log:
-        fout.write(record)
-
-    fout.close()
+    with open(aimless_log, 'w') as fout:
+        for record in log:
+            fout.write(record)
 
     # check for errors
-
     for record in log:
         if '!!!! No data !!!!' in record:
             raise RuntimeError('aimless complains no data')
 
-
     return parse_aimless_log(log)
 
 def parse_aimless_log(log):
-
     for record in log:
         if 'Low resolution limit  ' in record:
             lres = tuple(map(float, record.split()[-3:]))
@@ -96,55 +89,29 @@ def parse_aimless_log(log):
         elif 'Mn(I) half-set correlation CC(1/2)' in record:
             cchalf = tuple(map(float, record.split()[-3:]))
 
-    # copy to internal storage for XML output
-    xml_results = {}
-    xml_results['rmerge_overall'] = rmerge[0]
-    xml_results['rmeas_overall'] = rmeas[0]
-    xml_results['resol_high_overall'] = hres[0]
-    xml_results['resol_low_overall'] = lres[0]
-    xml_results['isigma_overall'] = isigma[0]
-    xml_results['completeness_overall'] = comp[0]
-    xml_results['multiplicity_overall'] = mult[0]
-    xml_results['acompleteness_overall'] = acomp[0]
-    xml_results['amultiplicity_overall'] = amult[0]
-    xml_results['cchalf_overall'] = cchalf[0]
-    xml_results['ccanom_overall'] = ccanom[0]
-    xml_results['nref_overall'] = nref[0]
-    xml_results['nunique_overall'] = nuniq[0]
-
-    xml_results['rmerge_inner'] = rmerge[1]
-    xml_results['rmeas_inner'] = rmeas[1]
-    xml_results['resol_high_inner'] = hres[1]
-    xml_results['resol_low_inner'] = lres[1]
-    xml_results['isigma_inner'] = isigma[1]
-    xml_results['completeness_inner'] = comp[1]
-    xml_results['multiplicity_inner'] = mult[1]
-    xml_results['acompleteness_inner'] = acomp[1]
-    xml_results['amultiplicity_inner'] = amult[1]
-    xml_results['cchalf_inner'] = cchalf[1]
-    xml_results['ccanom_inner'] = ccanom[1]
-    xml_results['nref_inner'] = nref[1]
-    xml_results['nunique_inner'] = nuniq[1]
-
-    xml_results['rmerge_outer'] = rmerge[2]
-    xml_results['rmeas_outer'] = rmeas[2]
-    xml_results['resol_high_outer'] = hres[2]
-    xml_results['resol_low_outer'] = lres[2]
-    xml_results['isigma_outer'] = isigma[2]
-    xml_results['completeness_outer'] = comp[2]
-    xml_results['multiplicity_outer'] = mult[2]
-    xml_results['acompleteness_outer'] = acomp[2]
-    xml_results['amultiplicity_outer'] = amult[2]
-    xml_results['cchalf_outer'] = cchalf[2]
-    xml_results['ccanom_outer'] = ccanom[2]
-    xml_results['nref_outer'] = nref[2]
-    xml_results['nunique_outer'] = nuniq[2]
+    scaling_statistics = {
+        shell: {
+            'anom_completeness': acomp[index],
+            'anom_multiplicity': amult[index],
+            'cc_anom': ccanom[index],
+            'cc_half': cchalf[index],
+            'completeness': comp[index],
+            'mean_i_sig_i': isigma[index],
+            'multiplicity': mult[index],
+            'n_tot_obs': nref[index],
+            'n_tot_unique_obs': nuniq[index],
+            'r_meas_within_iplusi_minus': rmeas[index],
+            'r_merge': rmerge[index],
+            'res_lim_high': hres[index],
+            'res_lim_low': lres[index],
+        }
+        for index, shell in enumerate(('overall', 'innerShell', 'outerShell'))
+    }
 
     # compute some additional results
-
     df_f, di_sigdi = anomalous_signals('fast_dp.mtz')
-    # print out the results...
 
+    # print out the results...
     write(80 * '-')
 
     write('%20s ' % 'Low resolution'     + '%6.2f %6.2f %6.2f' % lres)
@@ -165,9 +132,8 @@ def parse_aimless_log(log):
 
     write(80 * '-')
 
-    return xml_results
+    return scaling_statistics
 
 if __name__ == '__main__':
-
     import sys
     parse_aimless_log(open(sys.argv[1]).readlines())

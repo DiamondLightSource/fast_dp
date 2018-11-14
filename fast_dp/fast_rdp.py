@@ -185,7 +185,7 @@ class FastRDP:
             return
 
         try:
-            self._xml_results = merge(hklout='fast_rdp.mtz',
+            self._scaling_statistics = merge(hklout='fast_rdp.mtz',
                                       aimless_log='aimless_rerun.log')
         except RuntimeError as e:
             write('Merging error: %s' % e)
@@ -205,7 +205,7 @@ class FastRDP:
         for func, filename in [ (fast_dp.output.write_json, 'fast_rdp.json'),
                                 (fast_dp.output.write_ispyb_xml, 'fast_rdp.xml') ]:
           func(self._commandline, self._space_group,
-               self._unit_cell, self._xml_results,
+               self._unit_cell, self._scaling_statistics,
                self._start_image, self._refined_beam,
                filename=filename)
 
