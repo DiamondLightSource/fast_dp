@@ -2,7 +2,7 @@
 History
 =======
 
-2.0.0 (2018-??-??)
+1.1.0 (2018-11-15)
 ------------------
 
 * fast_dp.json format has changed. Scaling statistics are now
