@@ -212,6 +212,23 @@ run
 
 in the source directory.
 
+Coding Standards
+^^^^^^^^^^^^^^^^
+
+With prejudice the style guide for fast_dp is exactly PEP8; as
+enforced from
+https://github.com/DiamondLightSource/fast_dp/commit/af0e99c44a8bac0fdf8be372fa3cdd98270d36ab
+with autopep8. In a libtbx environment:
+
+::
+   libtbx.pip install autopep8
+   libtbx.refresh
+   libtbx.autopep8 --in-place -a -a `find . -name '*py'`
+
+which seems to leave the code in a working state - developers are
+advised to do this before committing code in order to clean up the
+differences.
+
 Assumptions
 -----------
 
