@@ -221,6 +221,7 @@ https://github.com/DiamondLightSource/fast_dp/commit/af0e99c44a8bac0fdf8be372fa3
 with autopep8. In a libtbx environment:
 
 ::
+
   libtbx.pip install autopep8
   libtbx.refresh
   libtbx.autopep8 --in-place -a -a `find . -name '*py'`
