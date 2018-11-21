@@ -69,7 +69,7 @@ def parse_aimless_log(log):
             hres = tuple(map(float, record.split()[-3:]))
         elif 'Rmerge  (within I+/I-)  ' in record:
             rmerge = tuple(map(float, record.split()[-3:]))
-        elif 'Rmeas (within I+/I-) ' in record:
+        elif 'Rmeas (all I+ & I-) ' in record:
             rmeas = tuple(map(float, record.split()[-3:]))
         elif 'Mean((I)/sd(I))  ' in record:
             isigma = tuple(map(float, record.split()[-3:]))
@@ -103,7 +103,7 @@ def parse_aimless_log(log):
             'multiplicity': mult[index],
             'n_tot_obs': nref[index],
             'n_tot_unique_obs': nuniq[index],
-            'r_meas_within_iplusi_minus': rmeas[index],
+            'r_meas_all_iplusi_minus': rmeas[index],
             'r_merge': rmerge[index],
             'res_lim_high': hres[index],
             'res_lim_low': lres[index],

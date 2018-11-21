@@ -37,7 +37,7 @@
 <AutoProcScalingStatistics>
 <scalingStatisticsType>overall</scalingStatisticsType>
 <rMerge>{scaling_statistics[overall][r_merge]:f}</rMerge>
-<rMeasAllIPlusIMinus>{scaling_statistics[overall][r_meas_within_iplusi_minus]:f}</rMeasAllIPlusIMinus>
+<rMeasAllIPlusIMinus>{scaling_statistics[overall][r_meas_all_iplusi_minus]:f}</rMeasAllIPlusIMinus>
 <resolutionLimitLow>{scaling_statistics[overall][res_lim_low]:f}</resolutionLimitLow>
 <resolutionLimitHigh>{scaling_statistics[overall][res_lim_high]:f}</resolutionLimitHigh>
 <meanIOverSigI>{scaling_statistics[overall][mean_i_sig_i]:f}</meanIOverSigI>
@@ -54,7 +54,7 @@
 <AutoProcScalingStatistics>
 <scalingStatisticsType>innerShell</scalingStatisticsType>
 <rMerge>{scaling_statistics[innerShell][r_merge]:f}</rMerge>
-<rMeasAllIPlusIMinus>{scaling_statistics[innerShell][r_meas_within_iplusi_minus]:f}</rMeasAllIPlusIMinus>
+<rMeasAllIPlusIMinus>{scaling_statistics[innerShell][r_meas_all_iplusi_minus]:f}</rMeasAllIPlusIMinus>
 <resolutionLimitLow>{scaling_statistics[innerShell][res_lim_low]:f}</resolutionLimitLow>
 <resolutionLimitHigh>{scaling_statistics[innerShell][res_lim_high]:f}</resolutionLimitHigh>
 <meanIOverSigI>{scaling_statistics[innerShell][mean_i_sig_i]:f}</meanIOverSigI>
@@ -71,7 +71,7 @@
 <AutoProcScalingStatistics>
 <scalingStatisticsType>outerShell</scalingStatisticsType>
 <rMerge>{scaling_statistics[outerShell][r_merge]:f}</rMerge>
-<rMeasAllIPlusIMinus>{scaling_statistics[outerShell][r_meas_within_iplusi_minus]:f}</rMeasAllIPlusIMinus>
+<rMeasAllIPlusIMinus>{scaling_statistics[outerShell][r_meas_all_iplusi_minus]:f}</rMeasAllIPlusIMinus>
 <resolutionLimitLow>{scaling_statistics[outerShell][res_lim_low]:f}</resolutionLimitLow>
 <resolutionLimitHigh>{scaling_statistics[outerShell][res_lim_high]:f}</resolutionLimitHigh>
 <meanIOverSigI>{scaling_statistics[outerShell][mean_i_sig_i]:f}</meanIOverSigI>
