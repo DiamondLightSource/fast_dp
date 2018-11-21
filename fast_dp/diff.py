@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function
 
+
 def XDS_INP_to_dict(inp_text):
-    result = { }
+    result = {}
     for record in inp_text.split('\n'):
         useful = record.split('!')[0].strip()
         if not useful:
@@ -10,8 +11,8 @@ def XDS_INP_to_dict(inp_text):
             # assume tokens of form key=value key=value
             tokens = useful.replace('=', ' ').split()
             for j in range(useful.count('=')):
-                key = tokens[2*j].strip()
-                value = tokens[2*j+1].strip()
+                key = tokens[2 * j].strip()
+                value = tokens[2 * j + 1].strip()
                 # handle multiples gracelessly
                 if key in result:
                     if not isinstance(result[key], list):
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     import sys
 
     if len(sys.argv) != 3:
-        raise RuntimeError, '%s XDS.INP ../other/XDS.INP' % sys.argv[1]
+        raise RuntimeError('%s XDS.INP ../other/XDS.INP' % sys.argv[1])
 
     a = XDS_INP_to_dict(open(sys.argv[1]).read())
     b = XDS_INP_to_dict(open(sys.argv[2]).read())

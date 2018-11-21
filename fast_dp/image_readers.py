@@ -6,9 +6,10 @@ import time
 from fast_dp.logger import write
 
 from fast_dp.image_names import image2template_directory, \
-     find_matching_images, template_directory_number2image
+    find_matching_images, template_directory_number2image
 
 from fast_dp.run_job import run_job
+
 
 def check_file_readable(filename):
     '''Check that the file filename exists and that it can be read. Returns
@@ -22,63 +23,72 @@ def check_file_readable(filename):
 
     return
 
+
 def get_dectris_serial_no(record):
-    if not 'S/N' in record:
+    if 'S/N' not in record:
         return '0'
     tokens = record.split()
     return tokens[tokens.index('S/N') + 1]
 
+
 def find_hdf5_lib(lib_name=None):
-  if not hasattr(find_hdf5_lib, 'cache'):
-    lib_name = lib_name or 'dectris-neggia.so'
-    for d in os.environ['PATH'].split(os.pathsep):
-      if os.path.exists(os.path.join(d, lib_name)):
-        library = os.path.join(d, lib_name)
-        break
-    else:
-      library = ''
-    setattr(find_hdf5_lib, 'cache', library)
-  return getattr(find_hdf5_lib, 'cache')
+    if not hasattr(find_hdf5_lib, 'cache'):
+        lib_name = lib_name or 'dectris-neggia.so'
+        for d in os.environ['PATH'].split(os.pathsep):
+            if os.path.exists(os.path.join(d, lib_name)):
+                library = os.path.join(d, lib_name)
+                break
+        else:
+            library = ''
+        setattr(find_hdf5_lib, 'cache', library)
+    return getattr(find_hdf5_lib, 'cache')
+
 
 try:
-  import bz2
-except: # intentional
-  bz2 = None
+    import bz2
+except BaseException:  # intentional
+    bz2 = None
 
 try:
-  import gzip
-except: # intentional
-  gzip = None
+    import gzip
+except BaseException:  # intentional
+    gzip = None
+
 
 def is_bz2(filename):
-  if not '.bz2' in filename[-4:]:
-    return False
-  return 'BZh' in open(filename, 'rb').read(3)
+    if '.bz2' not in filename[-4:]:
+        return False
+    return 'BZh' in open(filename, 'rb').read(3)
+
 
 def is_gzip(filename):
-  if not '.gz' in filename[-3:]:
-    return False
-  magic = open(filename, 'rb').read(2)
-  return ord(magic[0]) == 0x1f and ord(magic[1]) == 0x8b
+    if '.gz' not in filename[-3:]:
+        return False
+    magic = open(filename, 'rb').read(2)
+    return ord(magic[0]) == 0x1f and ord(magic[1]) == 0x8b
+
 
 def open_file(filename, mode='rb', url=False):
-  if is_bz2(filename):
-    if bz2 is None:
-      raise RuntimeError('bz2 file provided without bz2 module')
-    fh_func = lambda: bz2.BZ2File(filename, mode)
+    if is_bz2(filename):
+        if bz2 is None:
+            raise RuntimeError('bz2 file provided without bz2 module')
 
-  elif is_gzip(filename):
-    if gzip is None:
-      raise RuntimeError('gz file provided without gzip module')
-    fh_func = lambda: gzip.GzipFile(filename, mode)
+        def fh_func(): return bz2.BZ2File(filename, mode)
 
-  else:
-    fh_func = lambda: open(filename, mode)
+    elif is_gzip(filename):
+        if gzip is None:
+            raise RuntimeError('gz file provided without gzip module')
 
-  return fh_func()
+        def fh_func(): return gzip.GzipFile(filename, mode)
+
+    else:
+        def fh_func(): return open(filename, mode)
+
+    return fh_func()
+
 
 def XDS_INP_to_dict(inp_text):
-    result = { }
+    result = {}
     for record in inp_text.split('\n'):
         useful = record.split('!')[0].strip()
         if not useful:
@@ -87,8 +97,8 @@ def XDS_INP_to_dict(inp_text):
             # assume tokens of form key=value key=value
             tokens = useful.replace('=', ' ').split()
             for j in range(useful.count('=')):
-                key = tokens[2*j].strip()
-                value = tokens[2*j+1].strip()
+                key = tokens[2 * j].strip()
+                value = tokens[2 * j + 1].strip()
                 # handle multiples gracelessly
                 if key in result:
                     if not isinstance(result[key], list):
@@ -119,11 +129,12 @@ def XDS_INP_to_dict(inp_text):
 
     return result
 
+
 def failover_cbf(cbf_file):
     '''CBF files from the latest update to the PILATUS detector cause a
     segmentation fault in diffdump. This is a workaround.'''
 
-    header = { }
+    header = {}
 
     header['two_theta'] = 0.0
 
@@ -221,7 +232,7 @@ def failover_cbf(cbf_file):
 
         if 'Pixel_size' in record:
             header['pixel'] = 1000 * float(record.split()[2]), \
-                              1000 * float(record.split()[5])
+                1000 * float(record.split()[5])
             continue
 
         if 'Count_cutoff' in record:
@@ -237,7 +248,7 @@ def failover_cbf(cbf_file):
             # for CBF images need to swap these to put in XDS mosflm
             # coordinate frame...
             header['beam'] = beam_pixels[0] * header['pixel'][0], \
-                             beam_pixels[1] * header['pixel'][1]
+                beam_pixels[1] * header['pixel'][1]
 
             continue
 
@@ -250,7 +261,7 @@ def failover_cbf(cbf_file):
             header['date'] = time.asctime(struct_time)
             header['epoch'] = time.mktime(struct_time)
 
-        except:
+        except BaseException:
             pass
 
         try:
@@ -260,7 +271,7 @@ def failover_cbf(cbf_file):
             header['date'] = time.asctime(struct_time)
             header['epoch'] = time.mktime(struct_time)
 
-        except:
+        except BaseException:
             pass
 
         try:
@@ -270,7 +281,7 @@ def failover_cbf(cbf_file):
             header['date'] = time.asctime(struct_time)
             header['epoch'] = time.mktime(struct_time)
 
-        except:
+        except BaseException:
             pass
 
     # cope with vertical goniometer on I24 @ DLS from 2015/1/1
@@ -283,15 +294,19 @@ def failover_cbf(cbf_file):
             header['goniometer_is_vertical'] = True
 
     else:
-        if not 'goniometer_is_vertical' in header:
+        if 'goniometer_is_vertical' not in header:
             header['goniometer_is_vertical'] = False
 
     return header
 
+
 __lib_name = None
+
+
 def set_lib_name(lib_name):
     global __lib_name
     __lib_name = lib_name
+
 
 def read_image_metadata_dxtbx(image):
     '''Read the image header and send back the resulting metadata in a
@@ -334,7 +349,8 @@ def read_image_metadata_dxtbx(image):
 
     # remove things we will want to guarantee we set in fast_dp
     for name in ['BACKGROUND_RANGE', 'SPOT_RANGE', 'JOB']:
-        if name in params: del(params[name])
+        if name in params:
+            del(params[name])
 
     return params
 

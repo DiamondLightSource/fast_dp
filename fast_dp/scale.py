@@ -7,6 +7,7 @@ from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import spacegroup_number_to_name
 from fast_dp.autoindex import segment_text
 
+
 def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     '''Perform the scaling with the spacegroup and unit cell calculated
     from pointless and correct. N.B. this scaling is done by CORRECT.'''
@@ -27,7 +28,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
                 fout.write('%s=%s\n' % (k, v))
 
         fout.write('SPACE_GROUP_NUMBER=%d\n' % space_group_number)
-        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' %
                    tuple(unit_cell))
 
         fout.write('JOB=CORRECT\n')
@@ -44,8 +45,10 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     for step in ['CORRECT']:
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError('error in %s: %s' % \
-                  (step, lastrecord.replace('!!! ERROR !!!', '').strip()))
+            raise RuntimeError(
+                'error in %s: %s' %
+                (step, lastrecord.replace(
+                    '!!! ERROR !!!', '').strip()))
 
     # and get the postrefined cell constants from GXPARM.XDS - but continue
     # to work for the old format too...
@@ -84,7 +87,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     try:
         xdsstat_output = run_job('xdsstat', [], ['XDS_ASCII.HKL'])
         open('xdsstat.log', 'w').write(''.join(xdsstat_output))
-    except:
+    except BaseException:
         pass
 
     return unit_cell, space_group, nref, refined_beam

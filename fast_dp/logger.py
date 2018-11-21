@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
+
 class _writer:
     '''A specialist class to write to the screen and fast_dp.log.'''
 
@@ -30,7 +31,9 @@ class _writer:
         print(record)
         return
 
+
 write = _writer()
+
 
 def set_filename(filename):
     write.set_filename(filename)

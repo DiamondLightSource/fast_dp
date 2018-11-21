@@ -8,6 +8,7 @@ from cctbx.sgtbx import space_group_symbols
 from cctbx.uctbx import unit_cell
 from cctbx.crystal import symmetry
 
+
 def ersatz_pointgroup(spacegroup_name):
     '''Guess the pointgroup for the spacegroup by mapping from short to
     long name, then taking 1st character from each block.'''
@@ -15,7 +16,7 @@ def ersatz_pointgroup(spacegroup_name):
     pg = None
 
     for record in open(
-        os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
+            os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
         if ' ' in record[:1]:
             continue
         if spacegroup_name == record.split()[3]:
@@ -40,6 +41,7 @@ def ersatz_pointgroup(spacegroup_name):
 
     return result
 
+
 def spacegroup_to_lattice(input_spacegroup):
     ''' This generates a lattics from a the imported file bu chopping off
     the first letter of the cell type, changing to lowercase and then
@@ -50,37 +52,46 @@ def spacegroup_to_lattice(input_spacegroup):
             return lattice
         return 'hR'
 
-    mapping = {'TRICLINIC':'a',
-               'MONOCLINIC':'m',
-               'ORTHORHOMBIC':'o',
-               'TETRAGONAL':'t',
-               'TRIGONAL':'h',
-               'HEXAGONAL':'h',
-               'CUBIC':'c'}
+    mapping = {'TRICLINIC': 'a',
+               'MONOCLINIC': 'm',
+               'ORTHORHOMBIC': 'o',
+               'TETRAGONAL': 't',
+               'TRIGONAL': 'h',
+               'HEXAGONAL': 'h',
+               'CUBIC': 'c'}
 
-    if type(input_spacegroup) == type(u''):
+    if isinstance(input_spacegroup, type(u'')):
         input_spacegroup = str(input_spacegroup)
 
-    if type(input_spacegroup) == type(''):
+    if isinstance(input_spacegroup, type('')):
         for record in open(
-            os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
+                os.path.join(
+                    os.environ['CLIBD'],
+                    'symop.lib'),
+                'r').readlines():
             if ' ' in record[:1]:
                 continue
             if input_spacegroup == record.split()[3]:
-                return fix_hH(mapping[record.split()[5]] + record.split()[3][0])
+                return fix_hH(
+                    mapping[record.split()[5]] + record.split()[3][0])
 
-    elif type(input_spacegroup) == type(0):
+    elif isinstance(input_spacegroup, type(0)):
         for record in open(
-            os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
+                os.path.join(
+                    os.environ['CLIBD'],
+                    'symop.lib'),
+                'r').readlines():
             if ' ' in record[:1]:
                 continue
             if input_spacegroup == int(record.split()[0]):
-                return fix_hH(mapping[record.split()[5]] + record.split()[3][0])
+                return fix_hH(
+                    mapping[record.split()[5]] + record.split()[3][0])
 
     else:
         raise RuntimeError('bad type for input: %s' % type(input_spacegroup))
 
     return None
+
 
 def check_spacegroup_name(spacegroup_name):
     '''Will return normalised name if spacegroup name is recognised,
@@ -89,8 +100,8 @@ def check_spacegroup_name(spacegroup_name):
     try:
         j = int(spacegroup_name)
         if j > 230 or j <= 0:
-            raise RuntimeError('spacegroup number nonsense: %s' \
-                  % spacegroup_name)
+            raise RuntimeError('spacegroup number nonsense: %s'
+                               % spacegroup_name)
         return spacegroup_number_to_name(j)
 
     except ValueError:
@@ -99,13 +110,14 @@ def check_spacegroup_name(spacegroup_name):
     found_spacegroup = None
 
     for record in open(
-        os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
+            os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
         if ' ' in record[:1]:
             continue
         if spacegroup_name == record.split()[3]:
             return spacegroup_name
 
     raise RuntimeError('spacegroup name "%s" not recognised' % spacegroup_name)
+
 
 def check_split_cell(cell_string):
     '''Will return tuple of floats a, b, c, alpha, beta, gamma from input
@@ -115,13 +127,14 @@ def check_split_cell(cell_string):
     ideal_string = 'a,b,c,alpha,beta,gamma'
 
     if not cell_string.count(',') == 5:
-        raise RuntimeError('%s should be of the form %s' % \
-              (cell_string, ideal_string))
+        raise RuntimeError('%s should be of the form %s' %
+                           (cell_string, ideal_string))
 
     a, b, c, alpha, beta, gamma = tuple(
         map(float, cell_string.split(',')))
 
     return a, b, c, alpha, beta, gamma
+
 
 def constrain_cell(lattice_class, cell):
     '''Constrain cell to fit lattice class x.'''
@@ -146,13 +159,14 @@ def constrain_cell(lattice_class, cell):
 
     raise RuntimeError('lattice class not recognised: %s' % lattice_class)
 
+
 def spacegroup_number_to_name(spg_num):
     '''Convert a spacegroup number to a more readable name.'''
 
-    database = { }
+    database = {}
 
     for record in open(
-        os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
+            os.path.join(os.environ['CLIBD'], 'symop.lib'), 'r').readlines():
         if ' ' in record[:1]:
             continue
         number = int(record.split()[0])
@@ -161,17 +175,19 @@ def spacegroup_number_to_name(spg_num):
 
     return database[spg_num]
 
+
 def lattice_to_spacegroup(lattice):
     ''' Converts a lattice to the spacegroup with the lowest symmetry
     possible for that lattice'''
     l2s = {
-        'aP':1,   'mP':3,   'mC':5,   'mI':5,
-        'oP':16,  'oC':21,  'oI':23,  'oF':22,
-        'tP':75,  'tI':79,  'hP':143, 'hR':146,
-        'hH':146, 'cP':195, 'cF':196, 'cI':197
-        }
+        'aP': 1, 'mP': 3, 'mC': 5, 'mI': 5,
+        'oP': 16, 'oC': 21, 'oI': 23, 'oF': 22,
+        'tP': 75, 'tI': 79, 'hP': 143, 'hR': 146,
+        'hH': 146, 'cP': 195, 'cF': 196, 'cI': 197
+    }
 
     return l2s[lattice]
+
 
 def lauegroup_to_lattice(lauegroup):
     '''Convert a Laue group representation (from pointless, e.g. I m m m)
@@ -224,17 +240,19 @@ def lauegroup_to_lattice(lauegroup):
 
     return lauegroup_to_lattice[updated_laue]
 
+
 def generate_primitive_cell(unit_cell_constants, space_group_name):
     '''For a given set of unit cell constants and space group, determine the
     corresponding primitive unit cell...'''
 
     uc = unit_cell(unit_cell_constants)
     sg = space_group(space_group_symbols(space_group_name).hall())
-    cs = symmetry(unit_cell = uc,
-                  space_group = sg)
+    cs = symmetry(unit_cell=uc,
+                  space_group=sg)
     csp = cs.change_basis(cs.change_of_basis_op_to_primitive_setting())
 
     return csp.unit_cell()
+
 
 if __name__ == '__main__':
 

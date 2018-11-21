@@ -19,7 +19,7 @@ import traceback
 import fast_dp
 from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
-     generate_primitive_cell
+    generate_primitive_cell
 from fast_dp.image_names import find_matching_images
 import fast_dp.image_readers
 import fast_dp.output
@@ -32,6 +32,7 @@ from fast_dp.pointgroup import decide_pointgroup
 from fast_dp.logger import write
 
 from optparse import SUPPRESS_HELP, OptionParser
+
 
 class FastDP:
     '''A class to implement fast data processing for MX beamlines (at Diamond)
@@ -70,7 +71,7 @@ class FastDP:
         self._last_image = None
 
         # internal data
-        self._params = { }
+        self._params = {}
 
         # these are the resulting not input ones... clarify this?
         self._p1_unit_cell = None
@@ -214,14 +215,14 @@ class FastDP:
         if osc == 0.0:
             raise RuntimeError('grid scan data')
 
-        if not self._first_image is None:
+        if self._first_image is not None:
             if start < self._first_image:
                 osc_start += osc * (self._first_image - start)
                 start = self._first_image
                 self._xds_inp['STARTING_ANGLE'] = str(osc_start)
                 self._xds_inp['STARTING_FRAME'] = str(start)
 
-        if not self._last_image is None:
+        if self._last_image is not None:
             end = min(end, self._last_image)
 
         self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
@@ -259,9 +260,9 @@ class FastDP:
 
         try:
             self._p1_unit_cell = autoindex(self._xds_inp,
-                                           input_cell = self._input_cell_p1)
+                                           input_cell=self._input_cell_p1)
         except Exception as e:
-            traceback.print_exc(file = open('fast_dp.error', 'w'))
+            traceback.print_exc(file=open('fast_dp.error', 'w'))
             write('Autoindexing error: %s' % e)
             return
 
@@ -271,7 +272,7 @@ class FastDP:
                                 self._n_cores)
             write('Mosaic spread: %.2f < %.2f < %.2f' % tuple(mosaics))
         except RuntimeError as e:
-            traceback.print_exc(file = open('fast_dp.error', 'w'))
+            traceback.print_exc(file=open('fast_dp.error', 'w'))
             write('Integration error: %s' % e)
             return
 
@@ -280,7 +281,7 @@ class FastDP:
 
             cell, sg_num, resol = decide_pointgroup(
                 self._p1_unit_cell, metadata,
-                input_spacegroup = self._input_spacegroup)
+                input_spacegroup=self._input_spacegroup)
             self._unit_cell = cell
             self._space_group_number = sg_num
 
@@ -297,8 +298,8 @@ class FastDP:
             else:
                 self._xds_inp['FRIEDEL\'S_LAW'] = 'TRUE'
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
-            scale(self._unit_cell, self._xds_inp, self._space_group_number, \
-                   self._resolution_high)
+                scale(self._unit_cell, self._xds_inp, self._space_group_number,
+                      self._resolution_high)
             self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
                                   beam_pixels[0] * float(self._xds_inp['QX']))
 
@@ -313,7 +314,7 @@ class FastDP:
             return
 
         write('Merging point group: %s' % self._space_group)
-        write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' % \
+        write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %
               self._unit_cell)
 
         duration = time.time() - step_time
@@ -324,10 +325,13 @@ class FastDP:
         write('RPS: %.1f' % (float(self._nref) / duration))
 
         # write out json and xml
-        for func in (fast_dp.output.write_json, fast_dp.output.write_ispyb_xml):
-          func(self._commandline, self._space_group,
-               self._unit_cell, self._scaling_statistics,
-               self._start_image, self._refined_beam)
+        for func in (
+                fast_dp.output.write_json,
+                fast_dp.output.write_ispyb_xml):
+            func(self._commandline, self._space_group,
+                 self._unit_cell, self._scaling_statistics,
+                 self._start_image, self._refined_beam)
+
 
 def main():
     '''Main routine for fast_dp.'''
@@ -340,43 +344,43 @@ def main():
 
     parser.add_option("-?", action="help", help=SUPPRESS_HELP)
 
-    parser.add_option('-b', '--beam', dest = 'beam',
-                      help = 'Beam centre: x, y (mm)')
+    parser.add_option('-b', '--beam', dest='beam',
+                      help='Beam centre: x, y (mm)')
 
-    parser.add_option('-d', '--distance', dest = 'distance',
-                      help = 'Detector distance: d (mm)')
+    parser.add_option('-d', '--distance', dest='distance',
+                      help='Detector distance: d (mm)')
 
-    parser.add_option('-a', '--atom', dest = 'atom',
-                      help = 'Atom type (e.g. Se)')
+    parser.add_option('-a', '--atom', dest='atom',
+                      help='Atom type (e.g. Se)')
 
-    parser.add_option('-j', '--number-of-jobs', dest = 'number_of_jobs',
-                      help = 'Number of jobs for integration')
-    parser.add_option('-k', '--number-of-cores', dest = 'number_of_cores',
-                      help = 'Number of cores for integration')
+    parser.add_option('-j', '--number-of-jobs', dest='number_of_jobs',
+                      help='Number of jobs for integration')
+    parser.add_option('-k', '--number-of-cores', dest='number_of_cores',
+                      help='Number of cores for integration')
     parser.add_option('-J', '--maximum-number-of-jobs',
-                      dest = 'maximum_number_of_jobs',
-                      help = 'Maximum number of jobs for integration')
+                      dest='maximum_number_of_jobs',
+                      help='Maximum number of jobs for integration')
     parser.add_option('-e', '--execution-hosts',
-                      dest = 'execution_hosts',
-                      help = 'names for execution hosts for forkxds')
+                      dest='execution_hosts',
+                      help='names for execution hosts for forkxds')
 
-    parser.add_option('-c', '--cell', dest = 'cell',
-                      help = 'Cell constants for processing, needs spacegroup')
-    parser.add_option('-s', '--spacegroup', dest = 'spacegroup',
-                      help = 'Spacegroup for scaling and merging')
+    parser.add_option('-c', '--cell', dest='cell',
+                      help='Cell constants for processing, needs spacegroup')
+    parser.add_option('-s', '--spacegroup', dest='spacegroup',
+                      help='Spacegroup for scaling and merging')
 
-    parser.add_option('-1', '--first-image', dest = 'first_image',
-                      help = 'First image for processing')
-    parser.add_option('-N', '--last-image', dest = 'last_image',
-                      help = 'First image for processing')
+    parser.add_option('-1', '--first-image', dest='first_image',
+                      help='First image for processing')
+    parser.add_option('-N', '--last-image', dest='last_image',
+                      help='First image for processing')
 
-    parser.add_option('-r', '--resolution-high', dest = 'resolution_high',
-                      help = 'High resolution limit')
-    parser.add_option('-R', '--resolution-low', dest = 'resolution_low',
-                      help = 'Low resolution limit')
+    parser.add_option('-r', '--resolution-high', dest='resolution_high',
+                      help='High resolution limit')
+    parser.add_option('-R', '--resolution-low', dest='resolution_low',
+                      help='Low resolution limit')
 
-    parser.add_option('-l', '--lib-name', dest = 'lib_name',
-                      help = 'HDF5 reader library (i.e. neggia etc.)')
+    parser.add_option('-l', '--lib-name', dest='lib_name',
+                      help='HDF5 reader library (i.e. neggia etc.)')
 
     parser.add_option('--version', dest='version', action='store_true',
                       default=False, help='Print fast_dp version')
@@ -384,25 +388,25 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.version:
-      print('Fast_DP version %s' % fast_dp.__version__)
-      sys.exit(0)
+        print('Fast_DP version %s' % fast_dp.__version__)
+        sys.exit(0)
 
     if len(args) != 1:
-      parser.error("You must point to one image of the dataset to process")
+        parser.error("You must point to one image of the dataset to process")
 
     image = args[0]
 
     xia2_format = re.match(r"^(.*):(\d+):(\d+)$", image)
     if xia2_format:
-      # Image can be given in xia2-style format, ie.
-      #   set_of_images_00001.cbf:1:5000
-      # to select images 1 to 5000. Resolve any conflicts
-      # with -1/-N in favour of the explicit arguments.
-      image = xia2_format.group(1)
-      if not options.first_image:
-        options.first_image = xia2_format.group(2)
-      if not options.last_image:
-        options.last_image = xia2_format.group(3)
+        # Image can be given in xia2-style format, ie.
+        #   set_of_images_00001.cbf:1:5000
+        # to select images 1 to 5000. Resolve any conflicts
+        # with -1/-N in favour of the explicit arguments.
+        image = xia2_format.group(1)
+        if not options.first_image:
+            options.first_image = xia2_format.group(2)
+        if not options.last_image:
+            options.last_image = xia2_format.group(3)
 
     if options.lib_name:
         fast_dp.image_readers.set_lib_name(options.lib_name)
@@ -428,7 +432,10 @@ def main():
 
         if options.execution_hosts:
             finst.set_execution_hosts(options.execution_hosts.split(','))
-            write('Execution hosts: %s' % ' '.join(finst.get_execution_hosts()))
+            write(
+                'Execution hosts: %s' %
+                ' '.join(
+                    finst.get_execution_hosts()))
 
         if options.number_of_jobs:
             if options.maximum_number_of_jobs:
@@ -453,8 +460,8 @@ def main():
             finst.set_last_image(last_image)
 
         if missing:
-            raise RuntimeError('images missing: %s' % \
-                ' '.join(map(str, missing)))
+            raise RuntimeError('images missing: %s' %
+                               ' '.join(map(str, missing)))
 
         if options.resolution_low:
             finst.set_resolution_low(float(options.resolution_low))
@@ -471,7 +478,7 @@ def main():
                 finst.set_input_spacegroup(spacegroup)
                 write('Set spacegroup: %s' % spacegroup)
             except RuntimeError:
-                write('Spacegroup %s not recognised: ignoring' % \
+                write('Spacegroup %s not recognised: ignoring' %
                       options.spacegroup)
 
         if options.cell:
@@ -489,7 +496,7 @@ def main():
         sys.exit(1)
 
     finally:
-        json_stuff = { }
+        json_stuff = {}
         for prop in dir(finst):
             ignore = []
             if not prop.startswith('_') or prop.startswith('__'):
@@ -498,7 +505,8 @@ def main():
                 continue
             json_stuff[prop] = getattr(finst, prop)
         with open('fast_dp.state', 'wb') as fh:
-          json.dump(json_stuff, fh)
+            json.dump(json_stuff, fh)
+
 
 if __name__ == '__main__':
     main()

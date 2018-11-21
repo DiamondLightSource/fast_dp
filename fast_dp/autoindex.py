@@ -10,7 +10,8 @@ from fast_dp.cell_spacegroup import spacegroup_to_lattice
 
 from fast_dp.logger import write
 
-#TODO add pytests for this method
+# TODO add pytests for this method
+
 
 def add_spot_range(xds_inp):
     start, end = map(int, xds_inp['DATA_RANGE'].split())
@@ -27,7 +28,7 @@ def add_spot_range(xds_inp):
         spot_ranges.append('%d %d' % (start, start + wedge - 1))
         spot_ranges.append('%d %d' % (half, half + wedge - 1))
         spot_ranges.append('%d %d' % (int(90.0 / osc) + start,
-                                       int(90.0 / osc) + start + wedge - 1))
+                                      int(90.0 / osc) + start + wedge - 1))
     else:
         half = int((start + end - wedge) / 2)
         spot_ranges.append('%d %d' % (start, start + wedge - 1))
@@ -38,8 +39,9 @@ def add_spot_range(xds_inp):
 
     return xds_inp
 
+
 def segment_text(xds_inp):
-    if not 'SEGMENT' in xds_inp:
+    if 'SEGMENT' not in xds_inp:
         return ''
 
     result = []
@@ -49,10 +51,11 @@ def segment_text(xds_inp):
     for j in range(n):
         for k in 'SEGMENT', 'SEGMENT_DISTANCE', \
             'SEGMENT_ORGX', 'SEGMENT_ORGY', \
-            'DIRECTION_OF_SEGMENT_X-AXIS', 'DIRECTION_OF_SEGMENT_Y-AXIS':
+                'DIRECTION_OF_SEGMENT_X-AXIS', 'DIRECTION_OF_SEGMENT_Y-AXIS':
             result.append('%s=%s' % (k, xds_inp[k][j]))
 
     return '\n'.join(result)
+
 
 def autoindex(xds_inp, input_cell=None):
     '''Perform the autoindexing, using metatdata, get a list of possible
@@ -68,7 +71,7 @@ def autoindex(xds_inp, input_cell=None):
             if 'SEGMENT' in k:
                 continue
             v = xds_inp[k]
-            if type(v) == list:
+            if isinstance(v, list):
                 for _v in v:
                     fout.write('%s=%s\n' % (k, _v))
             else:
@@ -78,7 +81,7 @@ def autoindex(xds_inp, input_cell=None):
 
         if input_cell:
             fout.write('SPACE_GROUP_NUMBER=1\n')
-            fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+            fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' %
                        tuple(input_cell))
 
         fout.write('JOB=XYCORR INIT COLSPOT IDXREF\n')
@@ -98,8 +101,10 @@ def autoindex(xds_inp, input_cell=None):
     for step in ['XYCORR', 'INIT', 'COLSPOT', 'IDXREF']:
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError('error in %s: %s' % \
-                  (step, lastrecord.replace('!!! ERROR !!!', '').strip()))
+            raise RuntimeError(
+                'error in %s: %s' %
+                (step, lastrecord.replace(
+                    '!!! ERROR !!!', '').strip()))
 
     results = read_xds_idxref_lp('IDXREF.LP')
 
@@ -108,14 +113,14 @@ def autoindex(xds_inp, input_cell=None):
     # fixed
 
     write('All autoindexing results:')
-    write('%3s %6s %6s %6s %6s %6s %6s' % \
+    write('%3s %6s %6s %6s %6s %6s %6s' %
           ('Lattice', 'a', 'b', 'c', 'alpha', 'beta', 'gamma'))
 
     for r in reversed(sorted(results)):
-        if not type(r) == type(1):
+        if not isinstance(r, type(1)):
             continue
         cell = results[r][1]
-        write('%7s %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' % \
+        write('%7s %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %
               (spacegroup_to_lattice(r), cell[0], cell[1], cell[2],
                cell[3], cell[4], cell[5]))
 
@@ -123,5 +128,5 @@ def autoindex(xds_inp, input_cell=None):
 
     try:
         return results[1][1]
-    except:
+    except BaseException:
         raise RuntimeError('getting P1 cell for autoindex')

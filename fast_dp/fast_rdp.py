@@ -16,7 +16,7 @@ import traceback
 import fast_dp
 from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import check_spacegroup_name, check_split_cell, \
-     generate_primitive_cell
+    generate_primitive_cell
 import fast_dp.output
 
 from fast_dp.image_readers import check_file_readable
@@ -28,6 +28,7 @@ from fast_dp.merge import merge
 from fast_dp.pointgroup import decide_pointgroup
 from fast_dp.logger import write, set_filename
 set_filename('fast_rdp.log')
+
 
 class FastRDP:
     '''A class to implement fast data processing for MX beamlines (at Diamond)
@@ -107,14 +108,14 @@ class FastRDP:
         osc = float(self._xds_inp['OSCILLATION_RANGE'])
         osc_start = float(self._xds_inp['STARTING_ANGLE'])
 
-        if not self._first_image is None:
+        if self._first_image is not None:
             if start < self._first_image:
                 osc_start += osc * (self._first_image - start)
                 start = self._first_image
                 self._xds_inp['STARTING_ANGLE'] = str(osc_start)
                 self._xds_inp['STARTING_FRAME'] = str(start)
 
-        if not self._last_image is None:
+        if self._last_image is not None:
             end = min(end, self._last_image)
 
         self._xds_inp['DATA_RANGE'] = '%s %s' % (start, end)
@@ -142,23 +143,23 @@ class FastRDP:
         results = read_xds_idxref_lp('IDXREF.LP')
 
         write('For reference, all indexing results:')
-        write('%3s %6s %6s %6s %6s %6s %6s' % \
-            ('Lattice', 'a', 'b', 'c', 'alpha', 'beta', 'gamma'))
+        write('%3s %6s %6s %6s %6s %6s %6s' %
+              ('Lattice', 'a', 'b', 'c', 'alpha', 'beta', 'gamma'))
 
         for r in reversed(sorted(results)):
-            if not type(r) == type(1):
+            if not isinstance(r, type(1)):
                 continue
             cell = results[r][1]
-            write('%7s %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' % \
-                (spacegroup_to_lattice(r), cell[0], cell[1], cell[2],
-                cell[3], cell[4], cell[5]))
+            write('%7s %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %
+                  (spacegroup_to_lattice(r), cell[0], cell[1], cell[2],
+                   cell[3], cell[4], cell[5]))
 
         try:
             metadata = copy.deepcopy(self._xds_inp)
 
             cell, sg_num, resol = decide_pointgroup(
                 self._p1_unit_cell, metadata,
-                input_spacegroup = self._input_spacegroup)
+                input_spacegroup=self._input_spacegroup)
             self._unit_cell = cell
             self._space_group_number = sg_num
 
@@ -175,8 +176,8 @@ class FastRDP:
             else:
                 self._xds_inp['FRIEDEL\'S_LAW'] = 'TRUE'
             self._unit_cell, self._space_group, self._nref, beam_pixels = \
-            scale(self._unit_cell, self._xds_inp, self._space_group_number, \
-                   self._resolution_high)
+                scale(self._unit_cell, self._xds_inp, self._space_group_number,
+                      self._resolution_high)
             self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
                                   beam_pixels[0] * float(self._xds_inp['QX']))
 
@@ -186,13 +187,13 @@ class FastRDP:
 
         try:
             self._scaling_statistics = merge(hklout='fast_rdp.mtz',
-                                      aimless_log='aimless_rerun.log')
+                                             aimless_log='aimless_rerun.log')
         except RuntimeError as e:
             write('Merging error: %s' % e)
             return
 
         write('Merging point group: %s' % self._space_group)
-        write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' % \
+        write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %
               self._unit_cell)
 
         duration = time.time() - step_time
@@ -202,12 +203,13 @@ class FastRDP:
                self._nref))
 
         # write out json and xml
-        for func, filename in [ (fast_dp.output.write_json, 'fast_rdp.json'),
-                                (fast_dp.output.write_ispyb_xml, 'fast_rdp.xml') ]:
-          func(self._commandline, self._space_group,
-               self._unit_cell, self._scaling_statistics,
-               self._start_image, self._refined_beam,
-               filename=filename)
+        for func, filename in [(fast_dp.output.write_json, 'fast_rdp.json'),
+                               (fast_dp.output.write_ispyb_xml, 'fast_rdp.xml')]:
+            func(self._commandline, self._space_group,
+                 self._unit_cell, self._scaling_statistics,
+                 self._start_image, self._refined_beam,
+                 filename=filename)
+
 
 def main():
     '''Main routine for fast_rdp.'''
@@ -218,23 +220,23 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option('-a', '--atom', dest = 'atom',
-                      help = 'Atom type (e.g. Se)')
+    parser.add_option('-a', '--atom', dest='atom',
+                      help='Atom type (e.g. Se)')
 
-    parser.add_option('-c', '--cell', dest = 'cell',
-                      help = 'Cell constants for processing, needs spacegroup')
-    parser.add_option('-s', '--spacegroup', dest = 'spacegroup',
-                      help = 'Spacegroup for scaling and merging')
+    parser.add_option('-c', '--cell', dest='cell',
+                      help='Cell constants for processing, needs spacegroup')
+    parser.add_option('-s', '--spacegroup', dest='spacegroup',
+                      help='Spacegroup for scaling and merging')
 
-    parser.add_option('-1', '--first-image', dest = 'first_image',
-                      help = 'First image for processing')
-    parser.add_option('-N', '--last-image', dest = 'last_image',
-                      help = 'First image for processing')
+    parser.add_option('-1', '--first-image', dest='first_image',
+                      help='First image for processing')
+    parser.add_option('-N', '--last-image', dest='last_image',
+                      help='First image for processing')
 
-    parser.add_option('-r', '--resolution-high', dest = 'resolution_high',
-                      help = 'High resolution limit')
-    parser.add_option('-R', '--resolution-low', dest = 'resolution_low',
-                      help = 'Low resolution limit')
+    parser.add_option('-r', '--resolution-high', dest='resolution_high',
+                      help='High resolution limit')
+    parser.add_option('-R', '--resolution-low', dest='resolution_low',
+                      help='Low resolution limit')
 
     parser.add_option('--version', dest='version', action='store_true',
                       default=False, help='Print fast_dp version')
@@ -296,7 +298,7 @@ def main():
                 fast_rdp.set_input_spacegroup(spacegroup)
                 write('Set spacegroup: %s' % spacegroup)
             except RuntimeError as e:
-                write('Spacegroup %s not recognised: ignoring' % \
+                write('Spacegroup %s not recognised: ignoring' %
                       options.spacegroup)
 
         if options.cell:
@@ -308,8 +310,9 @@ def main():
         fast_rdp.reprocess()
 
     except Exception as e:
-        traceback.print_exc(file = open('fast_rdp.error', 'w'))
+        traceback.print_exc(file=open('fast_rdp.error', 'w'))
         write('Fast RDP error: %s' % str(e))
+
 
 if __name__ == '__main__':
     main()

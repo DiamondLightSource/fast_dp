@@ -7,6 +7,7 @@ from fast_dp.run_job import run_job
 
 from fast_dp.autoindex import segment_text
 
+
 def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     '''Peform the integration with a triclinic basis.'''
 
@@ -18,7 +19,7 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
             if 'SEGMENT' in k:
                 continue
             v = xds_inp[k]
-            if type(v) == list:
+            if isinstance(v, list):
                 for _v in v:
                     fout.write('%s=%s\n' % (k, _v))
             else:
@@ -45,17 +46,17 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
             continue
         lastrecord = open('%s.LP' % step).readlines()[-1]
         if '!!! ERROR !!!' in lastrecord:
-            raise RuntimeError('error in %s: %s' % \
-                  (step, lastrecord.replace(
-                '!!! ERROR !!!', '').strip().lower()))
+            raise RuntimeError('error in %s: %s' %
+                               (step, lastrecord.replace(
+                                   '!!! ERROR !!!', '').strip().lower()))
 
     if not os.path.exists('INTEGRATE.LP'):
         step = 'INTEGRATE'
         for record in open('LP_01.tmp').readlines():
             if '!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE ' in record:
-                raise RuntimeError('error in %s: %s' % \
-                      (step, record.replace(
-                    '!!! ERROR !!!', '').strip().lower()))
+                raise RuntimeError('error in %s: %s' %
+                                   (step, record.replace(
+                                       '!!! ERROR !!!', '').strip().lower()))
             elif '!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp' in record:
                 raise RuntimeError('integration error: cluster error')
 
@@ -64,13 +65,11 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     for step in ['INTEGRATE']:
         for record in open('%s.LP' % step).readlines():
             if '!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE ' in record:
-                raise RuntimeError('error in %s: %s' % \
-                      (step, record.replace(
-                    '!!! ERROR !!!', '').strip().lower()))
+                raise RuntimeError('error in %s: %s' %
+                                   (step, record.replace(
+                                       '!!! ERROR !!!', '').strip().lower()))
             elif '!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp' in record:
                 raise RuntimeError('integration error: cluster error')
-
-
 
     # if all was ok, look in the working directory for files named
     # forkintegrate_job.o341858 &c. and remove them. - N.B. this is site
@@ -80,7 +79,7 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
         if 'forkintegrate_job.' in f[:18]:
             try:
                 os.remove(f)
-            except:
+            except BaseException:
                 pass
 
     # get the mosaic spread ranges

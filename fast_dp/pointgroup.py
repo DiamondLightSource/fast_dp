@@ -4,7 +4,7 @@ import os
 import shutil
 
 from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution, \
-     read_xds_correct_lp
+    read_xds_correct_lp
 from fast_dp.pointless_reader import read_pointless_xml
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
@@ -13,8 +13,9 @@ from fast_dp.cell_spacegroup import lattice_to_spacegroup, ersatz_pointgroup, \
 from fast_dp.logger import write
 from fast_dp.autoindex import segment_text
 
+
 def decide_pointgroup(p1_unit_cell, xds_inp,
-                      input_spacegroup = None):
+                      input_spacegroup=None):
     '''Run POINTLESS to get the list of allowed pointgroups (N.B. will
     insist on triclinic symmetry for this scaling step) then run
     pointless on the resulting reflection file to get the idea of the
@@ -41,7 +42,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
                 fout.write('%s=%s\n' % (k, v))
 
         fout.write('SPACE_GROUP_NUMBER=1\n')
-        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' % \
+        fout.write('UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n' %
                    tuple(p1_unit_cell))
 
         fout.write('JOB=CORRECT\n')
@@ -71,8 +72,8 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
 
     pointless_log = run_job(
         'pointless',
-        arguments = ['xdsin', xdsin, 'xmlout', xmlout],
-        stdin = ['systematicabsences off'])
+        arguments=['xdsin', xdsin, 'xmlout', xmlout],
+        stdin=['systematicabsences off'])
 
     fout = open('pointless.log', 'w')
 
@@ -88,7 +89,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
     # select the top solution which is allowed, return this
 
     if input_spacegroup:
-        sg_accepted = False;
+        sg_accepted = False
         pointgroup = ersatz_pointgroup(input_spacegroup)
         if pointgroup.startswith('H'):
             pointgroup = pointgroup.replace('H', 'R')
@@ -96,7 +97,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
         for r in pointless_results:
             result_sg = "".join(check_spacegroup_name(r[1]).split(' '))
             if lattice_to_spacegroup(lattice) in results and \
-                   ersatz_pointgroup(result_sg) == pointgroup :
+                    ersatz_pointgroup(result_sg) == pointgroup:
                 space_group_number = r[1]
                 unit_cell = results[lattice_to_spacegroup(r[0])][1]
                 write('Happy with sg# %d' % space_group_number)
@@ -106,7 +107,7 @@ def decide_pointgroup(p1_unit_cell, xds_inp,
                 break
 
         if not sg_accepted:
-            write('No indexing solution for spacegroup %s so ignoring' % \
+            write('No indexing solution for spacegroup %s so ignoring' %
                   input_spacegroup)
             input_spacegroup = None
 
