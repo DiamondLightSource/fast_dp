@@ -2,6 +2,11 @@
 History
 =======
 
+1.1.1 (2018-11-21)
+------------------
+
+* Write out correct r_meas value in the fast_dp.json file.
+
 1.1.0 (2018-11-15)
 ------------------
 
