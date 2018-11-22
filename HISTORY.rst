@@ -2,6 +2,10 @@
 History
 =======
 
+1.1.2 (2018-11-22)
+------------------
+* Catch case where diffraction strong to edge of detector.
+
 1.1.1 (2018-11-21)
 ------------------
 
