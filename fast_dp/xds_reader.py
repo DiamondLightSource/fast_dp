@@ -92,4 +92,4 @@ def read_correct_lp_get_resolution(correct_lp_file):
     # this will assume that strong reflections go to the edge of the detector
     # => do not need to feed back a resolution limit...
 
-    return None
+    return 0.0
