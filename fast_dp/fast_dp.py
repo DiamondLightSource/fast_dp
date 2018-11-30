@@ -199,12 +199,7 @@ class FastDP:
         '''Main routine, chain together all of the steps imported from
         autoindex, integrate, pointgroup, scale and merge.'''
 
-        try:
-            hostname = os.environ['HOSTNAME'].split('.')[0]
-            write('Running on: %s' % hostname)
-
-        except Exception:
-            pass
+        write("Running on: %s" % str(os.getenv("HOSTNAME")).split(".")[0])
 
         # check input frame limits
 
@@ -261,20 +256,18 @@ class FastDP:
         try:
             self._p1_unit_cell = autoindex(self._xds_inp,
                                            input_cell=self._input_cell_p1)
-        except Exception as e:
-            traceback.print_exc(file=open('fast_dp.error', 'w'))
-            write('Autoindexing error: %s' % e)
-            return
+        except Exception:
+            write("Autoindexing failed")
+            raise
 
         try:
             mosaics = integrate(self._xds_inp, self._p1_unit_cell,
                                 self._resolution_low, self._n_jobs,
                                 self._n_cores)
             write('Mosaic spread: %.2f < %.2f < %.2f' % tuple(mosaics))
-        except RuntimeError as e:
-            traceback.print_exc(file=open('fast_dp.error', 'w'))
-            write('Integration error: %s' % e)
-            return
+        except RuntimeError:
+            write("Integration failed")
+            raise
 
         try:
             metadata = copy.deepcopy(self._xds_inp)
@@ -287,10 +280,9 @@ class FastDP:
 
             if not self._resolution_high:
                 self._resolution_high = resol
-
-        except RuntimeError as e:
-            write('Pointgroup error: %s' % e)
-            return
+        except RuntimeError:
+            write("Pointgroup determination failed")
+            raise
 
         try:
             if self._params.get('atom', None):
@@ -302,16 +294,15 @@ class FastDP:
                       self._resolution_high)
             self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
                                   beam_pixels[0] * float(self._xds_inp['QX']))
-
-        except RuntimeError as e:
-            write('Scaling error: %s' % e)
-            return
+        except RuntimeError:
+            write("Scaling failed")
+            raise
 
         try:
             self._scaling_statistics = merge()
-        except RuntimeError as e:
-            write('Merging error: %s' % e)
-            return
+        except RuntimeError:
+            write("Merging failed")
+            raise
 
         write('Merging point group: %s' % self._space_group)
         write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %

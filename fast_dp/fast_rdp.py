@@ -94,13 +94,7 @@ class FastRDP:
         '''Main routine, chain together last few steps of processing i.e.
         pointgroup, scale and merge.'''
 
-        try:
-
-            hostname = os.environ['HOSTNAME'].split('.')[0]
-            write('Running on: %s' % hostname)
-
-        except Exception:
-            pass
+        write("Running on: %s" % str(os.getenv("HOSTNAME")).split(".")[0])
 
         # check input frame limits
 
@@ -166,9 +160,9 @@ class FastRDP:
             if not self._resolution_high:
                 self._resolution_high = resol
 
-        except RuntimeError as e:
-            write('Pointgroup error: %s' % e)
-            return
+        except RuntimeError:
+            write("Pointgroup determination failed")
+            raise
 
         try:
             if self._params.get('atom', None):
@@ -181,16 +175,16 @@ class FastRDP:
             self._refined_beam = (beam_pixels[1] * float(self._xds_inp['QY']),
                                   beam_pixels[0] * float(self._xds_inp['QX']))
 
-        except RuntimeError as e:
-            write('Scaling error: %s' % e)
-            return
+        except RuntimeError:
+            write("Scaling failed")
+            raise
 
         try:
             self._scaling_statistics = merge(hklout='fast_rdp.mtz',
                                              aimless_log='aimless_rerun.log')
         except RuntimeError as e:
-            write('Merging error: %s' % e)
-            return
+            write("Merging failed")
+            raise
 
         write('Merging point group: %s' % self._space_group)
         write('Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f' %
@@ -265,7 +259,7 @@ def main():
         from_dir = None
 
     try:
-        write('Fast_DP version %s' % fast_dp.__version__)
+        write('Fast_RDP version %s' % fast_dp.__version__)
         fast_rdp = FastRDP()
         fast_rdp._commandline = commandline
         write('Working in: %s' % os.getcwd())
@@ -310,9 +304,10 @@ def main():
         fast_rdp.reprocess()
 
     except Exception as e:
-        traceback.print_exc(file=open('fast_rdp.error', 'w'))
+        with open('fast_rdp.error', 'w') as fh:
+          traceback.print_exc(file=fh)
         write('Fast RDP error: %s' % str(e))
-
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
