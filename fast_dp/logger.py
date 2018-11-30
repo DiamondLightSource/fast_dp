@@ -4,11 +4,11 @@ import os
 
 
 class _writer:
-    '''A specialist class to write to the screen and fast_dp.log.'''
+    """A specialist class to write to the screen and fast_dp.log."""
 
     def __init__(self):
         self._fout = None
-        self._filename = 'fast_dp.log'
+        self._filename = "fast_dp.log"
         return
 
     def set_filename(self, filename):
@@ -25,9 +25,9 @@ class _writer:
 
     def write(self, record):
         if not self._fout:
-            self._fout = open(self._filename, 'w')
+            self._fout = open(self._filename, "w")
 
-        self._fout.write('%s\n' % record)
+        self._fout.write("%s\n" % record)
         print(record)
         return
 
