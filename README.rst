@@ -22,6 +22,10 @@ Fast DP: Fast Data Processsing with XDS
         :target: https://pyup.io/repos/github/DiamondLightSource/fast_dp/
         :alt: Python 3 ready
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+        :target: https://github.com/ambv/black
+        :alt: Code style: black
+
 Introduction
 ------------
 

@@ -42,7 +42,7 @@ def ersatz_pointgroup(spacegroup_name):
 
 
 def spacegroup_to_lattice(input_spacegroup):
-    """ This generates a lattics from a the imported file bu chopping off
+    """This generates a lattice from the imported file but chopping off
     the first letter of the cell type, changing to lowercase and then
     prepending it to the first letter of the spacegroup."""
 
@@ -258,8 +258,6 @@ def generate_primitive_cell(unit_cell_constants, space_group_name):
 
 
 if __name__ == "__main__":
-
     import sys
-
     for token in sys.argv[1:]:
         print(ersatz_pointgroup(token))

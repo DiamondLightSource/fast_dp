@@ -140,7 +140,7 @@ def autoindex(xds_inp, input_cell=None):
             )
         )
 
-    # should probably print this for debuging
+    # should probably print this for debugging
 
     try:
         return results[1][1]
