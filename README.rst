@@ -215,20 +215,19 @@ in the source directory.
 Coding Standards
 ^^^^^^^^^^^^^^^^
 
-With prejudice the style guide for fast_dp is exactly PEP8; as
-enforced from
-https://github.com/DiamondLightSource/fast_dp/commit/af0e99c44a8bac0fdf8be372fa3cdd98270d36ab
-with autopep8. In a libtbx environment:
+With prejudice the style guide for fast_dp is consistent PEP8 as
+implemented by black https://black.readthedocs.io/en/stable/ -
+installation is close to trivial (pip3 install black) and run _with no
+options_ i.e. in fast_dp directory
 
 ::
 
-  libtbx.pip install autopep8
-  libtbx.refresh
-  libtbx.autopep8 --in-place -a -a `find . -name '*py'`
+  black .
 
-which seems to leave the code in a working state - developers are
-advised to do this before committing code in order to clean up the
-differences.
+will do what is needed to return the formatting to the defaults so
+that the diffs show only the code diffs not any formatting
+differences. There is no intention to be heavy handed about this, but
+having a style guide helps developers who contribute as there is no doubt.
 
 Assumptions
 -----------
