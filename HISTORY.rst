@@ -2,6 +2,11 @@
 History
 =======
 
+1.2.0 (2018-12-03)
+------------------
+* fast_dp and fast_rdp return with a non-zero exit code
+  when processing fails.
+
 1.1.2 (2018-11-22)
 ------------------
 * Catch case where diffraction strong to edge of detector.
