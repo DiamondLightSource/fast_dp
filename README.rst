@@ -221,8 +221,8 @@ Coding Standards
 
 With prejudice the style guide for fast_dp is consistent PEP8 as
 implemented by black https://black.readthedocs.io/en/stable/ -
-installation is close to trivial (pip3 install black) and run _with no
-options_ i.e. in fast_dp directory
+installation is close to trivial (pip3 install black) and run *with no
+options* i.e. in fast_dp directory
 
 ::
 
