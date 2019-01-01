@@ -12,4 +12,4 @@ mock==2.0.0
 pytest==4.0.2
 pytest-runner==4.2
 procrunner==0.9.0
-collective.checkdocs
+collective.checkdocs==0.2
