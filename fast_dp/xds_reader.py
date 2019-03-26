@@ -1,11 +1,8 @@
 from __future__ import absolute_import, division, print_function
 
 import re
-import sys
 
 from fast_dp.cell_spacegroup import constrain_cell, lattice_to_spacegroup
-
-from fast_dp.pointless_reader import read_pointless_xml
 
 
 def read_xds_idxref_lp(idxref_lp_file):
@@ -93,3 +90,32 @@ def read_correct_lp_get_resolution(correct_lp_file):
     # => do not need to feed back a resolution limit...
 
     return 0.0
+
+
+def read_xparm_get_refined_beam(xparm_file):
+    import dxtbx
+
+    models = dxtbx.load(xparm_file)
+    detector = models.get_detector()
+    beam = models.get_beam()
+    s0 = beam.get_s0()
+
+    x, y = (None, None)
+    for panel_id, panel in enumerate(detector):
+        try:
+            x, y = panel.get_ray_intersection(s0)
+        except RuntimeError:
+            continue
+        else:
+            if panel.is_coord_valid_mm((x, y)):
+                break
+            else:
+                x, y = (None, None)
+
+    if x is not None and y is not None:
+        panel = detector[panel_id]
+        x_px, y_px = panel.millimeter_to_pixel((x, y))
+        offset = panel.get_raw_image_offset()
+        x, y = (x_px + offset[0], y_px + offset[1])
+
+    return x, y

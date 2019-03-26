@@ -6,6 +6,7 @@ import shutil
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import spacegroup_number_to_name
 from fast_dp.autoindex import segment_text
+from fast_dp.xds_reader import read_xparm_get_refined_beam
 
 
 def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
@@ -71,15 +72,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     # and the total number of good reflections
     nref = 0
 
-    # set the refined beam in case it was not refined correctly in the
-    # global refinement (this probably indicates a bigger problem anyway)
-    refined_beam = 0, 0
-
-    for record in open("CORRECT.LP", "r").readlines():
-        if "NUMBER OF ACCEPTED OBSERVATIONS" in record:
-            nref = int(record.replace(")", ") ").split()[-1])
-        if "DETECTOR COORDINATES (PIXELS) OF DIRECT BEAM" in record:
-            refined_beam = tuple(map(float, record.split()[-2:]))
+    refined_beam = read_xparm_get_refined_beam("GXPARM.XDS")
 
     # hack in xdsstat (but don't cry if it fails)
 
