@@ -2,6 +2,11 @@
 History
 =======
 
+1.3.0 (2018-03-28)
+------------------
+* Report beam centre correctly in ispyb.xml for multi-panel
+  detectors.
+
 1.2.0 (2018-12-03)
 ------------------
 * fast_dp and fast_rdp return with a non-zero exit code
