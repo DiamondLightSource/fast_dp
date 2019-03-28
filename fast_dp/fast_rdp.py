@@ -265,7 +265,7 @@ def main():
         "-1", "--first-image", dest="first_image", help="First image for processing"
     )
     parser.add_option(
-        "-N", "--last-image", dest="last_image", help="First image for processing"
+        "-N", "--last-image", dest="last_image", help="Last image for processing"
     )
 
     parser.add_option(

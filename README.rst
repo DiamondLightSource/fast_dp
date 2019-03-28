@@ -70,7 +70,7 @@ Usage
     -1 FIRST_IMAGE, --first-image=FIRST_IMAGE
                           First image for processing
     -N LAST_IMAGE, --last-image=LAST_IMAGE
-                          First image for processing
+                          Last image for processing
     -r RESOLUTION_HIGH, --resolution-high=RESOLUTION_HIGH
                           High resolution limit
     -R RESOLUTION_LOW, --resolution-low=RESOLUTION_LOW
