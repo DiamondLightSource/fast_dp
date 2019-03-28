@@ -282,13 +282,17 @@ limitations under the License.
 Release Process
 ---------------
 
+Make sure you have written up your changes in the
+`HISTORY.rst <https://github.com/DiamondLightSource/fast_dp/blob/master/HISTORY.rst>`_
+file.
+
 To prepare a new fast_dp release you need to install
-`bumpversion <https://pypi.org/project/bumpversion/>`_,
+`bump2version <https://pypi.org/project/bump2version/>`_,
 for example by running
 
 ::
 
-  pip install bumpversion
+  pip install bump2version
 
 or using ``libtbx.pip`` in an CCTBX environment, followed by a
 ``libtbx.configure``. Releases can then be made by:
