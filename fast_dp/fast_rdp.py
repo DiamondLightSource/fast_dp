@@ -68,7 +68,7 @@ class FastRDP:
         """Set the heavy atom, if appropriate. Use "-" to unset"""
         if atom == "-":
             if "atom" in self._params:
-                del (self._params["atom"])
+                del self._params["atom"]
         else:
             self._params["atom"] = atom
 

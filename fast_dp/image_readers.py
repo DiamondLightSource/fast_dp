@@ -370,7 +370,7 @@ def read_image_metadata_dxtbx(image):
     # remove things we will want to guarantee we set in fast_dp
     for name in ["BACKGROUND_RANGE", "SPOT_RANGE", "JOB"]:
         if name in params:
-            del (params[name])
+            del params[name]
 
     return params
 

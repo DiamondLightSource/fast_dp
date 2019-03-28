@@ -2,7 +2,7 @@
 History
 =======
 
-1.3.0 (2018-03-28)
+1.3.0 (2019-03-28)
 ------------------
 * Report beam centre correctly in ispyb.xml for multi-panel
   detectors.

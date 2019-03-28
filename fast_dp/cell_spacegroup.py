@@ -259,5 +259,6 @@ def generate_primitive_cell(unit_cell_constants, space_group_name):
 
 if __name__ == "__main__":
     import sys
+
     for token in sys.argv[1:]:
         print(ersatz_pointgroup(token))
