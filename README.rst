@@ -32,7 +32,7 @@ Introduction
 Fast DP is a small Python program which uses XDS, CCP4 & CCTBX to deliver
 data processing results very quickly: quite how quickly will depend on the
 operating environment. In essence, the first image in the sweep is passed
-to the program, it's header read and then XDS used to index with a triclinic
+to the program, its header read and then XDS used to index with a triclinic
 lattice using spots drawn from small wedges of data around the start, 45
 degrees in and 90 degrees in (or as close as possible to this). Integration
 is then performed in parallel, either using multiple cores or multiple
@@ -259,7 +259,7 @@ Acknowledgements
 fast_dp was developed at Diamond Light Source with the specific purpose of
 providing feedback to users about the merging statistics of their data in the
 shortest possible time. Clearly, however, it is very much dependent on XDS
-and it's intrinsic parallelisation as well as CCP4 and CCTBX to operate, and
+and its intrinsic parallelisation as well as CCP4 and CCTBX to operate, and
 without these fast_dp could not exist.
 
 License
