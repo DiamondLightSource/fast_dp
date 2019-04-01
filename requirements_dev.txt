@@ -9,7 +9,7 @@ Sphinx==2.0.0
 twine==1.13.0
 
 mock==2.0.0
-pytest==4.3.1
+pytest==4.4.0
 pytest-runner==4.4
 procrunner==0.9.1
 collective.checkdocs==0.2
