@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from cctbx import xray
 from cctbx.sgtbx import space_group
 from cctbx.sgtbx import space_group_symbols
 from cctbx.uctbx import unit_cell
@@ -100,8 +99,6 @@ def check_spacegroup_name(spacegroup_name):
 
     except ValueError:
         pass
-
-    found_spacegroup = None
 
     for record in open(os.path.join(os.environ["CLIBD"], "symop.lib"), "r").readlines():
         if " " in record[:1]:

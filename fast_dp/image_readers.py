@@ -3,15 +3,9 @@ from __future__ import absolute_import, division, print_function
 import os
 import time
 
-from fast_dp.logger import write
-
 from fast_dp.image_names import (
     image2template_directory,
-    find_matching_images,
-    template_directory_number2image,
 )
-
-from fast_dp.run_job import run_job
 
 
 def check_file_readable(filename):
@@ -49,12 +43,12 @@ def find_hdf5_lib(lib_name=None):
 
 try:
     import bz2
-except BaseException:  # intentional
+except ImportError:
     bz2 = None
 
 try:
     import gzip
-except BaseException:  # intentional
+except ImportError:
     gzip = None
 
 

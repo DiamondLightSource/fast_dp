@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-import os
 import shutil
 
 from fast_dp.xds_reader import read_xds_idxref_lp

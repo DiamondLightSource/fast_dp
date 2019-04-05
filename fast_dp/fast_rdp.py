@@ -14,7 +14,6 @@ import copy
 import traceback
 
 import fast_dp
-from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import (
     check_spacegroup_name,
     check_split_cell,
@@ -22,10 +21,6 @@ from fast_dp.cell_spacegroup import (
 )
 import fast_dp.output
 
-from fast_dp.image_readers import check_file_readable
-
-from fast_dp.autoindex import autoindex
-from fast_dp.integrate import integrate
 from fast_dp.scale import scale
 from fast_dp.merge import merge
 from fast_dp.pointgroup import decide_pointgroup

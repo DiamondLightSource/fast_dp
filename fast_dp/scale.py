@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-import os
 import shutil
 
 from fast_dp.run_job import run_job
@@ -65,9 +64,6 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
         unit_cell = tuple(map(float, gxparm[7].split()[1:]))
 
     # FIXME also get the postrefined mosaic spread out...
-
-    space_group = space_group
-    unit_cell = unit_cell
 
     # and the total number of good reflections
     nref = 0

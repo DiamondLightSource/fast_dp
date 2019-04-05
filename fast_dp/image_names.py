@@ -68,13 +68,7 @@ def image2image(filename):
         match = re.compile(pattern).match(filename)
 
         if match:
-            prefix = match.group(1)
             number = match.group(2)
-            try:
-                exten = match.group(3)
-            except BaseException:
-                exten = ""
-
             return int(number)
 
     raise RuntimeError("filename %s not understood as a template" % filename)

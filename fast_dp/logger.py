@@ -1,7 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-import os
-
 
 class _writer:
     """A specialist class to write to the screen and fast_dp.log."""
@@ -9,7 +7,6 @@ class _writer:
     def __init__(self):
         self._fout = None
         self._filename = "fast_dp.log"
-        return
 
     def set_filename(self, filename):
         self._filename = filename
@@ -18,7 +15,6 @@ class _writer:
         if self._fout:
             self._fout.close()
         self._fout = None
-        return
 
     def __call__(self, record):
         self.write(record)
@@ -29,7 +25,6 @@ class _writer:
 
         self._fout.write("%s\n" % record)
         print(record)
-        return
 
 
 write = _writer()
