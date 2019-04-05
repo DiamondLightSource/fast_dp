@@ -26,6 +26,14 @@ Fast DP: Fast Data Processsing with XDS
         :target: https://github.com/ambv/black
         :alt: Code style: black
 
+.. image:: https://img.shields.io/lgtm/grade/python/g/DiamondLightSource/fast_dp.svg?logo=lgtm&logoWidth=18
+        :target: https://lgtm.com/projects/g/DiamondLightSource/fast_dp/context:python
+        :alt: Language grade: Python
+
+.. image:: https://img.shields.io/lgtm/alerts/g/DiamondLightSource/fast_dp.svg?logo=lgtm&logoWidth=18
+        :target: https://lgtm.com/projects/g/DiamondLightSource/fast_dp/alerts/
+        :alt: Total alerts
+
 Introduction
 ------------
 
