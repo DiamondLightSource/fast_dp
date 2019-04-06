@@ -2,10 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import shutil
 
-from fast_dp.xds_reader import (
-    read_xds_idxref_lp,
-    read_correct_lp_get_resolution,
-)
+from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution
 from fast_dp.pointless_reader import read_pointless_xml
 from fast_dp.run_job import run_job
 from fast_dp.cell_spacegroup import (

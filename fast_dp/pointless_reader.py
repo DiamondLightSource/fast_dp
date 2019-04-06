@@ -13,8 +13,6 @@ def read_pointless_xml(pointless_xml_file):
 
     dom = xml.dom.minidom.parse(pointless_xml_file)
 
-    best = dom.getElementsByTagName("BestSolution")[0]
-
     scorelist = dom.getElementsByTagName("LaueGroupScoreList")[0]
     scores = scorelist.getElementsByTagName("LaueGroupScore")
 

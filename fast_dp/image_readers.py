@@ -3,9 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import time
 
-from fast_dp.image_names import (
-    image2template_directory,
-)
+from fast_dp.image_names import image2template_directory
 
 
 def check_file_readable(filename):
