@@ -349,15 +349,13 @@ def read_image_metadata_dxtbx(image):
     # detector type specific parameters - minimum spot size, trusted region
     # and so on.
 
-    d = sweep.get_detector()
-    from dxtbx.model.detector_helpers import detector_helper_sensors
-
-    sensor_type = d[0].get_type()
-    if False:
-        if sensor_type == detector_helper_sensors.SENSOR_PAD:
-            params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "2"
-        else:
-            params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "4"
+    # from dxtbx.model.detector_helpers import detector_helper_sensors
+    # d = sweep.get_detector()
+    # sensor_type = d[0].get_type()
+    # if sensor_type == detector_helper_sensors.SENSOR_PAD:
+    #     params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "2"
+    # else:
+    #     params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "4"
 
     # remove things we will want to guarantee we set in fast_dp
     for name in ["BACKGROUND_RANGE", "SPOT_RANGE", "JOB"]:
