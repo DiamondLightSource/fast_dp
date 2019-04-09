@@ -1,0 +1,12 @@
+# GIT change notifications sent out by DLS Jenkins
+
+link=https://github.com/DiamondLightSource/fast_dp
+commit_link=https://github.com/DiamondLightSource/fast_dp/commit/%s
+
+sender=fast_dp commit
+
+recipient=xia2.support
+recipient_domain=gmail.com
+
+replyto=xia2.support
+replyto_domain=gmail.com
