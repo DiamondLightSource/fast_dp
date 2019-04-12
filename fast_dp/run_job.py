@@ -43,46 +43,5 @@ def run_job(executable, arguments=[], stdin=[], working_directory=None):
     return output
 
 
-def get_number_cpus():
-    """Portably get the number of processor cores available."""
-
-    # Windows NT derived platforms
-
-    if os.name == "nt":
-        return int(os.environ["NUMBER_OF_PROCESSORS"])
-
-    # linux
-
-    if os.path.exists("/proc/cpuinfo"):
-        n_cpu = 0
-
-        for record in open("/proc/cpuinfo", "r").readlines():
-            if not record.strip():
-                continue
-            if "processor" in record.split()[0]:
-                n_cpu += 1
-
-        return n_cpu
-
-    # os X
-
-    output = subprocess.Popen(
-        ["system_profiler", "SPHardwareDataType"], stdout=subprocess.PIPE
-    ).communicate()[0]
-
-    ht = 1
-
-    for record in output.split("\n"):
-        if "Intel Core i7" in record:
-            ht = 2
-        if "Total Number Of Cores" in record:
-            return ht * int(record.split()[-1])
-        if "Total Number of Cores" in record:
-            return ht * int(record.split()[-1])
-
-    return -1
-
-
 if __name__ == "__main__":
-    os.environ["FAST_DP_FORKINTEGRATE"] = "1"
     print("".join(run_job("env")))

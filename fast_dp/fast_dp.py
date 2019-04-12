@@ -17,7 +17,6 @@ import time
 import traceback
 
 import fast_dp
-from fast_dp.run_job import get_number_cpus
 from fast_dp.cell_spacegroup import (
     check_spacegroup_name,
     check_split_cell,
@@ -66,7 +65,6 @@ class FastDP:
         self._n_jobs = 1
         self._n_cores = 0
         self._max_n_jobs = 0
-        self._n_cpus = get_number_cpus()
         self._execution_hosts = []
 
         # image ranges
@@ -347,8 +345,6 @@ class FastDP:
 
 def main():
     """Main routine for fast_dp."""
-
-    os.environ["FAST_DP_FORKINTEGRATE"] = "1"
 
     commandline = " ".join(sys.argv)
 
