@@ -52,14 +52,14 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     # and get the postrefined cell constants from GXPARM.XDS - but continue
     # to work for the old format too...
 
-    if "XPARM.XDS" in open("GXPARM.XDS", "r").readline():
+    with open("GXPARM.XDS", "r") as fh:
+        gxparm = fh.readlines()
+    if gxparm and "XPARM.XDS" in gxparm[0]:
         # new format
-        gxparm = open("GXPARM.XDS", "r").readlines()
         space_group = spacegroup_number_to_name(int(gxparm[3].split()[0]))
         unit_cell = tuple(map(float, gxparm[3].split()[1:]))
     else:
         # old format:
-        gxparm = open("GXPARM.XDS", "r").readlines()
         space_group = spacegroup_number_to_name(int(gxparm[7].split()[0]))
         unit_cell = tuple(map(float, gxparm[7].split()[1:]))
 
@@ -71,11 +71,8 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     refined_beam = read_xparm_get_refined_beam("GXPARM.XDS")
 
     # hack in xdsstat (but don't cry if it fails)
-
-    try:
-        xdsstat_output = run_job("xdsstat", [], ["XDS_ASCII.HKL"])
-        open("xdsstat.log", "w").write("".join(xdsstat_output))
-    except BaseException:
-        pass
+    xdsstat_output = run_job("xdsstat", [], ["XDS_ASCII.HKL"])
+    with open("xdsstat.log", "w") as fh:
+        fh.write("".join(xdsstat_output))
 
     return unit_cell, space_group, nref, refined_beam
