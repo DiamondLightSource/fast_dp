@@ -1,15 +1,15 @@
-pip==19.0.3
+pip==19.1
 wheel==0.33.1
 watchdog==0.9.0
 flake8==3.7.7
-tox==3.8.4
+tox==3.9.0
 coverage==4.5.3
 six==1.12.0
 Sphinx==1.8.5 # pyup: <2.0 # for Python 2.7 and 3.4 support
 twine==1.13.0
 
 mock==2.0.0
-pytest==4.4.0
+pytest==4.4.1
 pytest-runner==4.4
-procrunner==1.0.0
+procrunner==1.0.1
 collective.checkdocs==0.2
