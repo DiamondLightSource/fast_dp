@@ -11,5 +11,5 @@ twine==1.13.0
 mock==2.0.0
 pytest==4.4.1
 pytest-runner==4.4
-procrunner==1.0.0
+procrunner==1.0.1
 collective.checkdocs==0.2
