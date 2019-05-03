@@ -22,7 +22,10 @@ setuptools.setup(
     install_requires=[],
     packages=["fast_dp"],
     package_data={"fast_dp": ["templates/ispyb.xml"]},
-    entry_points={"libtbx.dispatcher.script": ["fast_dp=fast_dp", "fast_rdp=fast_rdp"]},
+    entry_points={
+        "libtbx.dispatcher.script": ["fast_dp=fast_dp", "fast_rdp=fast_rdp"],
+        "libtbx.precommit": ["fast_dp = fast_dp"],
+    },
     scripts=["bin/fast_dp", "bin/fast_rdp"],
     tests_require=["mock", "procrunner", "pytest"],
     classifiers=[
