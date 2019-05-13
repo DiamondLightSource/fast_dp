@@ -1,43 +1,23 @@
 from __future__ import absolute_import, division, print_function
 
-import os
 
-from cctbx.sgtbx import space_group
-from cctbx.sgtbx import space_group_symbols
-from cctbx.uctbx import unit_cell
-from cctbx.crystal import symmetry
+from cctbx import crystal, sgtbx, uctbx
+from cctbx.sgtbx.bravais_types import bravais_lattice
 
 
 def ersatz_pointgroup(spacegroup_name):
     """Guess the pointgroup for the spacegroup by mapping from short to
     long name, then taking 1st character from each block."""
 
-    pg = None
-
-    for record in open(os.path.join(os.environ["CLIBD"], "symop.lib"), "r").readlines():
-        if " " in record[:1]:
-            continue
-        if spacegroup_name == record.split()[3]:
-            pg = record.split()[4][2:]
-        elif spacegroup_name == record.split("'")[1].replace(" ", ""):
-            pg = record.split()[4][2:]
-
-    if not pg:
-        raise RuntimeError("spacegroup %s unknown" % spacegroup_name)
-
-    # FIXME this is probably not correct for small molecule work...
-    # just be aware of this, in no danger right now of handling non-chiral
-    # spacegroups
-
-    if "/" in pg:
-        pg = pg.split("/")[0]
-
-    result = spacegroup_name[0] + pg
-
-    if "H3" in result:
-        result = result.replace("H3", "R3")
-
-    return result
+    pg = (
+        sgtbx.space_group_info(spacegroup_name)
+        .group()
+        .build_derived_patterson_group()
+        .build_derived_acentric_group()
+        .type()
+        .lookup_symbol()
+    )
+    return pg.split(":")[0].strip()
 
 
 def spacegroup_to_lattice(input_spacegroup):
@@ -45,46 +25,7 @@ def spacegroup_to_lattice(input_spacegroup):
     the first letter of the cell type, changing to lowercase and then
     prepending it to the first letter of the spacegroup."""
 
-    def fix_hH(lattice):
-        if lattice != "hH":
-            return lattice
-        return "hR"
-
-    mapping = {
-        "TRICLINIC": "a",
-        "MONOCLINIC": "m",
-        "ORTHORHOMBIC": "o",
-        "TETRAGONAL": "t",
-        "TRIGONAL": "h",
-        "HEXAGONAL": "h",
-        "CUBIC": "c",
-    }
-
-    if isinstance(input_spacegroup, type(u"")):
-        input_spacegroup = str(input_spacegroup)
-
-    if isinstance(input_spacegroup, type("")):
-        for record in open(
-            os.path.join(os.environ["CLIBD"], "symop.lib"), "r"
-        ).readlines():
-            if " " in record[:1]:
-                continue
-            if input_spacegroup == record.split()[3]:
-                return fix_hH(mapping[record.split()[5]] + record.split()[3][0])
-
-    elif isinstance(input_spacegroup, type(0)):
-        for record in open(
-            os.path.join(os.environ["CLIBD"], "symop.lib"), "r"
-        ).readlines():
-            if " " in record[:1]:
-                continue
-            if input_spacegroup == int(record.split()[0]):
-                return fix_hH(mapping[record.split()[5]] + record.split()[3][0])
-
-    else:
-        raise RuntimeError("bad type for input: %s" % type(input_spacegroup))
-
-    return None
+    return str(bravais_lattice(group=sgtbx.space_group_info(input_spacegroup).group()))
 
 
 def check_spacegroup_name(spacegroup_name):
@@ -95,18 +36,12 @@ def check_spacegroup_name(spacegroup_name):
         j = int(spacegroup_name)
         if j > 230 or j <= 0:
             raise RuntimeError("spacegroup number nonsense: %s" % spacegroup_name)
-        return spacegroup_number_to_name(j)
+        space_group_info = sgtbx.space_group_info(number=j)
 
     except ValueError:
-        pass
+        space_group_info = sgtbx.space_group_info(symbol=spacegroup_name)
 
-    for record in open(os.path.join(os.environ["CLIBD"], "symop.lib"), "r").readlines():
-        if " " in record[:1]:
-            continue
-        if spacegroup_name == record.split()[3]:
-            return spacegroup_name
-
-    raise RuntimeError('spacegroup name "%s" not recognised' % spacegroup_name)
+    return space_group_info.type().lookup_symbol()
 
 
 def check_split_cell(cell_string):
@@ -150,17 +85,7 @@ def constrain_cell(lattice_class, cell):
 
 def spacegroup_number_to_name(spg_num):
     """Convert a spacegroup number to a more readable name."""
-
-    database = {}
-
-    for record in open(os.path.join(os.environ["CLIBD"], "symop.lib"), "r").readlines():
-        if " " in record[:1]:
-            continue
-        number = int(record.split()[0])
-        name = record.split("'")[1].strip()
-        database[number] = name
-
-    return database[spg_num]
+    return sgtbx.space_group_info(number=spg_num).type().lookup_symbol()
 
 
 def lattice_to_spacegroup(lattice):
@@ -246,9 +171,9 @@ def generate_primitive_cell(unit_cell_constants, space_group_name):
     """For a given set of unit cell constants and space group, determine the
     corresponding primitive unit cell..."""
 
-    uc = unit_cell(unit_cell_constants)
-    sg = space_group(space_group_symbols(space_group_name).hall())
-    cs = symmetry(unit_cell=uc, space_group=sg)
+    uc = uctbx.unit_cell(unit_cell_constants)
+    sg = sgtbx.space_group_info(space_group_name).group()
+    cs = crystal.symmetry(unit_cell=uc, space_group=sg)
     csp = cs.change_basis(cs.change_of_basis_op_to_primitive_setting())
 
     return csp.unit_cell()
