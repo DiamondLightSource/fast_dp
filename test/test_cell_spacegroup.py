@@ -3,12 +3,10 @@ from __future__ import absolute_import, division, print_function
 import os
 import pytest
 
-try:
-    from cctbx import sgtbx
-    from fast_dp import cell_spacegroup
-except ImportError:
-    sgtbx = None
+pytest.importorskip("cctbx.sgtbx")
 
+from cctbx import sgtbx
+from fast_dp import cell_spacegroup
 
 def ersatz_pointgroup_old(spacegroup_name):
     """Guess the pointgroup for the spacegroup by mapping from short to
@@ -44,8 +42,6 @@ def ersatz_pointgroup_old(spacegroup_name):
 
 @pytest.fixture
 def acentric_space_groups():
-    if not sgtbx:
-        pytest.skip("Test requires cctbx environment")
     acentric = []
     for i in range(1, 231):
         sg = sgtbx.space_group_info(number=i).group()
@@ -55,8 +51,6 @@ def acentric_space_groups():
 
 
 def test_ersatz_pointgroup(acentric_space_groups):
-    if not sgtbx:
-        pytest.skip("Test requires cctbx environment")
     for sg in acentric_space_groups:
         symbol = sg.type().lookup_symbol()
         symbol = symbol.split(":")[0]
