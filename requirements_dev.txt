@@ -9,7 +9,7 @@ Sphinx==1.8.5 # pyup: <2.0 # for Python 2.7 and 3.4 support
 twine==1.13.0
 
 mock==3.0.5
-pytest==4.4.1
+pytest==4.5.0
 pytest-runner==4.4
 procrunner==1.0.1
 collective.checkdocs==0.2
