@@ -2,6 +2,11 @@
 History
 =======
 
+1.4.0 (2019-06-10)
+------------------
+* Improved support for spacegroup names.
+  (`#41 <https://github.com/DiamondLightSource/fast_dp/pull/41>`_)
+
 1.3.0 (2019-03-28)
 ------------------
 * Report beam centre correctly in ispyb.xml for multi-panel
