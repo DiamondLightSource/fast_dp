@@ -315,7 +315,11 @@ or using ``libtbx.pip`` in an CCTBX environment, followed by a
   bumpversion patch  # 1.1.1 -> 1.1.2
 
   git push
-  git push --tags
+  git push origin v1.1.2
+      # or
+  git push origin v1.2.0
+      # or
+  git push origin v2.0.0
 
 The release tag, once pushed to Github, will be picked up by Travis
 which will generate a new package and upload it directly to PyPI.
