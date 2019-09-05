@@ -67,6 +67,9 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
 
     # and the total number of good reflections
     nref = 0
+    for record in open("CORRECT.LP", "r"):
+        if "NUMBER OF ACCEPTED OBSERVATIONS" in record:
+            nref = int(record.split()[-1])
 
     refined_beam = read_xparm_get_refined_beam("GXPARM.XDS")
 
