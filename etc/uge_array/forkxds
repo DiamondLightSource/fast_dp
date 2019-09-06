@@ -39,6 +39,11 @@ done
 echo "PATH=$PATH" > forkxds.env
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> forkxds.env
 
+# hack mintegrate_par to respect the number of cores we want to use 
+# (else uses #cores from parent machine)
+printf "0: %02x000000" $maxcpu | xxd -r -g0 > nn.dat
+dd bs=4 count=1 seek=13 conv=notrunc if=nn.dat of=mintegrate.tmp
+
 # check environment for queue; project; priority information
 qsub_opt=""
 if [[ -n "$FORKXDS_PRIORITY" ]] ; then
