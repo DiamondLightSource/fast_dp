@@ -329,8 +329,6 @@ def read_image_metadata_dxtbx(image):
         from dxtbx.datablock import DataBlockFactory
 
         db = DataBlockFactory.from_filenames([image])[0]
-        sweep = db.extract_sweeps()[0]
-
     else:
         from dxtbx.datablock import DataBlockTemplateImporter
 
@@ -339,18 +337,24 @@ def read_image_metadata_dxtbx(image):
         importer = DataBlockTemplateImporter(
             [full_template], allow_incomplete_sweeps=True
         )
-        sweep = importer.datablocks[0].extract_sweeps()[0]
+        db = importer.datablocks[0]
+
+    if hasattr(db, "extract_sequences"):
+        db_extract = db.extract_sequences
+    else:
+        db_extract = db.extract_sweeps
+    sequences = db_extract()[0]
 
     from dxtbx.serialize.xds import to_xds
 
-    XDS_INP = to_xds(sweep).XDS_INP(as_str=True)
+    XDS_INP = to_xds(sequences).XDS_INP(as_str=True)
     params = XDS_INP_to_dict(XDS_INP)
 
     # detector type specific parameters - minimum spot size, trusted region
     # and so on.
 
     # from dxtbx.model.detector_helpers import detector_helper_sensors
-    # d = sweep.get_detector()
+    # d = sequences.get_detector()
     # sensor_type = d[0].get_type()
     # if sensor_type == detector_helper_sensors.SENSOR_PAD:
     #     params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "2"
