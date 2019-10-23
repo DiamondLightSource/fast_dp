@@ -2,6 +2,11 @@
 History
 =======
 
+1.5.0 (2019-10-23)
+------------------
+* add support for DIALS 2.0
+* use correct number of cores for integration with forkxds
+
 1.4.0 (2019-06-10)
 ------------------
 * Improved support for spacegroup names.
