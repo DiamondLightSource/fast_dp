@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     author="Diamond Light Source",
     author_email="scientificsoftware@diamond.ac.uk",
-    version="1.4",
+    version="1.5",
     url="https://github.com/DiamondLightSource/fast_dp",
     download_url="https://github.com/DiamondLightSource/fast_dp/releases",
     license="Apache-2.0",
