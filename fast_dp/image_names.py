@@ -31,14 +31,14 @@ def image2template(filename):
     }
 
     for pattern in pattern_keys:
-        match = re.compile(pattern).match(filename)
+        match = re.match(pattern, filename)
 
         if match:
             prefix = match.group(1)
             number = match.group(2)
             try:
                 exten = match.group(3)
-            except BaseException:
+            except IndexError:
                 exten = ""
 
             for digit in string.digits:

@@ -18,22 +18,23 @@ def read_xds_idxref_lp(idxref_lp_file):
 
     results = {}
 
-    for record in open(idxref_lp_file, "r").readlines():
-        if regexp.match(record):
-            tokens = record.split()
-            spacegroup = lattice_to_spacegroup(tokens[2])
-            cell = tuple(map(float, tokens[4:10]))
-            constrained_cell = constrain_cell(tokens[2][0], cell)
-            penalty = float(tokens[3])
+    with open(idxref_lp_file, "r") as fh:
+        for record in fh.readlines():
+            if regexp.match(record):
+                tokens = record.split()
+                spacegroup = lattice_to_spacegroup(tokens[2])
+                cell = tuple(map(float, tokens[4:10]))
+                constrained_cell = constrain_cell(tokens[2][0], cell)
+                penalty = float(tokens[3])
 
-            if spacegroup in results:
-                if penalty < results[spacegroup][0]:
+                if spacegroup in results:
+                    if penalty < results[spacegroup][0]:
+                        results[spacegroup] = penalty, constrained_cell
+                else:
                     results[spacegroup] = penalty, constrained_cell
-            else:
-                results[spacegroup] = penalty, constrained_cell
 
-        if "DETECTOR COORDINATES (PIXELS) OF DIRECT BEAM" in record:
-            results["beam centre pixels"] = map(float, record.split()[-2:])
+            if "DETECTOR COORDINATES (PIXELS) OF DIRECT BEAM" in record:
+                results["beam centre pixels"] = map(float, record.split()[-2:])
 
     assert "beam centre pixels" in results
 
@@ -47,14 +48,15 @@ def read_xds_correct_lp(correct_lp_file):
     unit_cell = None
     space_group_number = None
 
-    for record in open(correct_lp_file, "r").readlines():
-        if "SPACE_GROUP_NUMBER=" in record:
-            try:
-                space_group_number = int(record.split()[-1])
-            except BaseException:
-                space_group_number = 0
-        if "UNIT_CELL_CONSTANTS=" in record and "used" not in record:
-            unit_cell = tuple(map(float, record.split()[-6:]))
+    with open(correct_lp_file, "r") as fh:
+        for record in fh.readlines():
+            if "SPACE_GROUP_NUMBER=" in record:
+                try:
+                    space_group_number = int(record.split()[-1])
+                except Exception:
+                    space_group_number = 0
+            if "UNIT_CELL_CONSTANTS=" in record and "used" not in record:
+                unit_cell = tuple(map(float, record.split()[-6:]))
 
     return unit_cell, space_group_number
 
@@ -64,13 +66,12 @@ def read_correct_lp_get_resolution(correct_lp_file):
     This should then be recycled to a rerun of CORRECT, from which the
     reflections will be merged to get the statistics."""
 
-    correct_lp = open(correct_lp_file, "r").readlines()
+    with open(correct_lp_file, "r") as fh:
+        correct_lp = fh.readlines()
 
     rec = -1
 
-    for j in range(len(correct_lp)):
-        record = correct_lp[j]
-
+    for j, record in enumerate(correct_lp):
         if "RESOLUTION RANGE  I/Sigma  Chi^2  R-FACTOR  R-FACTOR" in record:
             rec = j + 3
             break

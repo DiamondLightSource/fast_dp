@@ -143,5 +143,5 @@ def autoindex(xds_inp, input_cell=None):
 
     try:
         return results[1][1]
-    except BaseException:
+    except Exception:
         raise RuntimeError("getting P1 cell for autoindex")

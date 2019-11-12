@@ -265,8 +265,7 @@ def failover_cbf(cbf_file):
             struct_time = time.strptime(datestring, format)
             header["date"] = time.asctime(struct_time)
             header["epoch"] = time.mktime(struct_time)
-
-        except BaseException:
+        except Exception:
             pass
 
         try:
@@ -275,8 +274,7 @@ def failover_cbf(cbf_file):
             struct_time = time.strptime(datestring, format)
             header["date"] = time.asctime(struct_time)
             header["epoch"] = time.mktime(struct_time)
-
-        except BaseException:
+        except Exception:
             pass
 
         try:
@@ -285,8 +283,7 @@ def failover_cbf(cbf_file):
             struct_time = time.strptime(datestring, format)
             header["date"] = time.asctime(struct_time)
             header["epoch"] = time.mktime(struct_time)
-
-        except BaseException:
+        except Exception:
             pass
 
     # cope with vertical goniometer on I24 @ DLS from 2015/1/1

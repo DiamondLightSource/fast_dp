@@ -82,7 +82,7 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
         if "forkintegrate_job." in f[:18]:
             try:
                 os.remove(f)
-            except BaseException:
+            except Exception:
                 pass
 
     # get the mosaic spread ranges
