@@ -344,7 +344,7 @@ def read_image_metadata_dxtbx(image):
 
     from dxtbx.serialize.xds import to_xds
 
-    XDS_INP = to_xds(sequences).XDS_INP(as_str=True)
+    XDS_INP = to_xds(sequences).XDS_INP()
     params = XDS_INP_to_dict(XDS_INP)
 
     # detector type specific parameters - minimum spot size, trusted region

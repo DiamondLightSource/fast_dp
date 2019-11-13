@@ -2,6 +2,12 @@
 History
 =======
 
+1.6.0 (2019-??-??)
+------------------
+* fast_dp is no longer supported with DIALS 1.12 and older versions
+* improved support for future DIALS versions
+* added support for Python 3.8
+
 1.5.0 (2019-10-23)
 ------------------
 * add support for DIALS 2.0
