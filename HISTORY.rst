@@ -2,6 +2,10 @@
 History
 =======
 
+1.6.1 (2020-02-25)
+------------------
+* add license file to release
+
 1.6.0 (2020-02-25)
 ------------------
 * fast_dp is no longer supported with DIALS 1.12 and older versions
