@@ -542,7 +542,7 @@ def main():
             if prop in ignore:
                 continue
             json_stuff[prop] = getattr(finst, prop)
-        with open("fast_dp.state", "wb") as fh:
+        with open("fast_dp.state", "w") as fh:
             json.dump(json_stuff, fh)
 
 

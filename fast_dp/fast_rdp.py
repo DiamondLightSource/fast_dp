@@ -36,7 +36,7 @@ class FastRDP:
 
     def __init__(self):
 
-        with open("fast_dp.state", "rb") as fh:
+        with open("fast_dp.state", "r") as fh:
             json_stuff = json.load(fh)
 
         for prop in json_stuff:
