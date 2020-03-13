@@ -122,9 +122,7 @@ def autoindex(xds_inp, input_cell=None):
         % ("Lattice", "a", "b", "c", "alpha", "beta", "gamma")
     )
 
-    for r in reversed(sorted(results)):
-        if not isinstance(r, type(1)):
-            continue
+    for r in sorted((r for r in results if isinstance(r, int)), reverse=True):
         cell = results[r][1]
         write(
             "%7s %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f"
