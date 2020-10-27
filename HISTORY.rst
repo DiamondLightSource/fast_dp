@@ -2,6 +2,10 @@
 History
 =======
 
+1.6.3 (...)
+-----------
+* change default plugin for Eiger data to durin-plugin.so
+
 1.6.2 (2020-03-14)
 ------------------
 * bugfix for Python 3 error
