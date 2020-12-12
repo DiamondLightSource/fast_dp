@@ -19,7 +19,7 @@ setuptools.setup(
     url="https://github.com/DiamondLightSource/fast_dp",
     download_url="https://github.com/DiamondLightSource/fast_dp/releases",
     license="Apache-2.0",
-    install_requires=[],
+    install_requires=["procrunner"],
     packages=["fast_dp"],
     package_data={"fast_dp": ["templates/ispyb.xml"]},
     entry_points={
