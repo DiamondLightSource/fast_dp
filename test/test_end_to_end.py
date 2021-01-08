@@ -1,9 +1,13 @@
 from __future__ import absolute_import, division, print_function
 
-import mock
 import os
 import pytest
 import sys
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 
 def test_fast_dp_X4_wide(capsys, tmpdir):
