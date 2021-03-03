@@ -4,7 +4,7 @@ History
 
 2.0.0 (xxxx-xx-xx)
 ------------------
-* fast_dp no supports Python 2.7 or 3.5
+* fast_dp no longer supports Python 2.7 or 3.5
 
 1.6.2 (2020-03-14)
 ------------------
