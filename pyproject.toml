@@ -1,0 +1,40 @@
+[project]
+name = "fast_dp"
+version = "1.6.2"
+authors = [
+    { name = "Diamond Light Source", email = "scientificsoftware@diamond.ac.uk" },
+]
+description = "Fast DP: Fast Data Processsing with XDS"
+readme = "README.rst"
+requires-python = ">=3.6"
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = ["procrunner"]
+
+[project.urls]
+Homepage = "https://github.com/DiamondLightSource/fast_dp"
+Downloads = "https://github.com/DiamondLightSource/fast_dp/releases"
+
+[project.entry-points."libtbx.dispatcher.script"]
+fast_dp = "fast_dp"
+fast_rdp = "fast_rdp"
+
+[project.entry-points."libtbx.precommit"]
+fast_dp = "fast_dp"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+fast_dp = "fast_dp.fast_dp:main"
+fast_rdp = "fast_dp.fast_rdp:main"
+
+[tool.setuptools]
+packages = ["fast_dp"]
