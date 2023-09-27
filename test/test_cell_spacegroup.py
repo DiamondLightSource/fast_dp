@@ -8,6 +8,7 @@ pytest.importorskip("cctbx.sgtbx")
 from cctbx import sgtbx
 from fast_dp import cell_spacegroup
 
+
 def ersatz_pointgroup_old(spacegroup_name):
     """Guess the pointgroup for the spacegroup by mapping from short to
     long name, then taking 1st character from each block."""
@@ -50,6 +51,9 @@ def acentric_space_groups():
     return acentric
 
 
+@pytest.mark.skipif(
+    not os.getenv("CLIBD"), reason="test requires CLIBD environment variable"
+)
 def test_ersatz_pointgroup(acentric_space_groups):
     for sg in acentric_space_groups:
         symbol = sg.type().lookup_symbol()

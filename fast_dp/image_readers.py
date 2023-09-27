@@ -5,6 +5,8 @@ import time
 
 from fast_dp.image_names import image2template_directory
 
+from dxtbx.model.experiment_list import ExperimentList
+
 
 def check_file_readable(filename):
     """Check that the file filename exists and that it can be read. Returns
@@ -323,28 +325,17 @@ def read_image_metadata_dxtbx(image):
     if image.endswith(".h5"):
         # XDS can literally only handle master files called (prefix)_master.h5
         assert "master" in image
-        from dxtbx.datablock import DataBlockFactory
-
-        db = DataBlockFactory.from_filenames([image])[0]
+        expt = ExperimentList.from_filenames([image])[0]
     else:
-        from dxtbx.datablock import DataBlockTemplateImporter
-
         template, directory = image2template_directory(image)
         full_template = os.path.join(directory, template)
-        importer = DataBlockTemplateImporter(
+        expt = ExperimentList.from_templates(
             [full_template], allow_incomplete_sweeps=True
-        )
-        db = importer.datablocks[0]
-
-    if hasattr(db, "extract_sequences"):
-        db_extract = db.extract_sequences
-    else:
-        db_extract = db.extract_sweeps
-    sequences = db_extract()[0]
+        )[0]
 
     from dxtbx.serialize.xds import to_xds
 
-    XDS_INP = to_xds(sequences).XDS_INP()
+    XDS_INP = to_xds(expt.imageset).XDS_INP()
     params = XDS_INP_to_dict(XDS_INP)
 
     # detector type specific parameters - minimum spot size, trusted region
