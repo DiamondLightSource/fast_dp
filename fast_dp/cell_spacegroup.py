@@ -89,7 +89,7 @@ def spacegroup_number_to_name(spg_num):
 
 
 def lattice_to_spacegroup(lattice):
-    """ Converts a lattice to the spacegroup with the lowest symmetry
+    """Converts a lattice to the spacegroup with the lowest symmetry
     possible for that lattice"""
     l2s = {
         "aP": 1,

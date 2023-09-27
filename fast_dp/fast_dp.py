@@ -42,7 +42,6 @@ class FastDP:
     ends to provide integrated and scaled data in a couple of minutes."""
 
     def __init__(self):
-
         # unguessable input parameters
         self._start_image = None
 
@@ -186,7 +185,6 @@ class FastDP:
         self._input_spacegroup = input_spacegroup
 
     def set_input_cell(self, input_cell):
-
         self._input_cell = input_cell
 
         # convert this to a primitive cell based on the centring

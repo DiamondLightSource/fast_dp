@@ -38,3 +38,13 @@ fast_rdp = "fast_dp.fast_rdp:main"
 
 [tool.setuptools]
 packages = ["fast_dp"]
+
+[tool.ruff]
+line-length = 88
+select = ["UP010", "I002", "F401", "I", "E", "F", "W"]
+ignore = ["E741"]
+# Automatically fixing this can be surprising for some
+unfixable = ["F401", "F841"]
+
+[tool.ruff.isort]
+required-imports = ["from __future__ import annotations"]

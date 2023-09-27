@@ -35,7 +35,6 @@ class FastRDP:
     ends to provide integrated and scaled data in a couple of minutes."""
 
     def __init__(self):
-
         with open("fast_dp.state", "r") as fh:
             json_stuff = json.load(fh)
 
@@ -74,7 +73,6 @@ class FastRDP:
         self._input_spacegroup = input_spacegroup
 
     def set_input_cell(self, input_cell):
-
         self._input_cell = input_cell
 
         # convert this to a primitive cell based on the centring
