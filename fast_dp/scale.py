@@ -1,17 +1,17 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import shutil
 
-from fast_dp.run_job import run_job
-from fast_dp.cell_spacegroup import spacegroup_number_to_name
 from fast_dp.autoindex import segment_text
+from fast_dp.cell_spacegroup import spacegroup_number_to_name
+from fast_dp.run_job import run_job
 from fast_dp.xds_reader import read_xparm_get_refined_beam
 
 
 def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
     """Perform the scaling with the spacegroup and unit cell calculated
-    from pointless and correct. N.B. this scaling is done by CORRECT."""
-
+    from pointless and correct. N.B. this scaling is done by CORRECT.
+    """
     assert unit_cell
     assert xds_inp
     assert space_group_number
@@ -23,12 +23,16 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
             v = xds_inp[k]
             if isinstance(v, list):
                 for _v in v:
-                    fout.write("%s=%s\n" % (k, _v))
+                    fout.write(f"{k}={_v}\n")
             else:
-                fout.write("%s=%s\n" % (k, v))
+                fout.write(f"{k}={v}\n")
 
         fout.write("SPACE_GROUP_NUMBER=%d\n" % space_group_number)
-        fout.write("UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n" % tuple(unit_cell))
+        fout.write(
+            "UNIT_CELL_CONSTANTS={:f} {:f} {:f} {:f} {:f} {:f}\n".format(
+                *tuple(unit_cell)
+            )
+        )
 
         fout.write("JOB=CORRECT\n")
         fout.write("REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n")
@@ -45,14 +49,15 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
         lastrecord = open("%s.LP" % step).readlines()[-1]
         if "!!! ERROR !!!" in lastrecord:
             raise RuntimeError(
-                "error in %s: %s"
-                % (step, lastrecord.replace("!!! ERROR !!!", "").strip())
+                "error in {}: {}".format(
+                    step, lastrecord.replace("!!! ERROR !!!", "").strip()
+                )
             )
 
     # and get the postrefined cell constants from GXPARM.XDS - but continue
     # to work for the old format too...
 
-    with open("GXPARM.XDS", "r") as fh:
+    with open("GXPARM.XDS") as fh:
         gxparm = fh.readlines()
     if gxparm and "XPARM.XDS" in gxparm[0]:
         # new format
@@ -67,7 +72,7 @@ def scale(unit_cell, xds_inp, space_group_number, resolution_high=0.0):
 
     # and the total number of good reflections
     nref = 0
-    for record in open("CORRECT.LP", "r"):
+    for record in open("CORRECT.LP"):
         if "NUMBER OF ACCEPTED OBSERVATIONS" in record:
             nref = int(record.split()[-1])
 

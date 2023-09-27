@@ -45,6 +45,7 @@ select = ["UP010", "I002", "F401", "I", "E", "F", "W"]
 ignore = ["E741"]
 # Automatically fixing this can be surprising for some
 unfixable = ["F401", "F841"]
+flake8-pytest-style.fixture-parentheses = false
 
 [tool.ruff.isort]
 required-imports = ["from __future__ import annotations"]

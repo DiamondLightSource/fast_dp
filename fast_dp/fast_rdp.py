@@ -3,28 +3,26 @@
 #
 # Re-data-process i.e. repeat the finishing stages of a fast_dp job, to adjust
 # the resolution limit or assign some other symmetry.
+from __future__ import annotations
 
-from __future__ import absolute_import, division, print_function
-
-import json
-import sys
-import os
-import time
 import copy
+import json
+import os
+import sys
+import time
 import traceback
 
 import fast_dp
+import fast_dp.output
 from fast_dp.cell_spacegroup import (
     check_spacegroup_name,
     check_split_cell,
     generate_primitive_cell,
 )
-import fast_dp.output
-
-from fast_dp.scale import scale
+from fast_dp.logger import set_filename, write
 from fast_dp.merge import merge
 from fast_dp.pointgroup import decide_pointgroup
-from fast_dp.logger import write, set_filename
+from fast_dp.scale import scale
 
 set_filename("fast_rdp.log")
 
@@ -32,10 +30,11 @@ set_filename("fast_rdp.log")
 class FastRDP:
     """A class to implement fast data processing for MX beamlines (at Diamond)
     which uses XDS, Pointless, Scala and a couple of other CCP4 odds and
-    ends to provide integrated and scaled data in a couple of minutes."""
+    ends to provide integrated and scaled data in a couple of minutes.
+    """
 
-    def __init__(self):
-        with open("fast_dp.state", "r") as fh:
+    def __init__(self) -> None:
+        with open("fast_dp.state") as fh:
             json_stuff = json.load(fh)
 
         for prop in json_stuff:
@@ -59,7 +58,7 @@ class FastRDP:
         self._resolution_high = resolution_high
 
     def set_atom(self, atom):
-        """Set the heavy atom, if appropriate. Use "-" to unset"""
+        """Set the heavy atom, if appropriate. Use "-" to unset."""
         if atom == "-":
             if "atom" in self._params:
                 del self._params["atom"]
@@ -90,8 +89,8 @@ class FastRDP:
 
     def reprocess(self):
         """Main routine, chain together last few steps of processing i.e.
-        pointgroup, scale and merge."""
-
+        pointgroup, scale and merge.
+        """
         write("Running on: %s" % str(os.getenv("HOSTNAME")).split(".")[0])
 
         # check input frame limits
@@ -100,24 +99,23 @@ class FastRDP:
         osc = float(self._xds_inp["OSCILLATION_RANGE"])
         osc_start = float(self._xds_inp["STARTING_ANGLE"])
 
-        if self._first_image is not None:
-            if start < self._first_image:
-                osc_start += osc * (self._first_image - start)
-                start = self._first_image
-                self._xds_inp["STARTING_ANGLE"] = str(osc_start)
-                self._xds_inp["STARTING_FRAME"] = str(start)
+        if self._first_image is not None and start < self._first_image:
+            osc_start += osc * (self._first_image - start)
+            start = self._first_image
+            self._xds_inp["STARTING_ANGLE"] = str(osc_start)
+            self._xds_inp["STARTING_FRAME"] = str(start)
 
         if self._last_image is not None:
             end = min(end, self._last_image)
 
-        self._xds_inp["DATA_RANGE"] = "%s %s" % (start, end)
+        self._xds_inp["DATA_RANGE"] = f"{start} {end}"
 
         step_time = time.time()
 
         write("Processing images: %d -> %d" % (start, end))
 
         osc_end = osc_start + (end - start + 1) * osc
-        write("Rotation range: %.2f -> %.2f" % (osc_start, osc_end))
+        write(f"Rotation range: {osc_start:.2f} -> {osc_end:.2f}")
 
         template = self._xds_inp["NAME_TEMPLATE_OF_DATA_FRAMES"]
 
@@ -129,8 +127,8 @@ class FastRDP:
         # FIXME should be able to run the same from CORRECT.LP which would
         # work better....
 
-        from fast_dp.xds_reader import read_xds_idxref_lp
         from fast_dp.cell_spacegroup import spacegroup_to_lattice
+        from fast_dp.xds_reader import read_xds_idxref_lp
 
         results = read_xds_idxref_lp("IDXREF.LP")
 
@@ -195,12 +193,16 @@ class FastRDP:
             self._scaling_statistics = merge(
                 hklout="fast_rdp.mtz", aimless_log="aimless_rerun.log"
             )
-        except RuntimeError as e:
+        except RuntimeError:
             write("Merging failed")
             raise
 
         write("Merging point group: %s" % self._space_group)
-        write("Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f" % self._unit_cell)
+        write(
+            "Unit cell: {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f}".format(
+                *self._unit_cell
+            )
+        )
 
         duration = time.time() - step_time
         write(
@@ -230,7 +232,6 @@ class FastRDP:
 
 def main():
     """Main routine for fast_rdp."""
-
     from optparse import OptionParser
 
     commandline = " ".join(sys.argv)
@@ -332,13 +333,13 @@ def main():
                 spacegroup = check_spacegroup_name(options.spacegroup)
                 fast_rdp.set_input_spacegroup(spacegroup)
                 write("Set spacegroup: %s" % spacegroup)
-            except RuntimeError as e:
+            except RuntimeError:
                 write("Spacegroup %s not recognised: ignoring" % options.spacegroup)
 
         if options.cell:
             assert options.spacegroup
             cell = check_split_cell(options.cell)
-            write("Set cell: %.2f %.2f %.2f %.2f %.2f %.2f" % cell)
+            write("Set cell: {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(*cell))
             fast_rdp.set_input_cell(cell)
 
         fast_rdp.reprocess()

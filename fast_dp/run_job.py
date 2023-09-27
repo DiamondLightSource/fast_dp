@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import os
 import subprocess
@@ -6,8 +6,8 @@ import subprocess
 
 def run_job(executable, arguments=[], stdin=[], working_directory=None):
     """Run a program with some command-line arguments and some input,
-    then return the standard output when it is finished."""
-
+    then return the standard output when it is finished.
+    """
     if working_directory is None:
         working_directory = os.getcwd()
 

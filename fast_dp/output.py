@@ -1,7 +1,8 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import json
 import os
+
 import pkg_resources
 
 
@@ -15,7 +16,6 @@ def write_json(
     filename="fast_dp.json",
 ):
     """Write out nice JSON for downstream processing."""
-
     with open(filename, "w") as fh:
         json.dump(
             {
@@ -51,7 +51,6 @@ def write_ispyb_xml(
     filename="fast_dp.xml",
 ):
     """Write out big lump of XML for ISPyB import."""
-
     xml_template = get_ispyb_template()
 
     with open(filename, "w") as fh:

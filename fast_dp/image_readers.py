@@ -1,24 +1,22 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import os
 import time
 
-from fast_dp.image_names import image2template_directory
-
 from dxtbx.model.experiment_list import ExperimentList
+
+from fast_dp.image_names import image2template_directory
 
 
 def check_file_readable(filename):
     """Check that the file filename exists and that it can be read. Returns
-    only if everything is OK."""
-
+    only if everything is OK.
+    """
     if not os.path.exists(filename):
         raise RuntimeError("file %s not found" % filename)
 
     if not os.access(filename, os.R_OK):
         raise RuntimeError("file %s not readable" % filename)
-
-    return
 
 
 def get_dectris_serial_no(record):
@@ -37,8 +35,8 @@ def find_hdf5_lib(lib_name=None):
                 break
         else:
             library = ""
-        setattr(find_hdf5_lib, "cache", library)
-    return getattr(find_hdf5_lib, "cache")
+        find_hdf5_lib.cache = library
+    return find_hdf5_lib.cache
 
 
 try:
@@ -133,8 +131,8 @@ def XDS_INP_to_dict(inp_text):
 
 def failover_cbf(cbf_file):
     """CBF files from the latest update to the PILATUS detector cause a
-    segmentation fault in diffdump. This is a workaround."""
-
+    segmentation fault in diffdump. This is a workaround.
+    """
     header = {}
 
     header["two_theta"] = 0.0
@@ -318,8 +316,8 @@ def read_image_metadata_dxtbx(image):
     """Read the image header and send back the resulting metadata in a
     dictionary. Read this using dxtbx - for a sequence of images use the
     first image in the sequence to derive the metadata, for HDF5 files
-    just get on an read."""
-
+    just get on an read.
+    """
     check_file_readable(image)
 
     if image.endswith(".h5"):
@@ -337,17 +335,6 @@ def read_image_metadata_dxtbx(image):
 
     XDS_INP = to_xds(expt.imageset).XDS_INP()
     params = XDS_INP_to_dict(XDS_INP)
-
-    # detector type specific parameters - minimum spot size, trusted region
-    # and so on.
-
-    # from dxtbx.model.detector_helpers import detector_helper_sensors
-    # d = sequences.get_detector()
-    # sensor_type = d[0].get_type()
-    # if sensor_type == detector_helper_sensors.SENSOR_PAD:
-    #     params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "2"
-    # else:
-    #     params["MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT"] = "4"
 
     # remove things we will want to guarantee we set in fast_dp
     for name in ["BACKGROUND_RANGE", "SPOT_RANGE", "JOB"]:

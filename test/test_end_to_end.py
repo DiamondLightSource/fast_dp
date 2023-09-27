@@ -1,13 +1,14 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import os
-import pytest
 import sys
+
+import pytest
 
 try:
     from unittest import mock
 except ImportError:
-    import mock
+    from unittest import mock
 
 
 def test_fast_dp_X4_wide(capsys, tmpdir):
@@ -18,11 +19,10 @@ def test_fast_dp_X4_wide(capsys, tmpdir):
     image = os.path.join(X4_wide, "X4_wide_M1S4_2_0001.cbf")
 
     cmd = ["fast_dp", "-a", "Ba", image]
-    with tmpdir.as_cwd():
-        with mock.patch.object(sys, "argv", cmd):
-            import fast_dp.fast_dp
+    with tmpdir.as_cwd(), mock.patch.object(sys, "argv", cmd):
+        import fast_dp.fast_dp
 
-            fast_dp.fast_dp.main()
+        fast_dp.fast_dp.main()
 
     captured = capsys.readouterr()
     assert captured.err == "", "fast_dp output to STDERR:"

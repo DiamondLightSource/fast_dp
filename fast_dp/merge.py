@@ -1,14 +1,11 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 from fast_dp.logger import write
 from fast_dp.run_job import run_job
 
 
 def anomalous_signals(hklin):
-    """
-    Compute some measures of anomalous signal: df / f and di / sig(di).
-    """
-
+    """Compute some measures of anomalous signal: df / f and di / sig(di)."""
     from iotbx import mtz
 
     m = mtz.object(hklin)
@@ -36,8 +33,8 @@ def anomalous_signals(hklin):
 def merge(hklout="fast_dp.mtz", aimless_log="aimless.log"):
     """Merge the reflections from XDS_ASCII.HKL with Aimless to get
     statistics - this will use pointless for the reflection file format
-    mashing."""
-
+    mashing.
+    """
     run_job("pointless", ["-c", "xdsin", "XDS_ASCII.HKL", "hklout", "xds_sorted.mtz"])
 
     log = run_job(
@@ -122,16 +119,16 @@ def parse_aimless_log(log):
     # print out the results...
     write(80 * "-")
 
-    write("%20s " % "Low resolution" + "%6.2f %6.2f %6.2f" % lres)
-    write("%20s " % "High resolution" + "%6.2f %6.2f %6.2f" % hres)
-    write("%20s " % "Rmerge" + "%6.3f %6.3f %6.3f" % rmerge)
-    write("%20s " % "I/sigma" + "%6.2f %6.2f %6.2f" % isigma)
-    write("%20s " % "Completeness" + "%6.1f %6.1f %6.1f" % comp)
-    write("%20s " % "Multiplicity" + "%6.1f %6.1f %6.1f" % mult)
-    write("%20s " % "CC 1/2" + "%6.3f %6.3f %6.3f" % cchalf)
-    write("%20s " % "Anom. Completeness" + "%6.1f %6.1f %6.1f" % acomp)
-    write("%20s " % "Anom. Multiplicity" + "%6.1f %6.1f %6.1f" % amult)
-    write("%20s " % "Anom. Correlation" + "%6.3f %6.3f %6.3f" % ccanom)
+    write("%20s " % "Low resolution" + "{:6.2f} {:6.2f} {:6.2f}".format(*lres))
+    write("%20s " % "High resolution" + "{:6.2f} {:6.2f} {:6.2f}".format(*hres))
+    write("%20s " % "Rmerge" + "{:6.3f} {:6.3f} {:6.3f}".format(*rmerge))
+    write("%20s " % "I/sigma" + "{:6.2f} {:6.2f} {:6.2f}".format(*isigma))
+    write("%20s " % "Completeness" + "{:6.1f} {:6.1f} {:6.1f}".format(*comp))
+    write("%20s " % "Multiplicity" + "{:6.1f} {:6.1f} {:6.1f}".format(*mult))
+    write("%20s " % "CC 1/2" + "{:6.3f} {:6.3f} {:6.3f}".format(*cchalf))
+    write("%20s " % "Anom. Completeness" + "{:6.1f} {:6.1f} {:6.1f}".format(*acomp))
+    write("%20s " % "Anom. Multiplicity" + "{:6.1f} {:6.1f} {:6.1f}".format(*amult))
+    write("%20s " % "Anom. Correlation" + "{:6.3f} {:6.3f} {:6.3f}".format(*ccanom))
     write("%20s " % "Nrefl" + "%6d %6d %6d" % nref)
     write("%20s " % "Nunique" + "%6d %6d %6d" % nuniq)
     write("%20s " % "Mid-slope" + "%6.3f" % slope)
