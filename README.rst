@@ -6,10 +6,6 @@ Fast DP: Fast Data Processsing with XDS
         :target: https://pypi.python.org/pypi/fast_dp
         :alt: PyPI release
 
-.. image:: https://travis-ci.com/DiamondLightSource/fast_dp.svg?branch=master
-        :target: https://travis-ci.com/DiamondLightSource/fast_dp
-        :alt: Build status
-
 .. image:: https://img.shields.io/pypi/pyversions/fast_dp.svg
         :target: https://pypi.org/project/fast-dp/
         :alt: Supported Python versions
@@ -17,14 +13,6 @@ Fast DP: Fast Data Processsing with XDS
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
         :target: https://github.com/ambv/black
         :alt: Code style: black
-
-.. image:: https://img.shields.io/lgtm/grade/python/g/DiamondLightSource/fast_dp.svg?logo=lgtm&logoWidth=18
-        :target: https://lgtm.com/projects/g/DiamondLightSource/fast_dp/context:python
-        :alt: Language grade: Python
-
-.. image:: https://img.shields.io/lgtm/alerts/g/DiamondLightSource/fast_dp.svg?logo=lgtm&logoWidth=18
-        :target: https://lgtm.com/projects/g/DiamondLightSource/fast_dp/alerts/
-        :alt: Total alerts
 
 Introduction
 ------------
