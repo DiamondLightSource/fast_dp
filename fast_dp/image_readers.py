@@ -30,7 +30,7 @@ def get_dectris_serial_no(record):
 
 def find_hdf5_lib(lib_name=None):
     if not hasattr(find_hdf5_lib, "cache"):
-        lib_name = lib_name or "dectris-neggia.so"
+        lib_name = lib_name or "durin-plugin.so"
         for d in os.environ["PATH"].split(os.pathsep):
             if os.path.exists(os.path.join(d, lib_name)):
                 library = os.path.join(d, lib_name)
