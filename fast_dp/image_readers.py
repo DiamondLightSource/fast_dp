@@ -347,6 +347,6 @@ def read_image_metadata_dxtbx(image):
 if __name__ == "__main__":
     import sys
 
-    md = read_image_metadata(sys.argv[1])
+    md = read_image_metadata_dxtbx(sys.argv[1])
     for name in sorted(md):
         print(name, md[name])
