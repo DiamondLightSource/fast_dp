@@ -6,7 +6,7 @@ authors = [
 ]
 description = "Fast DP: Fast Data Processsing with XDS"
 readme = "README.rst"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",

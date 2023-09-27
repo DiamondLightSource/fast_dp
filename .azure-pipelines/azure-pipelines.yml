@@ -19,7 +19,7 @@ stages:
       - task: UsePythonVersion@0
         displayName: Set up python
         inputs:
-          versionSpec: 3.7
+          versionSpec: 3.9
 
       - bash: |
           python .azure-pipelines/syntax-validation.py
@@ -76,13 +76,11 @@ stages:
     strategy:
       matrix:
         python36:
-          PYTHON_VERSION: 3.6
+          PYTHON_VERSION: 3.9
         python37:
-          PYTHON_VERSION: 3.7
+          PYTHON_VERSION: 3.10
         python38:
-          PYTHON_VERSION: 3.8
-#       python39:
-#         PYTHON_VERSION: 3.9
+          PYTHON_VERSION: 3.11
     steps:
     - template: conda-forge-build.yml
 
@@ -92,13 +90,11 @@ stages:
     strategy:
       matrix:
         python36:
-          PYTHON_VERSION: 3.6
+          PYTHON_VERSION: 3.9
         python37:
-          PYTHON_VERSION: 3.7
+          PYTHON_VERSION: 3.10
         python38:
-          PYTHON_VERSION: 3.8
-#       python39:
-#         PYTHON_VERSION: 3.9
+          PYTHON_VERSION: 3.11
     steps:
     - template: conda-forge-build.yml
 
@@ -108,13 +104,7 @@ stages:
     strategy:
       matrix:
         python36:
-          PYTHON_VERSION: 3.6
-#       python37:
-#         PYTHON_VERSION: 3.7
-#       python38:
-#         PYTHON_VERSION: 3.8
-#       python39:
-#         PYTHON_VERSION: 3.9
+          PYTHON_VERSION: 3.9
     steps:
     - template: conda-forge-build.yml
 
