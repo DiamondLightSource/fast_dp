@@ -5,8 +5,7 @@
 # of the quality of a data set as fast as possible along with a set of
 # intensities which have been scaled reasonably well. This relies heavily on
 # XDS, and forkintegrate in particular.
-
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import copy
 import json
@@ -15,34 +14,32 @@ import re
 import sys
 import time
 import traceback
+from optparse import SUPPRESS_HELP, OptionParser
 
 import fast_dp
+import fast_dp.image_readers
+import fast_dp.output
+from fast_dp.autoindex import autoindex
 from fast_dp.cell_spacegroup import (
     check_spacegroup_name,
     check_split_cell,
     generate_primitive_cell,
 )
 from fast_dp.image_names import find_matching_images
-import fast_dp.image_readers
-import fast_dp.output
-
-from fast_dp.autoindex import autoindex
 from fast_dp.integrate import integrate
-from fast_dp.scale import scale
+from fast_dp.logger import write
 from fast_dp.merge import merge
 from fast_dp.pointgroup import decide_pointgroup
-from fast_dp.logger import write
-
-from optparse import SUPPRESS_HELP, OptionParser
+from fast_dp.scale import scale
 
 
 class FastDP:
     """A class to implement fast data processing for MX beamlines (at Diamond)
     which uses XDS, Pointless, Scala and a couple of other CCP4 odds and
-    ends to provide integrated and scaled data in a couple of minutes."""
+    ends to provide integrated and scaled data in a couple of minutes.
+    """
 
-    def __init__(self):
-
+    def __init__(self) -> None:
         # unguessable input parameters
         self._start_image = None
 
@@ -125,8 +122,8 @@ class FastDP:
     def set_start_image(self, start_image):
         """Set the image to work from: in the majority of cases this will
         be sufficient. This returns a list of image numbers which may be
-        missing."""
-
+        missing.
+        """
         assert self._start_image is None
 
         # check input is image file, and exists
@@ -149,13 +146,12 @@ class FastDP:
             directory, template = os.path.split(template.replace("?", "#"))
             matching = find_matching_images(template, directory)
             every = set(range(min(matching), max(matching) + 1))
-            missing = list(sorted(every - set(matching)))
+            missing = sorted(every - set(matching))
 
         return missing
 
     def set_beam(self, beam):
         """Set the beam centre, in mm, in the Mosflm reference frame."""
-
         assert self._xds_inp
         assert len(beam) == 2
 
@@ -167,12 +163,11 @@ class FastDP:
 
     def set_distance(self, distance):
         """Set the detector distance, in mm."""
-
         assert self._xds_inp
         self._xds_inp["DETECTOR_DISTANCE"] = distance
 
     def set_atom(self, atom):
-        """Set the heavy atom, if appropriate. Use "-" to unset"""
+        """Set the heavy atom, if appropriate. Use "-" to unset."""
         if atom == "-":
             if "atom" in self._params:
                 del self._params["atom"]
@@ -186,7 +181,6 @@ class FastDP:
         self._input_spacegroup = input_spacegroup
 
     def set_input_cell(self, input_cell):
-
         self._input_cell = input_cell
 
         # convert this to a primitive cell based on the centring
@@ -200,8 +194,8 @@ class FastDP:
 
     def process(self):
         """Main routine, chain together all of the steps imported from
-        autoindex, integrate, pointgroup, scale and merge."""
-
+        autoindex, integrate, pointgroup, scale and merge.
+        """
         write("Running on: %s" % str(os.getenv("HOSTNAME")).split(".")[0])
 
         # check input frame limits
@@ -213,17 +207,16 @@ class FastDP:
         if osc == 0.0:
             raise RuntimeError("grid scan data")
 
-        if self._first_image is not None:
-            if start < self._first_image:
-                osc_start += osc * (self._first_image - start)
-                start = self._first_image
-                self._xds_inp["STARTING_ANGLE"] = str(osc_start)
-                self._xds_inp["STARTING_FRAME"] = str(start)
+        if self._first_image is not None and start < self._first_image:
+            osc_start += osc * (self._first_image - start)
+            start = self._first_image
+            self._xds_inp["STARTING_ANGLE"] = str(osc_start)
+            self._xds_inp["STARTING_FRAME"] = str(start)
 
         if self._last_image is not None:
             end = min(end, self._last_image)
 
-        self._xds_inp["DATA_RANGE"] = "%s %s" % (start, end)
+        self._xds_inp["DATA_RANGE"] = f"{start} {end}"
 
         # first if the number of jobs was set to 0, decide something sensible.
         # this should be jobs of a minimum of 5 degrees, 10 frames.
@@ -236,9 +229,8 @@ class FastDP:
         if self._n_jobs == 0:
             frames = end - start + 1
             n_jobs = int(round(frames / wedge))
-            if self._max_n_jobs > 0:
-                if n_jobs > self._max_n_jobs:
-                    n_jobs = self._max_n_jobs
+            if self._max_n_jobs > 0 and n_jobs > self._max_n_jobs:
+                n_jobs = self._max_n_jobs
             self.set_n_jobs(n_jobs)
 
         write("Number of jobs: %d" % self._n_jobs)
@@ -248,7 +240,7 @@ class FastDP:
 
         write("Processing images: %d -> %d" % (start, end))
         osc_end = osc_start + (end - start + 1) * osc
-        write("Rotation range: %.2f -> %.2f" % (osc_start, osc_end))
+        write(f"Rotation range: {osc_start:.2f} -> {osc_end:.2f}")
 
         template = self._xds_inp["NAME_TEMPLATE_OF_DATA_FRAMES"]
 
@@ -272,7 +264,7 @@ class FastDP:
                 self._n_jobs,
                 self._n_cores,
             )
-            write("Mosaic spread: %.2f < %.2f < %.2f" % tuple(mosaics))
+            write("Mosaic spread: {:.2f} < {:.2f} < {:.2f}".format(*tuple(mosaics)))
         except RuntimeError:
             write("Integration failed")
             raise
@@ -318,7 +310,11 @@ class FastDP:
             raise
 
         write("Merging point group: %s" % self._space_group)
-        write("Unit cell: %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f" % self._unit_cell)
+        write(
+            "Unit cell: {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f}".format(
+                *self._unit_cell
+            )
+        )
 
         duration = time.time() - step_time
         write(
@@ -345,7 +341,6 @@ class FastDP:
 
 def main():
     """Main routine for fast_dp."""
-
     commandline = " ".join(sys.argv)
 
     parser = OptionParser(usage="fast_dp [options] imagefile")
@@ -522,7 +517,7 @@ def main():
         if options.cell:
             assert options.spacegroup
             cell = check_split_cell(options.cell)
-            write("Set cell: %.2f %.2f %.2f %.2f %.2f %.2f" % cell)
+            write("Set cell: {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(*cell))
             finst.set_input_cell(cell)
 
         finst.process()

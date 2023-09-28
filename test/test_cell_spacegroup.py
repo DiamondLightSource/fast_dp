@@ -1,21 +1,23 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import os
+
 import pytest
 
 pytest.importorskip("cctbx.sgtbx")
 
-from cctbx import sgtbx
-from fast_dp import cell_spacegroup
+from cctbx import sgtbx  # noqa: E402
+
+from fast_dp import cell_spacegroup  # noqa: E402
 
 
 def ersatz_pointgroup_old(spacegroup_name):
     """Guess the pointgroup for the spacegroup by mapping from short to
-    long name, then taking 1st character from each block."""
-
+    long name, then taking 1st character from each block.
+    """
     pg = None
 
-    for record in open(os.path.join(os.environ["CLIBD"], "symop.lib"), "r").readlines():
+    for record in open(os.path.join(os.environ["CLIBD"], "symop.lib")).readlines():
         if " " in record[:1]:
             continue
         if spacegroup_name == record.split()[3]:

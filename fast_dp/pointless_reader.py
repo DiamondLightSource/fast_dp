@@ -1,16 +1,17 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import xml.dom.minidom
 
-from fast_dp.cell_spacegroup import lauegroup_to_lattice
 from cctbx import sgtbx
+
+from fast_dp.cell_spacegroup import lauegroup_to_lattice
 
 
 def read_pointless_xml(pointless_xml_file):
     """Read through the pointless xml output, return as a list of spacegroup
     numbers in order of likelihood, corresponding to the pointgroup of the
-    data."""
-
+    data.
+    """
     dom = xml.dom.minidom.parse(pointless_xml_file)
 
     scorelist = dom.getElementsByTagName("LaueGroupScoreList")[0]

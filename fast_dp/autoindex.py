@@ -1,13 +1,11 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import shutil
 
-from fast_dp.xds_reader import read_xds_idxref_lp
-from fast_dp.run_job import run_job
-
 from fast_dp.cell_spacegroup import spacegroup_to_lattice
-
 from fast_dp.logger import write
+from fast_dp.run_job import run_job
+from fast_dp.xds_reader import read_xds_idxref_lp
 
 # TODO add pytests for this method
 
@@ -57,7 +55,7 @@ def segment_text(xds_inp):
             "DIRECTION_OF_SEGMENT_X-AXIS",
             "DIRECTION_OF_SEGMENT_Y-AXIS",
         ):
-            result.append("%s=%s" % (k, xds_inp[k][j]))
+            result.append(f"{k}={xds_inp[k][j]}")
 
     return "\n".join(result)
 
@@ -65,8 +63,8 @@ def segment_text(xds_inp):
 def autoindex(xds_inp, input_cell=None):
     """Perform the autoindexing, using metatdata, get a list of possible
     lattices and record / return the triclinic cell constants (get these from
-    XPARM.XDS)."""
-
+    XPARM.XDS).
+    """
     assert xds_inp
 
     xds_inp = add_spot_range(xds_inp)
@@ -78,15 +76,19 @@ def autoindex(xds_inp, input_cell=None):
             v = xds_inp[k]
             if isinstance(v, list):
                 for _v in v:
-                    fout.write("%s=%s\n" % (k, _v))
+                    fout.write(f"{k}={_v}\n")
             else:
-                fout.write("%s=%s\n" % (k, v))
+                fout.write(f"{k}={v}\n")
 
         fout.write("%s\n" % segment_text(xds_inp))
 
         if input_cell:
             fout.write("SPACE_GROUP_NUMBER=1\n")
-            fout.write("UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n" % tuple(input_cell))
+            fout.write(
+                "UNIT_CELL_CONSTANTS={:f} {:f} {:f} {:f} {:f} {:f}\n".format(
+                    *tuple(input_cell)
+                )
+            )
 
         fout.write("JOB=XYCORR INIT COLSPOT IDXREF\n")
         fout.write("REFINE(IDXREF)=CELL AXIS ORIENTATION POSITION BEAM\n")
@@ -106,8 +108,9 @@ def autoindex(xds_inp, input_cell=None):
         lastrecord = open("%s.LP" % step).readlines()[-1]
         if "!!! ERROR !!!" in lastrecord:
             raise RuntimeError(
-                "error in %s: %s"
-                % (step, lastrecord.replace("!!! ERROR !!!", "").strip())
+                "error in {}: {}".format(
+                    step, lastrecord.replace("!!! ERROR !!!", "").strip()
+                )
             )
 
     results = read_xds_idxref_lp("IDXREF.LP")

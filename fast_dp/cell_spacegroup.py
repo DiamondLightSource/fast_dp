@@ -1,5 +1,4 @@
-from __future__ import absolute_import, division, print_function
-
+from __future__ import annotations
 
 from cctbx import crystal, sgtbx, uctbx
 from cctbx.sgtbx.bravais_types import bravais_lattice
@@ -7,8 +6,8 @@ from cctbx.sgtbx.bravais_types import bravais_lattice
 
 def ersatz_pointgroup(spacegroup_name):
     """Guess the pointgroup for the spacegroup by mapping from short to
-    long name, then taking 1st character from each block."""
-
+    long name, then taking 1st character from each block.
+    """
     pg = (
         sgtbx.space_group_info(spacegroup_name)
         .group()
@@ -23,15 +22,15 @@ def ersatz_pointgroup(spacegroup_name):
 def spacegroup_to_lattice(input_spacegroup):
     """This generates a lattice from the imported file but chopping off
     the first letter of the cell type, changing to lowercase and then
-    prepending it to the first letter of the spacegroup."""
-
+    prepending it to the first letter of the spacegroup.
+    """
     return str(bravais_lattice(group=sgtbx.space_group_info(input_spacegroup).group()))
 
 
 def check_spacegroup_name(spacegroup_name):
     """Will return normalised name if spacegroup name is recognised,
-    raise exception otherwise. For checking command-line options."""
-
+    raise exception otherwise. For checking command-line options.
+    """
     try:
         j = int(spacegroup_name)
         if j > 230 or j <= 0:
@@ -47,12 +46,12 @@ def check_spacegroup_name(spacegroup_name):
 def check_split_cell(cell_string):
     """Will return tuple of floats a, b, c, alpha, beta, gamma from input
     cell string which contains a,b,c,alpha,beta,gamma raising an exception
-    if there is a problem."""
-
+    if there is a problem.
+    """
     ideal_string = "a,b,c,alpha,beta,gamma"
 
     if not cell_string.count(",") == 5:
-        raise RuntimeError("%s should be of the form %s" % (cell_string, ideal_string))
+        raise RuntimeError(f"{cell_string} should be of the form {ideal_string}")
 
     a, b, c, alpha, beta, gamma = tuple(map(float, cell_string.split(",")))
 
@@ -61,7 +60,6 @@ def check_split_cell(cell_string):
 
 def constrain_cell(lattice_class, cell):
     """Constrain cell to fit lattice class x."""
-
     a, b, c, alpha, beta, gamma = cell
 
     if lattice_class == "a":
@@ -89,8 +87,9 @@ def spacegroup_number_to_name(spg_num):
 
 
 def lattice_to_spacegroup(lattice):
-    """ Converts a lattice to the spacegroup with the lowest symmetry
-    possible for that lattice"""
+    """Converts a lattice to the spacegroup with the lowest symmetry
+    possible for that lattice.
+    """
     l2s = {
         "aP": 1,
         "mP": 3,
@@ -116,8 +115,8 @@ def lattice_to_spacegroup(lattice):
 def lauegroup_to_lattice(lauegroup):
     """Convert a Laue group representation (from pointless, e.g. I m m m)
     to something useful, like the implied crystal lattice (in this
-    case, oI.)"""
-
+    case, oI.).
+    """
     # this has been calculated from the results of Ralf GK's sginfo and a
     # little fiddling...
     #
@@ -161,7 +160,7 @@ def lauegroup_to_lattice(lauegroup):
     updated_laue = ""
 
     for l in lauegroup.split():
-        if not l == "1":
+        if l != "1":
             updated_laue += l
 
     return lauegroup_to_lattice[updated_laue]
@@ -169,8 +168,8 @@ def lauegroup_to_lattice(lauegroup):
 
 def generate_primitive_cell(unit_cell_constants, space_group_name):
     """For a given set of unit cell constants and space group, determine the
-    corresponding primitive unit cell..."""
-
+    corresponding primitive unit cell...
+    """
     uc = uctbx.unit_cell(unit_cell_constants)
     sg = sgtbx.space_group_info(space_group_name).group()
     cs = crystal.symmetry(unit_cell=uc, space_group=sg)

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 
 def XDS_INP_to_dict(inp_text):
@@ -40,16 +40,15 @@ def XDS_INP_to_dict(inp_text):
 
 
 def diff(xds_inp_a, xds_inp_b):
-    """Compare the parameters in a, b; write out the differences"""
-
-    all_keys = list(sorted(set(xds_inp_a).union(xds_inp_b)))
+    """Compare the parameters in a, b; write out the differences."""
+    all_keys = sorted(set(xds_inp_a).union(xds_inp_b))
 
     for key in all_keys:
         a = xds_inp_a.get(key, "")
         b = xds_inp_b.get(key, "")
         if a == b:
             continue
-        print("%s:\n\t%s\n\t%s" % (key, a, b))
+        print(f"{key}:\n\t{a}\n\t{b}")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import re
 
@@ -10,15 +10,15 @@ def read_xds_idxref_lp(idxref_lp_file):
     spacegroup number (ASSERT: this is the lowest symmetry spacegroup for
     the corresponding lattice) containing unit cell constants and a
     penalty. N.B. this also works from CORRECT.LP for the autoindexing
-    results."""
-
+    results.
+    """
     # try doing this with regular expression: * int lattice...`
 
     regexp = re.compile(r"^ \*\ ")
 
     results = {}
 
-    with open(idxref_lp_file, "r") as fh:
+    with open(idxref_lp_file) as fh:
         for record in fh.readlines():
             if regexp.match(record):
                 tokens = record.split()
@@ -43,12 +43,12 @@ def read_xds_idxref_lp(idxref_lp_file):
 
 def read_xds_correct_lp(correct_lp_file):
     """Read the XDS CORRECT.LP file and get out the spacegroup and
-    unit cell constants it decided on."""
-
+    unit cell constants it decided on.
+    """
     unit_cell = None
     space_group_number = None
 
-    with open(correct_lp_file, "r") as fh:
+    with open(correct_lp_file) as fh:
         for record in fh.readlines():
             if "SPACE_GROUP_NUMBER=" in record:
                 try:
@@ -64,9 +64,9 @@ def read_xds_correct_lp(correct_lp_file):
 def read_correct_lp_get_resolution(correct_lp_file):
     """Read the CORRECT.LP file and get an estimate of the resolution limit.
     This should then be recycled to a rerun of CORRECT, from which the
-    reflections will be merged to get the statistics."""
-
-    with open(correct_lp_file, "r") as fh:
+    reflections will be merged to get the statistics.
+    """
+    with open(correct_lp_file) as fh:
         correct_lp = fh.readlines()
 
     rec = -1

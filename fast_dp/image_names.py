@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import math
 import os
@@ -8,7 +8,6 @@ import string
 
 def image2template(filename):
     """Return a template to match this filename."""
-
     # check that the file name doesn't contain anything mysterious
     if filename.count("#"):
         raise RuntimeError("# characters in filename")
@@ -51,7 +50,6 @@ def image2template(filename):
 
 def image2image(filename):
     """Return an integer for the template to match this filename."""
-
     # check that the file name doesn't contain anything mysterious
     if filename.count("#"):
         raise RuntimeError("# characters in filename")
@@ -76,11 +74,9 @@ def image2image(filename):
 
 def image2template_directory(filename):
     """Separate out the template and directory from an image name."""
-
     directory = os.path.dirname(filename)
 
     if not directory:
-
         # then it should be the current working directory
         directory = os.getcwd()
 
@@ -92,8 +88,8 @@ def image2template_directory(filename):
 
 def find_matching_images(template, directory):
     """Find images which match the input template in the directory
-    provided."""
-
+    provided.
+    """
     files = os.listdir(directory)
 
     # to turn the template to a regular expression want to replace
@@ -123,8 +119,8 @@ def find_matching_images(template, directory):
 
 def template_directory_number2image(template, directory, number):
     """Construct the full path to an image from the template, directory
-    and image number."""
-
+    and image number.
+    """
     length = template.count("#")
 
     # check that the number will fit in the template
@@ -137,6 +133,4 @@ def template_directory_number2image(template, directory, number):
     format = "%%0%dd" % length
 
     # construct the full image name
-    image = os.path.join(directory, template.replace("#" * length, format % number))
-
-    return image
+    return os.path.join(directory, template.replace("#" * length, format % number))

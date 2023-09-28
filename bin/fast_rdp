@@ -1,8 +1,0 @@
-#!/bin/bash
-#
-# run the fast data processing, assumes that the environment is configured
-# with XDS, CCP4 on the PATH and the forkintegrate script properly configured
-# if -j > 1 or -J set and -j == 0.
-#
-
-cctbx.python -m fast_dp.fast_rdp "$@"

@@ -1,19 +1,18 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 import shutil
 
-from fast_dp.xds_reader import read_xds_idxref_lp, read_correct_lp_get_resolution
+from fast_dp.autoindex import segment_text
+from fast_dp.cell_spacegroup import (
+    check_spacegroup_name,
+    ersatz_pointgroup,
+    lattice_to_spacegroup,
+    spacegroup_to_lattice,
+)
+from fast_dp.logger import write
 from fast_dp.pointless_reader import read_pointless_xml
 from fast_dp.run_job import run_job
-from fast_dp.cell_spacegroup import (
-    lattice_to_spacegroup,
-    ersatz_pointgroup,
-    spacegroup_to_lattice,
-    check_spacegroup_name,
-)
-
-from fast_dp.logger import write
-from fast_dp.autoindex import segment_text
+from fast_dp.xds_reader import read_correct_lp_get_resolution, read_xds_idxref_lp
 
 
 def decide_pointgroup(p1_unit_cell, xds_inp, input_spacegroup=None):
@@ -21,8 +20,8 @@ def decide_pointgroup(p1_unit_cell, xds_inp, input_spacegroup=None):
     insist on triclinic symmetry for this scaling step) then run
     pointless on the resulting reflection file to get the idea of the
     best pointgroup to use. Then return the correct pointgroup and
-    cell."""
-
+    cell.
+    """
     assert p1_unit_cell
 
     start, end = map(int, xds_inp["DATA_RANGE"].split())
@@ -38,12 +37,16 @@ def decide_pointgroup(p1_unit_cell, xds_inp, input_spacegroup=None):
             v = xds_inp[k]
             if isinstance(v, list):
                 for _v in v:
-                    fout.write("%s=%s\n" % (k, _v))
+                    fout.write(f"{k}={_v}\n")
             else:
-                fout.write("%s=%s\n" % (k, v))
+                fout.write(f"{k}={v}\n")
 
         fout.write("SPACE_GROUP_NUMBER=1\n")
-        fout.write("UNIT_CELL_CONSTANTS=%f %f %f %f %f %f\n" % tuple(p1_unit_cell))
+        fout.write(
+            "UNIT_CELL_CONSTANTS={:f} {:f} {:f} {:f} {:f} {:f}\n".format(
+                *tuple(p1_unit_cell)
+            )
+        )
 
         fout.write("JOB=CORRECT\n")
         fout.write("REFINE(CORRECT)=CELL AXIS ORIENTATION POSITION BEAM\n")
@@ -104,7 +107,9 @@ def decide_pointgroup(p1_unit_cell, xds_inp, input_spacegroup=None):
                 space_group_number = r[1]
                 unit_cell = results[lattice_to_spacegroup(r[0])][1]
                 write("Happy with sg# %d" % space_group_number)
-                write("%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f" % unit_cell)
+                write(
+                    "{:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f}".format(*unit_cell)
+                )
                 sg_accepted = True
                 break
 
@@ -121,7 +126,9 @@ def decide_pointgroup(p1_unit_cell, xds_inp, input_spacegroup=None):
                 space_group_number = r[1]
                 unit_cell = results[lattice_to_spacegroup(r[0])][1]
                 write("Happy with sg# %d" % space_group_number)
-                write("%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f" % unit_cell)
+                write(
+                    "{:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f} {:6.2f}".format(*unit_cell)
+                )
 
                 break
             else:
