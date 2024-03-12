@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import time
 
-from dxtbx.model.experiment_list import ExperimentList
+from dxtbx.model.experiment_list import ExperimentListFactory
 
 from fast_dp.image_names import image2template_directory
 
@@ -323,11 +323,11 @@ def read_image_metadata_dxtbx(image):
     if image.endswith(".h5"):
         # XDS can literally only handle master files called (prefix)_master.h5
         assert "master" in image
-        expt = ExperimentList.from_filenames([image])[0]
+        expt = ExperimentListFactory.from_filenames([image])[0]
     else:
         template, directory = image2template_directory(image)
         full_template = os.path.join(directory, template)
-        expt = ExperimentList.from_templates(
+        expt = ExperimentListFactory.from_templates(
             [full_template], allow_incomplete_sweeps=True
         )[0]
 
