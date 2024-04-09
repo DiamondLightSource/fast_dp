@@ -1,6 +1,6 @@
 [project]
 name = "fast_dp"
-version = "1.6.2"
+version = "1.7"
 authors = [
     { name = "Diamond Light Source", email = "scientificsoftware@diamond.ac.uk" },
 ]
