@@ -15,7 +15,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Operating System :: POSIX :: Linux",
 ]
-dependencies = ["procrunner"]
 
 [project.urls]
 Homepage = "https://github.com/DiamondLightSource/fast_dp"
