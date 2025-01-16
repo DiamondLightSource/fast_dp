@@ -1,46 +1,37 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 
 
-def run_job(executable, arguments=[], stdin=[], working_directory=None):
+def run_job(
+    executable: str,
+    arguments: list[str] = [],
+    stdin=[],
+    working_directory: str | None = None,
+) -> list[str]:
     """Run a program with some command-line arguments and some input,
     then return the standard output when it is finished.
     """
     if working_directory is None:
         working_directory = os.getcwd()
 
-    command_line = "%s" % executable
-    for arg in arguments:
-        command_line += ' "%s"' % arg
+    command_line = [shutil.which(executable)] + arguments
+    if command_line[0] is None:
+        raise RuntimeError(f"Cannot find executable {executable!r}")
 
-    popen = subprocess.Popen(
+    proc = subprocess.run(
         command_line,
         bufsize=1,
-        stdin=subprocess.PIPE,
+        input="\n".join(stdin),
+        text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        cwd=working_directory,
-        universal_newlines=True,
-        shell=True,
+        check=True,
     )
 
-    for record in stdin:
-        popen.stdin.write("%s\n" % record)
-
-    popen.stdin.close()
-
-    output = []
-
-    while True:
-        record = popen.stdout.readline()
-        if not record:
-            break
-
-        output.append(record)
-
-    return output
+    return proc.stdout.splitlines()
 
 
 if __name__ == "__main__":
