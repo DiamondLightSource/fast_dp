@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-
-import pkg_resources
+from importlib.resources import files
 
 
 def write_json(
@@ -34,9 +33,9 @@ def write_json(
 
 def get_ispyb_template():
     """Read the ispyb.xml template from the package resources."""
-    xml_template = pkg_resources.resource_string(
-        "fast_dp", "templates/ispyb.xml"
-    ).decode("utf-8")
+    template_path = files("fast_dp") / "templates" / "ispyb.xml"
+    xml_template = template_path.read_text(encoding="utf-8")
+
     assert xml_template, "Error retrieving XML template"
     return xml_template
 
