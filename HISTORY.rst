@@ -7,6 +7,7 @@ History
 * fast_dp no longer supports Python 2.7 or 3.5
 * change default plugin for Eiger data to durin-plugin.so
 * migrate from pkg_resources to importlib.resources
+* require python 3.11 or later to match DIALS requirements
 
 1.6.2 (2020-03-14)
 ------------------
