@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 
 from fast_dp.cell_spacegroup import spacegroup_to_lattice
@@ -105,7 +106,15 @@ def autoindex(xds_inp, input_cell=None):
     # sequentially check for errors... XYCORR INIT COLSPOT IDXREF
 
     for step in ["XYCORR", "INIT", "COLSPOT", "IDXREF"]:
-        lastrecord = open("%s.LP" % step).readlines()[-1]
+        lp = "%s.LP" % step
+        if not os.path.exists(lp):
+            raise RuntimeError(
+                f"error in {step}: no {lp} was written - see autoindex.log"
+            )
+        records = open(lp).readlines()
+        if not records:
+            raise RuntimeError(f"error in {step}: {lp} is empty - see autoindex.log")
+        lastrecord = records[-1]
         if "!!! ERROR !!!" in lastrecord:
             raise RuntimeError(
                 "error in {}: {}".format(
