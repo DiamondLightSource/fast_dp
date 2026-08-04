@@ -21,7 +21,9 @@ class _writer:
 
     def write(self, record):
         if not self._fout:
-            self._fout = open(self._filename, "w")
+            # Line buffered, so that a run killed part way through (e.g. by the
+            # cluster scheduler) still leaves a usable log file behind.
+            self._fout = open(self._filename, "w", buffering=1)
 
         self._fout.write("%s\n" % record)
         print(record)
