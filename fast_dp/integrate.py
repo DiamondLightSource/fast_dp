@@ -43,7 +43,11 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     for step in ["DEFPIX", "INTEGRATE"]:
         if not os.path.exists("%s.LP" % step):
             continue
-        lastrecord = open("%s.LP" % step).readlines()[-1]
+        records = open("%s.LP" % step).readlines()
+        if not records:
+            # Zero-length .LP, e.g. from a run killed part way through
+            continue
+        lastrecord = records[-1]
         if "!!! ERROR !!!" in lastrecord:
             raise RuntimeError(
                 "error in {}: {}".format(
@@ -97,6 +101,9 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
     for record in open("INTEGRATE.LP"):
         if "CRYSTAL MOSAICITY (DEGREES)" in record:
             mosaics.append(float(record.split()[-1]))
+
+    if not mosaics:
+        raise RuntimeError("integration error: no mosaicity found in INTEGRATE.LP")
 
     mosaic = sum(mosaics) / len(mosaics)
 
