@@ -53,15 +53,20 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
 
     if not os.path.exists("INTEGRATE.LP"):
         step = "INTEGRATE"
-        for record in open("LP_01.tmp").readlines():
-            if "!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE " in record:
-                raise RuntimeError(
-                    "error in {}: {}".format(
-                        step, record.replace("!!! ERROR !!!", "").strip().lower()
+        if os.path.exists("LP_01.tmp"):
+            for record in open("LP_01.tmp").readlines():
+                if "!!! ERROR !!! AUTOMATIC DETERMINATION OF SPOT SIZE " in record:
+                    raise RuntimeError(
+                        "error in {}: {}".format(
+                            step, record.replace("!!! ERROR !!!", "").strip().lower()
+                        )
                     )
-                )
-            elif "!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp" in record:
-                raise RuntimeError("integration error: cluster error")
+                elif "!!! ERROR !!! CANNOT OPEN OR READ FILE LP_01.tmp" in record:
+                    raise RuntimeError("integration error: cluster error")
+
+        # No INTEGRATE.LP, and nothing diagnostic in LP_01.tmp (or no LP_01.tmp
+        # at all) - e.g. the cluster fork produced no output whatsoever.
+        raise RuntimeError("integration error: no output from XDS INTEGRATE")
 
     # check for some specific errors
 
