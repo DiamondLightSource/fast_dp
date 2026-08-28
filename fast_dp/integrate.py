@@ -24,7 +24,7 @@ def integrate(xds_inp, p1_unit_cell, resolution_low, n_jobs, n_processors):
             else:
                 fout.write(f"{k}={v}\n")
 
-        fout.write("REFINE(INTEGRATE)= POSITION BEAM ORIENTATION CELL\n")
+        fout.write("REFINE(INTEGRATE)= POSITION BEAM ORIENTATION\n")
         fout.write("JOB=DEFPIX INTEGRATE\n")
         fout.write("%s\n" % segment_text(xds_inp))
 
