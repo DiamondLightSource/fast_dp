@@ -65,8 +65,8 @@ def write_ispyb_xml(
                 cell_gamma=unit_cell[5],
                 results_directory=os.getcwd(),
                 scaling_statistics=scaling_statistics,
-                refined_beam_x=refined_beam[0],
-                refined_beam_y=refined_beam[1],
+                refined_beam_x=refined_beam[1],
+                refined_beam_y=refined_beam[0],
                 filename=os.path.split(start_image)[-1],
                 directory=os.path.split(start_image)[0],
             )
